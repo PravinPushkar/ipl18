@@ -32,7 +32,7 @@ func setupStatic(r *mux.Router) {
 }
 
 func setupPublic(r *mux.Router) {
-	r.Handle("/register", handler.NotImplemented).Methods("POST")
+	r.Handle("/register", handler.RegistrationHandler).Methods("POST")
 	r.Handle("/ping", handler.PingHandler).Methods("GET")
 	r.Handle("/login", handler.LoginHandler).Methods("POST")
 }

@@ -1,56 +1,59 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/auth"
+	"github.wdf.sap.corp/I334816/ipl18/backend/config"
+	"github.wdf.sap.corp/I334816/ipl18/backend/db"
+	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 	"github.wdf.sap.corp/I334816/ipl18/backend/util"
-
-	jwt "github.com/dgrijalva/jwt-go"
 )
 
-func sendErrResponse(w http.ResponseWriter, code int, msg interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(util.GetJsonErrMessage(code, msg))
-}
+var tokenManager = auth.NewTokenManager(auth.SignMethodSHA512, config.GetHashConfig().Secret)
 
 var PingHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
 })
 
 var RegistrationHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		log.Println(err.Error())
-		sendErrResponse(w, http.StatusBadRequest, err)
+	user := models.User{}
+	defer r.Body.Close()
+	json.NewDecoder(r.Body).Decode(&user)
+
+	if _, err := db.DB.Exec("insert into ipluser(firstname, lastname, password, coin, alias, piclocation, inum) values($1, $2, $3, $4, $5, '', $6)",
+		user.Firstname,
+		user.Lastname,
+		user.Password,
+		12,
+		user.Alias,
+		user.INumber); err != nil {
+		log.Println("could not insert in db", err.Error())
+		util.ErrWriter(w, http.StatusInternalServerError, "could not register new user")
 		return
 	}
-
-	//todo db stuff here
+	util.OkWriter(w)
 })
 
 var LoginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
+	defer r.Body.Close()
+	lm := models.LoginModel{}
+	if err := json.NewDecoder(r.Body).Decode(&lm); err != nil {
 		log.Println(err.Error())
-		sendErrResponse(w, http.StatusBadRequest, err)
+		util.ErrWriter(w, http.StatusBadRequest, err)
 		return
 	}
 
-	//do db auth here, return on error
-	token := jwt.New(jwt.SigningMethodHS512)
+	//check correct password here
+	token, err := tokenManager.GetToken(lm.INumber, time.Duration(1))
 
-	claims := token.Claims.(jwt.MapClaims)
-
-	claims["name"] = "Sushant Mahajan"
-	claims["exp"] = time.Now().Add(time.Hour * 6).Unix()
-
-	tokenString, err := token.SignedString([]byte("secretsecret"))
 	if err != nil {
-		log.Println(err.Error())
-		sendErrResponse(w, http.StatusInternalServerError, "could not generate token")
+		util.ErrWriter(w, http.StatusInternalServerError, "could not generate token")
 		return
 	}
 
-	w.Write([]byte(tokenString))
+	util.StructWriter(w, token)
 })

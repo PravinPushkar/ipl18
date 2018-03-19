@@ -1,0 +1,15 @@
+{
+    "db": {
+        "dbuser": "",
+        "dbpassword": "",
+        "host": "",
+        "port": "",
+        "dbname": ""
+    },
+    "jwt": {
+        "secret": ""
+    },
+    "hash": {
+        "secret": ""
+    }
+}
