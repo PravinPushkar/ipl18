@@ -16,10 +16,10 @@ var SetupAndGetRouter = func() http.Handler {
 
 	//can be more easily protected
 	//or not using Subrouter
-	pubRouter := r.Path("/pub/").Headers("Content-Type", "application/json").Subrouter()
+	pubRouter := r.PathPrefix("/pub").Headers("Content-Type", "application/json").Subrouter()
 	setupPublic(pubRouter)
 
-	apiRouter := r.Path("/api/").Headers("Content-Type", "application/json").Subrouter()
+	apiRouter := r.PathPrefix("/api").Headers("Content-Type", "application/json").Subrouter()
 	setupApi(apiRouter)
 
 	return setupLogging(r)
@@ -32,18 +32,19 @@ func setupStatic(r *mux.Router) {
 }
 
 func setupPublic(r *mux.Router) {
-	r.Handle("/pub/register", handler.NotImplemented).Methods("POST")
-	r.Handle("/pub/info", handler.NotImplemented).Methods("GET")
+	r.Handle("/register", handler.NotImplemented).Methods("POST")
+	r.Handle("/ping", handler.PingHandler).Methods("GET")
+	r.Handle("/login", handler.LoginHandler).Methods("POST")
 }
 
 func setupApi(r *mux.Router) {
-	r.Handle("/api/profile", handler.NotImplemented).Methods("GET", "POST")
-	r.Handle("/api/buzz", handler.NotImplemented).Methods("GET", "POST")
-	r.Handle("/api/jackpot", handler.NotImplemented).Methods("GET", "POST")
-	r.Handle("/api/voting", handler.NotImplemented).Methods("GET", "POST")
-	r.Handle("/api/leaderboard", handler.NotImplemented).Methods("GET")
-	r.Handle("/api/rules", handler.NotImplemented).Methods("GET")
-	r.Handle("/api/recap", handler.NotImplemented).Methods("GET")
+	r.Handle("/profile", handler.NotImplemented).Methods("GET", "POST")
+	r.Handle("/buzz", handler.NotImplemented).Methods("GET", "POST")
+	r.Handle("/jackpot", handler.NotImplemented).Methods("GET", "POST")
+	r.Handle("/voting", handler.NotImplemented).Methods("GET", "POST")
+	r.Handle("/leaderboard", handler.NotImplemented).Methods("GET")
+	r.Handle("/rules", handler.NotImplemented).Methods("GET")
+	r.Handle("/recap", handler.NotImplemented).Methods("GET")
 }
 
 func setupLogging(r http.Handler) http.Handler {
