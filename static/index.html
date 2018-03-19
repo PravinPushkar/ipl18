@@ -1,34 +1,41 @@
 <!DOCTYPE html>
-<html ng-app="ipl">
+<html>
 
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width">
-        <title>IPL 2018</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>IPL Predictions '18</title>
 
-        <!-- Add all CDNs here -->
-        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.7/angular.min.js"></script> -->
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
-        <script src="https://unpkg.com/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-animate.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-aria.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-messages.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.6/angular-material.min.js"></script>
+    <!-- Add all CDNs here -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.7/angular.min.js"></script> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+    <script src="https://unpkg.com/@uirouter/angularjs/release/angular-ui-router.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-animate.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-aria.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular-messages.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.7/angular-material.min.js"></script>
 
-        <!-- Add the application's JS here -->
-        <script src="/static/app/app.module.js"></script>
-        <script src="/static/app/app.route.js"></script>
-        <script src="/static/app/components/home/home.controller.js"></script>
-        <script src="/static/app/components/login/login.controller.js"></script>
+    <!-- Add the application's JS here -->
+    <script src="/static/app/app.module.js"></script>
+    <script src="/static/app/app.route.js"></script>
+    <script src="/static/app/app.run.js"></script>
+    <script src="/static/app/components/home/home.controller.js"></script>
+    <script src="/static/app/components/login/login.controller.js"></script>
+    <script src="/static/app/components/register/register.controller.js"></script>
+    <script src="/static/app/shared/toolbar/toolbar.controller.js"></script>
+    <script src="/static/app/shared/services/requests.service.js"></script>
 
-        <!-- Add all CSS here -->
-        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.6/angular-material.min.css">
+    <!-- Add all CSS here -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/1.1.7/angular-material.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="/static/assets/css/custom.css">
 
-    </head>
+</head>
 
-    <body>
-        <!-- Redirect to the angular ui router -->
-        <ui-view></ui-view>
-    </body>
-    
+<body ng-app="ipl">
+    <!-- Main -->
+    <main ui-view></main>
+</body>
+
 </html>

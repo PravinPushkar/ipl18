@@ -7,8 +7,9 @@ var app = angular.module('ipl');
  * 
  * Controller for the login page.
  */
-app.controller('loginController', function(){
+app.controller('loginController', function () {
     var vm = this;
 
-    vm.abcd = 'vvv';
+    vm.abcd = 'login';
+    vm.iNumberPattern = /^[i|I][0-9]{6}$/;
 });
