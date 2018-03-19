@@ -27,7 +27,7 @@ var SetupAndGetRouter = func() http.Handler {
 
 func setupStatic(r *mux.Router) {
 	//for pages
-	r.Handle("/", http.FileServer(http.Dir("./views/")))
+	r.Handle("/", http.FileServer(http.Dir("./static/")))
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./static/"))))
 }
 
