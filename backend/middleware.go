@@ -1,6 +1,7 @@
 package backend
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -11,6 +12,7 @@ import (
 )
 
 var SetupAndGetRouter = func() http.Handler {
+	log.Println("Setting up routes...")
 	r := mux.NewRouter()
 	setupStatic(r)
 

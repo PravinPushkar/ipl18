@@ -13,6 +13,7 @@ import (
 var DB *sql.DB
 
 func init() {
+	log.Println("Initializing database...")
 	dbConf := config.GetDBConfig()
 	connStr := fmt.Sprintf(`postgres://%s:%s@%s/%s?sslmode=disable`, dbConf.DBUser, dbConf.DBPassword, dbConf.Host, dbConf.DBName)
 	var err error

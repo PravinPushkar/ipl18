@@ -38,6 +38,7 @@ func NewTokenManager(method SignMethod, secret string) *TokenManager {
 }
 
 func (t *TokenManager) GetToken(inumber string, exp time.Duration) (*models.TokenModel, error) {
+	log.Printf("New GetToken request from %s\n", inumber)
 	token := jwt.New(t.algorithm)
 	claims := token.Claims.(jwt.MapClaims)
 

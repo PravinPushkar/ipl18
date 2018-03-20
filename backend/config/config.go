@@ -27,6 +27,7 @@ var GetJwtConfig = func() models.JWTConfig {
 }
 
 func init() {
+	log.Println("Parsing config...")
 	f, err := os.Open("./config.json")
 	if err != nil {
 		log.Println("error opening config file", err.Error())
