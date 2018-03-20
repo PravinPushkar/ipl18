@@ -1,1 +1,33 @@
-<h1>Login</h1> {{lc.abcd}}
+{{login.abcd}}
+<div layout="column">
+
+    <!-- Sign Up -->
+    <section layout="row" layout-align="end start" layout-padding flex>
+        <p>Not a member?</p>
+        <button class="outline-button">Sign Up</button>
+    </section>
+    <!-- Sign Up end -->
+
+    <!-- Login -->
+    <section layout="column" layout-align="center center" flex>
+        <form name="loginForm" ng-submit="login.signIn()" novalidate>
+            <md-input-container class="md-block">
+                <label>I-Number</label>
+                <input maxlength="7" ng-pattern="login.iNumberPattern" name="iNumber" ng-model="login.iNumber" required md-no-asterisk>
+                <div ng-messages="loginForm.iNumber.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="pattern">This must be a valid I-Number.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Password</label>
+                <input type="password" required md-no-asterisk name="password" ng-model="login.password">
+                <div ng-messages="loginForm.password.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+            <button type="submit" id="submit" value="Submit">Login</button>
+        </form>
+    </section>
+
+</div>

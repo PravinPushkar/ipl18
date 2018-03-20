@@ -21,7 +21,13 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
         url: '/login',
         templateUrl: '/static/app/components/login/login.html',
         controller: 'loginController',
-        controllerAs: 'lc'
+        controllerAs: 'login'
+    }, {
+        name: 'register',
+        url: '/register',
+        templateUrl: '/static/app/components/register/register.html',
+        controller: 'registerController',
+        controllerAs: 'register'
     }, {
         abstract: true,
         name: 'main',
@@ -29,11 +35,10 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
             '@': {
                 templateUrl: '/static/app/components/main/main.html'
             },
-            'left@main': {
-                templateUrl: '/static/app/shared/sidebar/sidebar.html'
-            },
             'top@main': {
-                template: '<h3>TOP</h3>'
+                templateUrl: '/static/app/shared/toolbar/toolbar.html',
+                controller: 'toolbarController',
+                controllerAs: 'toolbar'
             }
         }
     }, {
@@ -43,7 +48,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
             'body@main': {
                 templateUrl: '/static/app/components/home/home.html',
                 controller: 'homeController',
-                controllerAs: 'hc'
+                controllerAs: 'home'
             }
         }
     }];
@@ -54,5 +59,5 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
     });
 
     // Default page
-    $urlRouterProvider.otherwise('/home');
+    $urlRouterProvider.otherwise('/login');
 });
