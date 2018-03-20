@@ -30,6 +30,7 @@ func setupRoutes(r *mux.Router) {
 
 	apiRouter := r.PathPrefix("/api").Headers("Content-Type", "application/json").Subrouter()
 	setupApi(apiRouter)
+	apiRouter.Use(handler.IsAuthenticated)
 }
 
 func setupStatic(r *mux.Router) {
