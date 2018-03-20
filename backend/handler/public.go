@@ -14,8 +14,11 @@ import (
 
 var tokenManager = auth.NewTokenManager(auth.SignMethodSHA512)
 
+//PingHandler .....
 var PingHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(200)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"alive":"true"}`))
 })
 
 var RegistrationHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
