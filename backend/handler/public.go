@@ -7,13 +7,12 @@ import (
 	"time"
 
 	"github.wdf.sap.corp/I334816/ipl18/backend/auth"
-	"github.wdf.sap.corp/I334816/ipl18/backend/config"
 	"github.wdf.sap.corp/I334816/ipl18/backend/db"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 	"github.wdf.sap.corp/I334816/ipl18/backend/util"
 )
 
-var tokenManager = auth.NewTokenManager(auth.SignMethodSHA512, config.GetHashConfig().Secret)
+var tokenManager = auth.NewTokenManager(auth.SignMethodSHA512)
 
 var PingHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(200)
