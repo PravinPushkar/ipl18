@@ -1,50 +1,65 @@
-{{register.abcd}}
-<section>
-    <form name="registerForm" ng-submit="register.signUp()" novalidate>
-        <md-input-container class="md-block">
-            <label>I-Number</label>
-            <input maxlength="7" ng-pattern="register.iNumberPattern" name="iNumber" ng-model="register.iNumber" required md-no-asterisk>
-            <div ng-messages="registerForm.iNumber.$error">
-                <div ng-message="required">This is required.</div>
-                <div ng-message="pattern">This must be a valid I-Number.</div>
-            </div>
-        </md-input-container>
-        <md-input-container class="md-block">
-            <label>First Name</label>
-            <input name="firstName" ng-model="register.firstName" required md-no-asterisk>
-            <div ng-messages="registerForm.firstName.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
-        </md-input-container>
-        <md-input-container class="md-block">
-            <label>Last Name</label>
-            <input name="lastName" ng-model="register.lastName" required md-no-asterisk>
-            <div ng-messages="registerForm.lastName.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
-        </md-input-container>
-        <md-input-container class="md-block">
-            <label>Password</label>
-            <input type="password" name="password" ng-model="register.password" required md-no-asterisk>
-            <div ng-messages="registerForm.password.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
-        </md-input-container>
-        <md-input-container class="md-block">
-            <label>Confirm Password</label>
-            <input type="password" name="confirmPassword" ng-model="register.confirmPassword" required md-no-asterisk>
-            <div ng-messages="registerForm.iNumber.$error">
-                <div ng-message="required">This is required.</div>
-            </div>
-        </md-input-container>
-        <md-input-container class="md-block">
-            <label>Alias</label>
-            <input name="alias" ng-model="register.alias">
-            <div ng-messages="registerForm.alias.$error">
-                <div ng-message="required">This is required.</div>
-                <div ng-message="pattern">This must be a valid I-Number.</div>
-            </div>
-        </md-input-container>
-        <button type="submit" id="submit" value="Submit">Register</button>
-    </form>
-</section>
+<div layout="column" novalidate>
+
+    <!-- Login -->
+    <section layout="row" layout-align="start start" layout-padding flex>
+        <button class="outline-button" ui-sref="login">Login</button>
+        <p>Back to Login</p>
+    </section>
+    <!-- Login end -->
+
+    <!-- Sign Up form -->
+    <section layout="column" layout-align="center center">
+        <span ng-if="register.error">{{register.errorMessage}}</span>
+        <span ng-if="register.success">{{register.successMessage}}</span>
+        <form name="registerForm" ng-submit="register.signUp()">
+            <md-input-container class="md-block">
+                <label>I-Number</label>
+                <input maxlength="7" ng-pattern="register.iNumberPattern" name="iNumber" ng-model="register.iNumber" required md-no-asterisk>
+                <div ng-messages="registerForm.iNumber.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="pattern">This must be a valid I-Number.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>First Name</label>
+                <input name="firstName" ng-model="register.firstName" required md-no-asterisk>
+                <div ng-messages="registerForm.firstName.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Last Name</label>
+                <input name="lastName" ng-model="register.lastName" required md-no-asterisk>
+                <div ng-messages="registerForm.lastName.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Password</label>
+                <input type="password" name="password" ng-model="register.password" required md-no-asterisk>
+                <div ng-messages="registerForm.password.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Confirm Password</label>
+                <!-- use-form-error="isNotSame" use-error-expression="password && confirmPassword && password!=confirmPassword" -->
+                <input type="password" name="confirmPassword" ng-model="register.confirmPassword" required md-no-asterisk>
+                <div ng-messages="registerForm.iNumber.$error">
+                    <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+            <md-input-container class="md-block">
+                <label>Alias</label>
+                <input name="alias" ng-model="register.alias">
+                <div ng-messages="registerForm.alias.$error">
+                    <div ng-message="required">This is required.</div>
+                    <div ng-message="pattern">This must be a valid I-Number.</div>
+                </div>
+            </md-input-container>
+            <button type="submit" id="submit" value="Submit" ng-disabled="registerForm.$invalid">Register</button>
+        </form>
+    </section>
+    <!-- Sign Up Form end -->
+
+</div>

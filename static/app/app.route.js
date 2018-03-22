@@ -51,6 +51,36 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
                 controllerAs: 'home'
             }
         }
+    }, {
+        name: 'main.profile',
+        url: '/profile',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/profile/profile.html',
+                controller: 'profileController',
+                controllerAs: 'profile'
+            }
+        }
+    }, {
+        name: 'main.editProfile',
+        url: '/editprofile',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/editProfile/editProfile.html',
+                controller: 'editProfileController',
+                controllerAs: 'editProfile'
+            }
+        }
+    }, {
+        name: 'main.leaderboard',
+        url: '/leaderboard',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/leaderboard/leaderboard.html',
+                controller: 'leaderboardController',
+                controllerAs: 'leaderboard'
+            }
+        }
     }];
 
     // Add every state into the $stateProvider

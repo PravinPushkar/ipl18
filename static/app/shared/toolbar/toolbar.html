@@ -14,7 +14,7 @@
                     </md-button>
                     <md-menu-content width="3" ng-mouseleave="$mdMenu.close()">
                         <md-menu-item ng-repeat="item in toolbar.userMenuItems">
-                            <md-button>
+                            <md-button ng-click="toolbar.clickUserMenu(item.id, $event)">
                                 <div layout="row" flex>
                                     <md-icon md-font-set="material-icons" flex>{{item.icon}}</md-icon>
                                     <p style="text-align: end" flex>{{item.name}}</p>
@@ -30,7 +30,7 @@
 
     <!-- Sidenav -->
     <section layout="row" style="height: 100vh" flex>
-        <md-sidenav class="md-sidenav-left" md-whiteframe="4" md-component-id="left">
+        <md-sidenav class="md-sidenav-left" md-whiteframe="4" md-component-id={{toolbar.sidenavId}}>
             <md-toolbar>
                 <div class="md-toolbar-tools" layout="row">
                     <md-button class="md-icon-button" aria-label="Menu" ng-click="toolbar.toggleSidenav('left')">
@@ -40,7 +40,7 @@
             </md-toolbar>
             <md-content>
                 <md-list>
-                    <md-list-item ng-click="null" ng-repeat="item in toolbar.sidebarItems" flex>
+                    <md-list-item ng-repeat="item in toolbar.sidebarItems" ui-sref="{{item.state}}" flex>
                         <span>
                             <md-icon md-font-set="material-icons">{{item.icon}}</md-icon>
                         </span>

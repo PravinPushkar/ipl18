@@ -7,29 +7,46 @@ var app = angular.module('ipl');
  * 
  * Controller for the register page.
  */
-app.controller('registerController', function (requestsService) {
+app.controller('registerController', function ($http, INumberPattern, urlService) {
     var vm = this;
 
-    vm.abcd = 'register';
+    vm.iNumberPattern = INumberPattern;
+    vm.successMessage = 'User registration successful';
 
     vm.signUp = signUp;
 
+    // Function to sign up new user
     function signUp() {
+        vm.error = false;
+        vm.errorMessage = undefined;
+        vm.success = false;
+        if (vm.password !== vm.confirmPassword) {
+            vm.success = false;
+            vm.error = true;
+            vm.errorMessage = 'Error! Password and Confirm Password do not match.';
+            return;
+        }
         var data = {
             iNumber: vm.iNumber,
             firstName: vm.firstName,
             lastName: vm.lastName,
             password: vm.password
         };
-        if (vm.alias !== '' && vm.alias !== undefined) {
+        vm.error = false;
+        if (vm.alias !== '' && vm.alias !== undefined && vm.alias !== null) {
             data.alias = vm.alias;
         }
-        requestsService.registerUser(data)
+        $http.post(urlService.registerUser, data)
             .then(function () {
                 console.log('signup success');
-            })
-            .catch(function (err) {
+                vm.success = true;
+                vm.error = false;
+            }, function (err) {
                 console.log('signup error', err);
+                vm.error = true;
+                vm.success = false;
+                vm.errorMessage = err;
             });
     }
+
 });
