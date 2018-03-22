@@ -1,15 +1,15 @@
-{{login.abcd}}
 <div layout="column">
 
     <!-- Sign Up -->
     <section layout="row" layout-align="end start" layout-padding flex>
         <p>Not a member?</p>
-        <button class="outline-button">Sign Up</button>
+        <button class="outline-button" ui-sref="register">Sign Up</button>
     </section>
     <!-- Sign Up end -->
 
     <!-- Login -->
     <section layout="column" layout-align="center center" flex>
+        <span ng-if="login.error">Error! Please check your credentials.</span>
         <form name="loginForm" ng-submit="login.signIn()" novalidate>
             <md-input-container class="md-block">
                 <label>I-Number</label>
@@ -26,8 +26,9 @@
                     <div ng-message="required">This is required.</div>
                 </div>
             </md-input-container>
-            <button type="submit" id="submit" value="Submit">Login</button>
+            <button class="translucent-button" type="submit" id="submit" value="Submit">Login</button>
         </form>
     </section>
+    <!-- Login End -->
 
 </div>

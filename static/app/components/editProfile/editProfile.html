@@ -1,0 +1,35 @@
+<md-button class="md-icon-button" aria-label="Back" ui-sref="main.profile">
+    <md-icon class="material_icons">chevron_left</md-icon>
+</md-button>
+<label>Back to Profile</label>
+<md-card layout="column">
+
+    <!-- Change password -->
+    <section layout="column" layout-align="center center">
+        <h3>Change Password</h3>
+        <md-input-container class="md-block">
+            <label>Password</label>
+            <input type="password" name="password" ng-model="editProfile.password">
+        </md-input-container>
+        <md-input-container class="md-block">
+            <label>Confirm Password</label>
+            <input type="password" name="confirmPassword" ng-model="editProfile.confirmPassword">
+        </md-input-container>
+    </section>
+
+    <!-- Updatable data -->
+    <section>
+        <md-input-container class="md-block">
+            <label>Alias</label>
+            <input name="alias" ng-model="editProfile.alias">
+        </md-input-container>
+        <!-- Hide the upload image input -->
+        <input type="file" accept="image/*" ng-model="editProfile.profilePic" id="profilePic" image-select="onFileSelect($files)" ng-hide="true">
+        <label for="profilePic" class="md-button md-raised md-primary">Choose Image</label>
+        <div style="width: 250px; height: 250px; border: 2px solid black;">
+            <img ng-src="{{editProfile.profilePic}}" style="width:250px; height:250px;">
+        </div>
+    </section>
+    <br> {{editProfile.imageSelectedName}}
+</md-card>
+<button ng-click="editProfile.edit()">Save</button>

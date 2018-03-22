@@ -7,9 +7,31 @@ var app = angular.module('ipl');
  * 
  * Controller for the login page.
  */
-app.controller('loginController', function () {
+app.controller('loginController', function ($http, $window, $state, INumberPattern, token, urlService) {
     var vm = this;
 
-    vm.abcd = 'login';
-    vm.iNumberPattern = /^[i|I][0-9]{6}$/;
+    vm.iNumberPattern = INumberPattern;
+
+    vm.signIn = signIn;
+
+    // Function when sign in occurs
+    function signIn() {
+        vm.error = false;
+        var data = {
+            iNumber: vm.iNumber,
+            password: vm.password
+        };
+        $http.post(urlService.loginUser, data)
+            .then(function (res) {
+                console.log('login success');
+                $window.localStorage.setItem(token, res.data.token);
+                // Add JWT Token as the default token for all back-end requests
+                $http.defaults.headers.common.Authorization = 'Bearer ' + res.data.token;
+                $state.go('main.home');
+
+            }, function (err) {
+                console.log('error', err);
+                vm.error = true;
+            });
+    }
 });
