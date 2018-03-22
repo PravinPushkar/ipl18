@@ -73,6 +73,7 @@ func (t *TokenManager) GetClaims(token string) (jwt.MapClaims, error) {
 }
 
 func (t *TokenManager) IsValidToken(token string) error {
+	log.Println("validating token")
 	_, err := t.GetClaims(token)
 	return err
 }
