@@ -44,7 +44,7 @@ func setupPublic(r *mux.Router) {
 }
 
 func setupApi(r *mux.Router) {
-	r.Handle("/profile", handler.NotImplemented).Methods("GET", "POST")
+	r.Handle("/profile", handler.ProfileHandler{}).Methods("GET", "POST")
 	r.Handle("/buzz", handler.NotImplemented).Methods("GET", "POST")
 	r.Handle("/jackpot", handler.NotImplemented).Methods("GET", "POST")
 	r.Handle("/voting", handler.NotImplemented).Methods("GET", "POST")

@@ -14,6 +14,10 @@ var GetJsonErrMessage = func(code int, msg interface{}) []byte {
 	case string:
 		err.Message = msg.(string)
 	case error:
+		err.Message = "unknown"
+		if e, ok := msg.(error); ok {
+			err.Message = e.Error()
+		}
 		err.Message = (msg.(error)).Error()
 	default:
 		err.Message = "unknown"

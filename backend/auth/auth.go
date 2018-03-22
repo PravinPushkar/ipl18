@@ -59,7 +59,7 @@ func (t *TokenManager) GetToken(inumber string, exp time.Duration) (*models.Toke
 	return &tModel, nil
 }
 
-func (t *TokenManager) GetClaims(token string) (jwt.Claims, error) {
+func (t *TokenManager) GetClaims(token string) (jwt.MapClaims, error) {
 	tok, err := t.decodeToken(token)
 	if err != nil {
 		log.Println("token parse error", err.Error())
