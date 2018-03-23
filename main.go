@@ -9,5 +9,5 @@ import (
 
 func main() {
 	log.Println("Starting server on port 3000...")
-	log.Fatal(http.ListenAndServe(":3000", backend.SetupAndGetRouter()))
+	log.Fatal(http.ListenAndServe("0.0.0.0:3000", backend.SetupAndGetRouter()))
 }

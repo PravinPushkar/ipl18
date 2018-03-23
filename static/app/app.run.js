@@ -8,7 +8,7 @@ var app = angular.module('ipl');
  * The run block for the application.
  */
 app.run(function ($http, $rootScope, $window, $location, displayName, token) {
-    $http.defaults.headers.common.Accept = 'application/json';
+    // $http.defaults.headers.common.Accept = 'application/json';
     $http.defaults.headers.post['Content-Type'] = 'application/json';
 
     // Restrict pages, except public pages, without a token

@@ -28,7 +28,7 @@ func setupRoutes(r *mux.Router) {
 	pubRouter := r.PathPrefix("/pub").Headers("Content-Type", "application/json").Subrouter()
 	setupPublic(pubRouter)
 
-	apiRouter := r.PathPrefix("/api").Headers("Content-Type", "application/json").Subrouter()
+	apiRouter := r.PathPrefix("/api").Subrouter()
 	setupApi(apiRouter)
 	apiRouter.Use(handler.IsAuthenticated)
 }
@@ -45,7 +45,8 @@ func setupPublic(r *mux.Router) {
 }
 
 func setupApi(r *mux.Router) {
-	r.Handle("/profile", handler.ProfileHandler{}).Methods("GET", "POST")
+	r.Handle("/users/{inumber}", handler.UserGetHandler{}).Methods("GET")
+	r.Handle("/users/{inumber}", handler.UserPutHandler{}).Methods("PUT")
 	r.Handle("/buzz", handler.NotImplemented).Methods("GET", "POST")
 	r.Handle("/jackpot", handler.NotImplemented).Methods("GET", "POST")
 	r.Handle("/voting", handler.NotImplemented).Methods("GET", "POST")

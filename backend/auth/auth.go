@@ -74,7 +74,8 @@ func (t *TokenManager) GetClaims(token string) (jwt.MapClaims, error) {
 
 func (t *TokenManager) IsValidToken(token string) error {
 	log.Println("validating token")
-	_, err := t.GetClaims(token)
+	_, err := t.decodeToken(token)
+	log.Println("error decoding token", err.Error())
 	return err
 }
 

@@ -1,14 +1,14 @@
 package handler
 
 import (
-	"errors"
+	"fmt"
 	"net/http"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/util"
+	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
 )
 
-var NotImplementedErr = errors.New("Not Implemented")
+var NotImplementedErr = fmt.Errorf("Not Implemented")
 
 var NotImplemented = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	util.ErrWriter(w, http.StatusNotFound, NotImplementedErr)
+	errors.ErrWriter(w, http.StatusNotFound, NotImplementedErr)
 })

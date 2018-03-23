@@ -17,9 +17,3 @@ var StructWriter = func(w http.ResponseWriter, msg interface{}) {
 	json.NewEncoder(b).Encode(msg)
 	w.Write(b.Bytes())
 }
-
-var ErrWriter = func(w http.ResponseWriter, code int, msg interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-	w.Write(GetJsonErrMessage(code, msg))
-}

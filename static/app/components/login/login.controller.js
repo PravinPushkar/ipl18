@@ -18,15 +18,15 @@ app.controller('loginController', function ($http, $window, $state, INumberPatte
     function signIn() {
         vm.error = false;
         var data = {
-            iNumber: vm.iNumber,
+            inumber: vm.iNumber,
             password: vm.password
         };
         $http.post(urlService.loginUser, data)
             .then(function (res) {
-                console.log('login success');
+                console.log('login success',res.data,res.body);
                 $window.localStorage.setItem(token, res.data.token);
                 // Add JWT Token as the default token for all back-end requests
-                $http.defaults.headers.common.Authorization = 'Bearer ' + res.data.token;
+                $http.defaults.headers.common.Authorization = res.data.token;
                 $state.go('main.home');
 
             }, function (err) {
