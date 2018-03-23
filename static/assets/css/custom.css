@@ -90,14 +90,39 @@ md-card>img {
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.25), 0 1px 5px 0 rgba(0, 0, 0, 0.15), 0 10px 8px -4px rgba(0, 0, 0, 0.4);
 }
 
-.top-card {
-    width: 30vw;
-    height: 65vh;
-    margin-right: 0;
-    padding-right: 0;
+.image-card {
+    width: 25vw;
+    height: 40vh;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
     border-radius: 18px;
 }
 
-/* .second-card {
-    b
-} */
+.name-card {
+    width: 20vw;
+    height: 6vh;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-radius: 10px 10px 0 0;
+    background: linear-gradient(to top, #999 0, #ffffff 7px, #ffffff 100%);
+}
+
+.other-info-card {
+    width: 20vw;
+    height: 6vh;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.stats-card {
+    width: 16vw;
+    height: 7vh;
+    margin-top: 0;
+    padding-top: 0;
+    border-radius: 0 0 10px 10px;
+}

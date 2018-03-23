@@ -14,7 +14,7 @@ app.factory('urlService', function () {
     service.registerUser = '/pub/register';
     service.loginUser = '/pub/login';
     service.logoutUser = '/api/logout';
-    service.userProfile = '/api/profile';
+    service.userProfile = '/api/users';
 
     return service;
 });

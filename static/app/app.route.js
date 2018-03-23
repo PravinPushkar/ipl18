@@ -56,7 +56,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
         url: '/profile',
         views: {
             'body@main': {
-                templateUrl: '/static/app/components/profile/profile.html',
+                templateUrl: '/static/app/components/profile/profile2.html',
                 controller: 'profileController',
                 controllerAs: 'profile'
             }

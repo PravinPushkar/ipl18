@@ -12,6 +12,7 @@ app.factory('utilsService', function ($state, $mdDialog, $mdToast) {
 
     service.showConfirmDialog = showConfirmDialog;
     service.showToast = showToast;
+    service.capitalizeFirstLetter = capitalizeFirstLetter;
 
     return service;
 
@@ -33,9 +34,15 @@ app.factory('utilsService', function ($state, $mdDialog, $mdToast) {
     function showToast(params) {
         $mdToast.show(
             $mdToast.simple()
+            .position('top right')
             .textContent(params.text)
             .hideDelay(params.hideDelay)
-            .theme(params.error ? 'error-toast' : 'success-toast')
+            .theme(params.isError ? 'error-toast' : 'success-toast')
+            .action(params.hideDelay === 0 ? 'ok' : null)
         );
+    }
+
+    function capitalizeFirstLetter(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
     }
 });

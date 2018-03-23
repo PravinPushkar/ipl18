@@ -1,42 +1,39 @@
-<div ng-init="profile.init()" layout="row" layout-align="center center" layout-margin>
+<div ng-init="profile.init()" layout="column" layout-align="center center" layout-margin flex>
 
-        <!-- Main card -->
-        <md-card class="top-card" md-whiteframe="15">
-            <img ng-src="{{profile.userData.profilePic}}" style="width: 100% !important; height: 100% !important; border-radius: 18px;">
-        </md-card>
-        <!-- Left card end -->
-    
-        <!-- Right card -->
-        <md-card class="right-adjoined-card" md-whiteframe="15" style:"font-family: Arial">
-            <md-card-content>
-                <section layout="column" layout-align="start center" flex="100" layout-margin style="padding-top:5%;">
-                    <h2 style="padding-bottom: 0;">{{profile.userData.firstName}} {{profile.userData.lastName}}</h2>
-                    <h4 style="padding-top: 0; font-weight: normal">{{profile.userData.iNumber}}</h4>
-                </section>
-                <div class="wrap-button" flex layout="row" layout-align="center center" flex>
-                    <md-button class="md-fab" style="margin: 0;" ui-sref="main.editProfile">
-                        <md-icon md-font-set="material-icons">edit</md-icon>
-                    </md-button>
-                </div>
-                <section layout="row" layout-align="center" layout-margin layout-padding flex>
-                    <section layout="column" layout-align="center center"  class="md-padding">
-                        <p style="padding-bottom: 0; padding-top: 100%; font-weight: normal; line-height: 0.1;">Alias</p>
-                        <h3 style="padding-top: 0; line-height: 0.1;">{{profile.userData.alias}}</h3>
-                    </section>
-                    <section layout="column" layout-align="center center">
-                        <p style="padding-bottom: 0; padding-top: 100%; font-weight: normal; line-height: 0.1;">Points</p>
-                        <h3 style="padding-top: 0; line-height: 0.1;">{{profile.userData.points}}</h3>
-                    </section>
-                    <section layout="column" layout-align="center center">
-                        <p style="padding-bottom: 0; padding-top: 100%; font-weight: normal; line-height: 0.1;">Coins</p>
-                        <h3 style="padding-top: 0; line-height: 0.1;">{{profile.userData.coins}}</h3>
-                    </section>
-                </section>
-                <!-- <md-checkbox md-no-ink aria-label="showAlias" ng-model="profile.showAlias" class="md-primary"> -->
-                <!-- Show Alias to others<br>(in place of full name) -->
-                </md-checkbox>
-            </md-card-content>
-        </md-card>
-        <!-- Right card end -->
-        
-    </div>
+    <!-- Name card -->
+    <md-card class="name-card" layout layout-align="center center">
+        <h3>{{profile.userData.firstName}} {{profile.userData.lastName}}</h3>
+    </md-card>
+    <!-- Name card end -->
+
+    <!-- Image card -->
+    <md-card class="image-card" md-whiteframe="15" style="z-index: 100;">
+        <img ng-src="{{profile.userData.profilePic}}" style="width: 100% !important; height: 100% !important; border-radius: 18px;">
+    </md-card>
+    <!-- Image card end -->
+
+    <!-- Other info card -->
+    <md-card class="other-info-card" layout layout-align="end center" md-whiteframe="15" style="z-index: 50;">
+        <div layout="column" layout-align="start center" flex>
+            <h3>{{profile.userData.iNumber}}</h3>
+        </div>
+        <span flex></span>
+        <h3>{{profile.userData.alias}}</h3>
+    </md-card>
+    <!-- Other info card end -->
+
+    <!-- Stats card -->
+    <md-card class="stats-card card-shadow" layout="row" layout-align="end center" layout-padding style="z-index: 25;">
+        <div layout="column" layout-align="start center" flex>
+            <h3 style="line-height: 0.1; margin-bottom: 0">{{profile.userData.points}}</h3>
+            <h5 style="line-height: 0.1;">points</h5>
+        </div>
+        <span flex></span>
+        <section layout="column" layout-align="center center" flex>
+            <h3 style="line-height: 0.1; margin-bottom: 0">{{profile.userData.coins}}</h3>
+            <h5 style="line-height: 0.1;">coins</h5>
+        </section>
+    </md-card>
+    <!-- Stats card end -->
+
+</div>

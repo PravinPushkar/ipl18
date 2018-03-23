@@ -7,43 +7,44 @@ var app = angular.module('ipl');
  * 
  * Controller for the profile page.
  */
-app.controller('profileController', function($http, $window, urlService) {
+app.controller('profileController', function ($http, $window, urlService, utilsService) {
     var vm = this;
 
     vm.init = init;
-    // vm.userData = {
-    //     firstName: 'Gal',
-    //     lastName: 'Gadot',
-    //     iNumber: 'I333333',
-    //     alias: 'wonderwoman',
-    //     points: 50,
-    //     coins: 5,
-    //     profilePic: '/static/assets/img/users/batman.jpeg'
-    // };
+
+    vm.setAlias = $window.localStorage.getItem('setAlias');
+
+    vm.userData = {
+        firstName: 'bruce',
+        lastName: 'wayne',
+        iNumber: 'I333333',
+        alias: 'chamgadar_aaaamaanav',
+        points: 50,
+        coins: 5,
+        profilePic: '/static/assets/img/users/batman.jpeg'
+    };
 
     function init() {
-        // console.log($http.defaults.headers.common.Authorization,urlService.userProfile)
-        // $http.get(urlService.userProfile)
-        var req = {
-            url: '/api/profile',
-            // headers: {
-            //     Authorization: $window.localStorage.getItem('token')
-            // },
-            method: 'GET'
-        }
-        $http(req)
-            .then(function(res) {
-                // console.log('xxxxxxx',res.data, res.body);
+        var params = {
+            url: urlService.userProfile,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        };
+        $http(params)
+            .then(function (res) {
                 vm.userData = {
-                    firstName: res.data.firstname,
-                    lastName: res.data.lastname,
-                    iNumber: res.data.inumber,
+                    firstName: utilsService.capitalizeFirstLetter(res.data.firstname),
+                    lastName: utilsService.capitalizeFirstLetter(res.data.lastname),
+                    iNumber: utilsService.capitalizeFirstLetter(res.data.inumber),
                     alias: res.data.alias,
                     // points: res.data.points,
                     coins: res.data.coin,
-                    // profilePic: res.data.pic_loc
+                    // profilePic: res.data.piclocation
                 };
-                // $window.localStorage.displayName = 
+                $window.localStorage.setItem('displayName', vm.setAlias ? vm.userData.alias : `${vm.userData.firstName} ${vm.userData.lastName}`);
+                $window.localStorage.getItem('setAlias', vm.setAlias);
                 console.log('success');
             }, function(err) {
                 console.log('error', err);

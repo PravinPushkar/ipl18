@@ -7,23 +7,30 @@ var app = angular.module('ipl');
  * 
  * Controller for the register page.
  */
-app.controller('registerController', function ($http, INumberPattern, urlService) {
+app.controller('registerController', function ($http, INumberPattern, urlService, aliasPattern, utilsService) {
     var vm = this;
 
     vm.iNumberPattern = INumberPattern;
-    vm.successMessage = 'User registration successful';
+    vm.aliasPattern = aliasPattern;
 
     vm.signUp = signUp;
 
     // Function to sign up new user
-    function signUp() {
-        vm.error = false;
-        vm.errorMessage = undefined;
-        vm.success = false;
+    function signUp(isFormValid) {
+        if (isFormValid === false) {
+            utilsService.showToast({
+                text: 'Please enter valid credentials.',
+                hideDelay: 3000,
+                isError: true
+            });
+            return;
+        }
         if (vm.password !== vm.confirmPassword) {
-            vm.success = false;
-            vm.error = true;
-            vm.errorMessage = 'Error! Password and Confirm Password do not match.';
+            utilsService.showToast({
+                text: 'Password and Confirm Password do not match',
+                hideDelay: 3000,
+                isError: true
+            });
             return;
         }
         var data = {
@@ -32,20 +39,32 @@ app.controller('registerController', function ($http, INumberPattern, urlService
             lastName: vm.lastName,
             password: vm.password
         };
-        vm.error = false;
         if (vm.alias !== '' && vm.alias !== undefined && vm.alias !== null) {
             data.alias = vm.alias;
         }
-        $http.post(urlService.registerUser, data)
+        var params = {
+            url: urlService.registerUser,
+            data: data,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        $http(params)
             .then(function () {
                 console.log('signup success');
-                vm.success = true;
-                vm.error = false;
+                utilsService.showToast({
+                    text: 'User Registration Successful.',
+                    hideDelay: 0,
+                    isError: true
+                });
             }, function (err) {
                 console.log('signup error', err);
-                vm.error = true;
-                vm.success = false;
-                vm.errorMessage = err;
+                utilsService.showToast({
+                    text: `${err.message} .`,
+                    hideDelay: 0,
+                    isError: true
+                });
             });
     }
 

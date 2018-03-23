@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for the toolbar and the sidebar.
  */
-app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, displayName, token, toolbarService, utilsService, urlService) {
+app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, toolbarService, utilsService, urlService) {
     var vm = this;
 
     vm.toggleSidenav = toggleSidenav;
@@ -47,11 +47,16 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
             };
             utilsService.showConfirmDialog(params)
                 .then(function () {
-                    $window.localStorage.removeItem(displayName);
-                    $window.localStorage.removeItem(token);
-                    $http.delete(urlService.logoutUser)
+                    var params = {
+                        url: urlService.logoutUser,
+                        method: 'DELETE',
+                    };
+                    $http(params)
                         .then(function () {
                             $http.defaults.headers.common.Authorization = '';
+                            $window.localStorage.removeItem('displayName');
+                            $window.localStorage.removeItem('token');
+                            $window.localStorage.remoteItem('iNumber');
                             $state.go('login');
                         }, function (err) {
                             console.log('Error logging out', err.message);
