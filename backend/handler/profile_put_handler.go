@@ -49,27 +49,28 @@ func (p UserPutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (p UserPutHandler) parseAndUpdate(r *http.Request, inumber string) error {
+	log.Println("UserPutHandler: parsing request")
 	err := r.ParseMultipartForm(maxMemory)
 	if err != nil {
-		log.Println("error parsing multipart form", err.Error())
 		return err
 	}
 
 	query := "update ipluser set inumber=$1"
 	values := []interface{}{inumber}
-	i := 1
+
+	i := 2
+	if location, err := p.handleImage(r, inumber); err != nil {
+		return err
+	} else {
+		query += fmt.Sprintf(",piclocation=$%d", i)
+		values = append(values, location)
+	}
+
 	for k, _ := range r.Form {
 		val := r.Form.Get(k)
-		log.Println("UserPutHandler: found field-", k)
+		log.Println("UserPutHandler: found field ", k)
 		i++
 		switch k {
-		case "image":
-			if location, err := p.handleImage(r, inumber); err != nil {
-				return err
-			} else {
-				query += fmt.Sprintf(",piclocation=$%d", i)
-				values = append(values, location)
-			}
 
 		case "alias":
 			query += fmt.Sprintf(",alias=$%d", i)
@@ -103,7 +104,7 @@ func (p UserPutHandler) handleImage(r *http.Request, inumber string) (string, er
 	}
 
 	defer file.Close()
-	piclocation := fmt.Sprintf("./profile/%s_%d_%s", inumber, time.Now().Unix(), handle.Filename)
+	piclocation := fmt.Sprintf("./static/assets/img/users/%s_%d_%s", inumber, time.Now().Unix(), handle.Filename)
 	if f, err := os.OpenFile(piclocation, os.O_WRONLY|os.O_CREATE, 0644); err != nil {
 		log.Println("UserPutHandler: error opening new file for writing", err.Error())
 		return "", err
