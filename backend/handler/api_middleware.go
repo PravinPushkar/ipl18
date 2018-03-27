@@ -13,6 +13,7 @@ var IsAuthenticated = func(next http.Handler) http.Handler {
 		log.Printf("%v", r)
 		token := r.Header.Get("Authorization")
 		if claims, err := tokenManager.GetClaims(token); err != nil {
+			log.Println("IsAuthenticated:", err.Error())
 			errors.ErrWriter(w, http.StatusForbidden, "token not valid")
 			return
 		} else {
@@ -20,6 +21,7 @@ var IsAuthenticated = func(next http.Handler) http.Handler {
 				ctx := context.WithValue(r.Context(), "inumber", inumber)
 				next.ServeHTTP(w, r.WithContext(ctx))
 			} else {
+				log.Println("IsAuthenticated: inumber not found in claims")
 				errors.ErrWriter(w, http.StatusForbidden, "token not valid")
 				return
 			}

@@ -6,7 +6,7 @@ type User struct {
 	Lastname    string `json:"lastname"`
 	Password    string `json:"password"`
 	Coins       int    `json:"coins"`
-	UID         int    `json:"uid"`
+	UID         int    `json:"id"`
 	Alias       string `json:"alias"`
-	PicLocation string `json:"pic_loc"`
+	PicLocation string `json:"picLocation"`
 }

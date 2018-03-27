@@ -5,6 +5,6 @@ type ProfileViewModel struct {
 	Lastname    string `json:"lastname"`
 	Coin        int    `json:"coin"`
 	Alias       string `json:"alias"`
-	PicLocation string `json:"piclocation"`
+	PicLocation string `json:"picLocation"`
 	INumber     string `json:"inumber"`
 }
