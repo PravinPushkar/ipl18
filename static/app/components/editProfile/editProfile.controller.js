@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for the edit profile page.
  */
-app.controller('editProfileController', function ($http, $mdToast, $scope, urlService, utilsService, aliasPattern) {
+app.controller('editProfileController', function ($http, $mdToast, $scope, $window, urlService, utilsService, aliasPattern) {
     var vm = this;
 
     vm.edit = edit;
@@ -50,8 +50,9 @@ app.controller('editProfileController', function ($http, $mdToast, $scope, urlSe
         if (document.getElementById('profilePic').files[0]) {
             fd.append('image', document.getElementById('profilePic').files[0]);
         }
+        var currentUserINumber = $window.localStorage.getItem('iNumber');
         var params = {
-            url: urlService.userProfile,
+            url: `${urlService.userProfile}/${currentUserINumber}`,
             data: fd,
             method: 'PUT',
             transformRequest: angular.identity,

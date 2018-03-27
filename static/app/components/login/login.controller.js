@@ -38,10 +38,6 @@ app.controller('loginController', function ($http, $window, $state, INumberPatte
         };
         $http(params)
             .then(function (res) {
-<<<<<<< 84e806b8c71d995b0992b8de37324f2ff2950330
-                console.log('login success',res.data,res.body);
-                $window.localStorage.setItem(token, res.data.token);
-=======
                 utilsService.showToast({
                     text: 'Login Successful.',
                     hideDelay: 3000,
@@ -50,10 +46,9 @@ app.controller('loginController', function ($http, $window, $state, INumberPatte
                 console.log('login success');
                 $window.localStorage.setItem('token', res.data.token);
                 $window.localStorage.setItem('iNumber', vm.iNumber);
->>>>>>> Profile and edit profile changes
                 // Add JWT Token as the default token for all back-end requests
                 $http.defaults.headers.common.Authorization = res.data.token;
-                $state.go('main.home');
+                $state.go('main.profile');
             }, function (err) {
                 console.log('error', err);
                 utilsService.showToast({

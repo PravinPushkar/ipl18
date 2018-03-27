@@ -42,13 +42,13 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
             }
         }
     }, {
-        name: 'main.home',
-        url: '/home',
+        name: 'main.teams',
+        url: '/teams',
         views: {
             'body@main': {
-                templateUrl: '/static/app/components/home/home.html',
-                controller: 'homeController',
-                controllerAs: 'home'
+                templateUrl: '/static/app/components/teams/teams.html',
+                controller: 'teamsController',
+                controllerAs: 'teams'
             }
         }
     }, {
@@ -56,7 +56,7 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
         url: '/profile',
         views: {
             'body@main': {
-                templateUrl: '/static/app/components/profile/profile2.html',
+                templateUrl: '/static/app/components/profile/profile.html',
                 controller: 'profileController',
                 controllerAs: 'profile'
             }
@@ -89,5 +89,5 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
     });
 
     // Default page
-    $urlRouterProvider.otherwise('/login');
+    $urlRouterProvider.otherwise('/profile');
 });

@@ -1,23 +1,32 @@
-<md-button class="md-icon-button" aria-label="Back" ui-sref="main.profile">
-    <md-icon class="material_icons">chevron_left</md-icon>
-</md-button>
-<label>Back to Profile</label>
-<form name="editProfileForm" ng-submit="editProfile.edit()" layout="row" layout-align="center center" novalidate>
-    <md-card layout="column" layout-nowrap flex-xs flex-sm="75" flex-md="60" flex-gt-md="60">
-        <md-card-title>
+<form name="editProfileForm" ng-submit="editProfile.edit()" layout="row" layout-align="center center" layout-margin novalidate>
+    <md-card layout="column" flex-xs flex-sm="75" flex-md="60" flex-gt-md="60" md-whiteframe="15">
+        <md-card-title layout layout-align="center center">
+            <md-card-actions>
+                <md-button class="md-raised" ui-sref="main.profile">
+                    <md-icon class="material_icons">arrow_back</md-icon>
+                    <label>Profile</label>
+                </md-button>
+            </md-card-actions>
             <md-card-title-text>
                 <span class="md-headline" style="text-align:center;">Update User Information</span>
-                <md-divider></md-divider>
             </md-card-title-text>
+            <md-card-actions hide-xs>
+                <md-button type="submit" id="submit" value="Submit" class="md-fab">
+                    <md-icon md-font-set="material-icons">save</md-icon>
+                    <md-tooltip md-direction="down" md-autohide>Update Profile</md-tooltip>
+                </md-button>
+            </md-card-actions>
+
         </md-card-title>
+        <md-divider></md-divider>
 
         <md-card-content layout="row" layout-xs="column" layout-align-xs="center center" layout-sm="column" layout-align-sm="center center" layout-align="space-around start">
             <!-- Image -->
             <div layout="column">
-                <div class="md-media-xl card-media" style="border: 2px solid black; background-color: grey;">
+                <div class="md-media-xl card-media" style="border: 2px solid black; background-color: grey;" hide-xs>
                     <img ng-src="{{editProfile.profilePic}}" style="width:240px; height:240px;">
                 </div>
-                <md-card-actions layout="row" layout-padding layout-align="center start">
+                <md-card-actions layout="row" layout-padding layout-align="center start" hide-xs>
                     <!-- Hide the upload image input -->
                     <input type="file" accept="image/*" ng-model="editProfile.profilePic" id="profilePic" image-select="onFileSelect($files)" ng-hide="true">
                     <label for="profilePic" class="md-button md-raised md-primary">Browse</label>
@@ -46,9 +55,24 @@
             </div>
             <!-- Other info end -->
 
+            <div hide-gt-xs>
+                <md-input-container>
+                    <label>Image name</label>
+                    <input name="image name" ng-model="editProfile.imageSelectedName" disabled>
+                </md-input-container>
+            </div>
+
         </md-card-content>
-        <md-card-actions layout="row" layout-align="end center" layout-align-xs="center center" layout-align-sm="center center">
-            <button type="submit" id="submit" value="Submit">Save</button>
+        <md-card-actions layout="row" layout-align="space-around center" hide-gt-xs>
+            <!-- Hide the upload image input -->
+            <label for="profilePic" class="md-button md-fab" layout>
+                <md-icon md-font-set="material-icons">open_in_browser</md-icon>
+                <md-tooltip md-direction="top" md-delay="1000">Browse Image</md-tooltip>
+            </label>
+            <md-button type="submit" id="submit" value="Submit" class="md-fab">
+                <md-icon md-font-set="material-icons">save</md-icon>
+                <md-tooltip md-direction="top" md-delay="1000">Update Profile</md-tooltip>
+            </md-button>
         </md-card-actions>
 
     </md-card>

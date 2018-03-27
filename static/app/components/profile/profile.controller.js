@@ -12,12 +12,12 @@ app.controller('profileController', function ($http, $window, urlService, utilsS
 
     vm.init = init;
 
-    vm.setAlias = $window.localStorage.getItem('setAlias');
+    // vm.setAlias = $window.localStorage.getItem('setAlias');
 
     vm.userData = {
         firstName: 'bruce',
         lastName: 'wayne',
-        iNumber: 'I333333',
+        iNumber: 'I341668',
         alias: 'chamgadar_aaaamaanav',
         points: 50,
         coins: 5,
@@ -25,8 +25,9 @@ app.controller('profileController', function ($http, $window, urlService, utilsS
     };
 
     function init() {
+        var currentUserINumber = $window.localStorage.getItem('iNumber');
         var params = {
-            url: urlService.userProfile,
+            url: `${urlService.userProfile}/${currentUserINumber}`,
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
@@ -43,8 +44,8 @@ app.controller('profileController', function ($http, $window, urlService, utilsS
                     coins: res.data.coin,
                     // profilePic: res.data.piclocation
                 };
-                $window.localStorage.setItem('displayName', vm.setAlias ? vm.userData.alias : `${vm.userData.firstName} ${vm.userData.lastName}`);
-                $window.localStorage.getItem('setAlias', vm.setAlias);
+                // $window.localStorage.setItem('displayName', vm.setAlias ? vm.userData.alias : `${vm.userData.firstName} ${vm.userData.lastName}`);
+                // $window.localStorage.getItem('setAlias', vm.setAlias);
                 console.log('success');
             }, function(err) {
                 console.log('error', err);

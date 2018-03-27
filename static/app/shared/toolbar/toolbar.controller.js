@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for the toolbar and the sidebar.
  */
-app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, toolbarService, utilsService, urlService) {
+app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, $mdBottomSheet, toolbarService, utilsService, urlService) {
     var vm = this;
 
     vm.toggleSidenav = toggleSidenav;
@@ -20,6 +20,16 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
     $rootScope.$on('$locationChangeStart', function () {
         $mdSidenav(vm.sidenavId).close();
     });
+
+    vm.showGridBottomSheet = function () {
+        vm.alert = '';
+        $mdBottomSheet.show({
+            templateUrl: '/static/app/shared/toolbar/bottomSheetGrid.html',
+            controller: 'bottomSheetGridController',
+            controllerAs: 'bottomSheet',
+            clickOutsideToClose: true
+        });
+    };
 
     // Function to toggle the sidebar visibility
     function toggleSidenav() {
@@ -54,7 +64,7 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
                     $http(params)
                         .then(function () {
                             $http.defaults.headers.common.Authorization = '';
-                            $window.localStorage.removeItem('displayName');
+                            // $window.localStorage.removeItem('displayName');
                             $window.localStorage.removeItem('token');
                             $window.localStorage.remoteItem('iNumber');
                             $state.go('login');
