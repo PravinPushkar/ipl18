@@ -55,12 +55,7 @@ func setupApi(r *mux.Router) {
 
 	r.Handle("/players", handler.PlayersGetHandler{}).Methods("GET")
 	r.Handle("/players/{id}", handler.PlayersGetHandler{}).Methods("GET")
-	// r.Handle("/buzz", handler.NotImplemented).Methods("GET", "POST")
-	// r.Handle("/jackpot", handler.NotImplemented).Methods("GET", "POST")
-	// r.Handle("/voting", handler.NotImplemented).Methods("GET", "POST")
-	// r.Handle("/leaderboard", handler.NotImplemented).Methods("GET")
-	// r.Handle("/rules", handler.NotImplemented).Methods("GET")
-	// r.Handle("/recap", handler.NotImplemented).Methods("GET")
+	r.Handle("/leaders", handler.LeadersGetHandler{}).Methods("GET")
 }
 
 func setupLogging(r http.Handler) http.Handler {
