@@ -1,55 +1,57 @@
 <div ng-cloak layout="column">
 
     <!-- Toolbar -->
-    <section style="width: 100vw" flex>
+    <!-- <section style="width: 100vw" flex> -->
+    <md-toolbar md-scroll-shrink>
+        <div class="md-toolbar-tools" layout="row">
+            <md-button class="md-icon-button" aria-label="Menu" ng-click="toolbar.toggleSidenav('left')">
+                <md-icon md-font-set="material-icons">menu</md-icon>
+            </md-button>
+            <h2 md-truncate style="text-align: center" flex>IPL PREDICTIONS 2018</h2>
+            <md-menu md-offset="-60 0" md-position-mode="target-right target" hide-sm hide-xs>
+                <md-button class="md-fab md-no-ink" aria-label="User" ng-click="$mdMenu.open($event)" style="background-image: url('/static/assets/img/users/batman.jpeg'); background-size: cover; background-position: center center;"></md-button>
+                <md-menu-content width="3" ng-mouseleave="$mdMenu.close()">
+                    <md-menu-item ng-repeat="item in toolbar.userMenuItems">
+                        <md-button ng-click="toolbar.clickUserMenu(item.id, $event)">
+                            <div layout="row" flex>
+                                <md-icon md-font-set="material-icons" flex>{{item.icon}}</md-icon>
+                                <p style="text-align: end" flex>{{item.name}}</p>
+                            </div>
+                        </md-button>
+                    </md-menu-item>
+                </md-menu-content>
+            </md-menu>
+            <!-- For small and xs layout -->
+            <div class="bottom-sheet-demo inset" hide-gt-sm>
+                <md-button class="md-fab md-mini md-no-ink" aria-label="BottomSheetUser" ng-click="toolbar.showGridBottomSheet()" style="background-image: url('/static/assets/img/users/batman.jpeg'); background-size: cover; background-position: center center;"></md-button>
+            </div>
+        </div>
+    </md-toolbar>
+    <!-- </section> -->
+    <!-- Toolbar end -->
+
+    <!-- Sidenav -->
+    <!-- <section layout="row" style="height: 100vh" flex> -->
+    <md-sidenav class="md-sidenav-left" md-whiteframe="4" md-component-id={{toolbar.sidenavId}}>
         <md-toolbar>
             <div class="md-toolbar-tools" layout="row">
                 <md-button class="md-icon-button" aria-label="Menu" ng-click="toolbar.toggleSidenav('left')">
                     <i class="material-icons">menu</i>
                 </md-button>
-                <h2 md-truncate style="text-align: center" flex>IPL PREDICTIONS 2018</h2>
-                <md-menu md-offset="-60 0" md-position-mode="target-right target">
-                    <md-button class="md-fab md-no-ink" aria-label="User" ng-click="$mdMenu.open($event)">
-                        <md-icon md-font-set="material-icons">person</md-icon>
-                    </md-button>
-                    <md-menu-content width="3" ng-mouseleave="$mdMenu.close()">
-                        <md-menu-item ng-repeat="item in toolbar.userMenuItems">
-                            <md-button ng-click="toolbar.clickUserMenu(item.id, $event)">
-                                <div layout="row" flex>
-                                    <md-icon md-font-set="material-icons" flex>{{item.icon}}</md-icon>
-                                    <p style="text-align: end" flex>{{item.name}}</p>
-                                </div>
-                            </md-button>
-                        </md-menu-item>
-                    </md-menu-content>
-                </md-menu>
             </div>
         </md-toolbar>
-    </section>
-    <!-- Toolbar end -->
-
-    <!-- Sidenav -->
-    <section layout="row" style="height: 100vh" flex>
-        <md-sidenav class="md-sidenav-left" md-whiteframe="4" md-component-id={{toolbar.sidenavId}}>
-            <md-toolbar>
-                <div class="md-toolbar-tools" layout="row">
-                    <md-button class="md-icon-button" aria-label="Menu" ng-click="toolbar.toggleSidenav('left')">
-                        <i class="material-icons">menu</i>
-                    </md-button>
-                </div>
-            </md-toolbar>
-            <md-content>
-                <md-list>
-                    <md-list-item ng-repeat="item in toolbar.sidebarItems" ui-sref="{{item.state}}" flex>
-                        <span>
+        <md-content>
+            <md-list>
+                <md-list-item ng-repeat="item in toolbar.sidebarItems" ui-sref="{{item.state}}" flex>
+                    <span>
                             <md-icon md-font-set="material-icons">{{item.icon}}</md-icon>
                         </span>
-                        <span class="md-secondary">{{item.name}}</span>
-                    </md-list-item>
-                </md-list>
-            </md-content>
-        </md-sidenav>
-    </section>
+                    <span class="md-secondary">{{item.name}}</span>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </md-sidenav>
+    <!-- </section> -->
     <!-- Sidenav end -->
 
 </div>

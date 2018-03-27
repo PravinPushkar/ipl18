@@ -11,7 +11,7 @@
     <section layout="column" layout-align="center center">
         <span ng-if="register.error">{{register.errorMessage}}</span>
         <span ng-if="register.success">{{register.successMessage}}</span>
-        <form name="registerForm" ng-submit="register.signUp()">
+        <form name="registerForm" ng-submit="register.signUp(registerForm.$valid)">
             <md-input-container class="md-block">
                 <label>I-Number</label>
                 <input maxlength="7" ng-pattern="register.iNumberPattern" name="iNumber" ng-model="register.iNumber" required md-no-asterisk>
@@ -43,7 +43,6 @@
             </md-input-container>
             <md-input-container class="md-block">
                 <label>Confirm Password</label>
-                <!-- use-form-error="isNotSame" use-error-expression="password && confirmPassword && password!=confirmPassword" -->
                 <input type="password" name="confirmPassword" ng-model="register.confirmPassword" required md-no-asterisk>
                 <div ng-messages="registerForm.iNumber.$error">
                     <div ng-message="required">This is required.</div>
@@ -51,13 +50,12 @@
             </md-input-container>
             <md-input-container class="md-block">
                 <label>Alias</label>
-                <input name="alias" ng-model="register.alias">
+                <input name="alias" ng-model="register.alias" ng-pattern="register.aliasPattern" maxlength="20">
                 <div ng-messages="registerForm.alias.$error">
-                    <div ng-message="required">This is required.</div>
-                    <div ng-message="pattern">This must be a valid I-Number.</div>
+                    <div ng-message="pattern">This must be of the form [a-zA-Z0-9_]</div>
                 </div>
             </md-input-container>
-            <button type="submit" id="submit" value="Submit" ng-disabled="registerForm.$invalid">Register</button>
+            <button type="submit" id="submit" value="Submit">Register</button>
         </form>
     </section>
     <!-- Sign Up Form end -->

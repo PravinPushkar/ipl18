@@ -14,7 +14,10 @@ app.factory('urlService', function () {
     service.registerUser = '/pub/register';
     service.loginUser = '/pub/login';
     service.logoutUser = '/api/logout';
-    service.userProfile = '/api/profile';
+    service.userProfile = '/api/users';
+    service.leaderboard = '/api/leaders';
+    service.teams = '/api/teams';
+    service.team = '/api/team';
 
     return service;
 });

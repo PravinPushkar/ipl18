@@ -10,7 +10,7 @@
     <!-- Login -->
     <section layout="column" layout-align="center center" flex>
         <span ng-if="login.error">Error! Please check your credentials.</span>
-        <form name="loginForm" ng-submit="login.signIn()" novalidate>
+        <form name="loginForm" ng-submit="login.signIn(loginForm.$valid)" novalidate>
             <md-input-container class="md-block">
                 <label>I-Number</label>
                 <input maxlength="7" ng-pattern="login.iNumberPattern" name="iNumber" ng-model="login.iNumber" required md-no-asterisk>

@@ -5,7 +5,11 @@
     --font-color: black;
     --error-toast-background-color: red;
     --success-toast-background-color: green;
-    --wrap-button-background-color: grey;
+    /* --wrap-button-background-color: grey; */
+    --roboto-font: Roboto, sans-serif;
+    --leaderboard-card-width: 500px;
+    --leaderboard-card-height: 500px;
+    --leaderboard-progress-bar-color: #26a69a;
 }
 
 body {
@@ -22,7 +26,7 @@ body {
     text-align: center;
     display: inline-block;
     font-size: 16px;
-    font-family: Roboto, sans-serif;
+    font-family: var(--roboto-font);
     -webkit-transition-duration: 0.4s;
     transition-duration: 0.4s;
     /* Safari */
@@ -51,30 +55,7 @@ md-toast.md-success-toast-theme div.md-toast-content {
     background-color: var(--success-toast-background-color);
 }
 
-/* md-card>:not(md-card-content) img,
-md-card>img {
-    width: 100% !important;
-    height: 100% !important;
-    border-radius: 18px;
-} */
-
-.left-adjoined-card {
-    width: 35vw;
-    height: 70vh;
-    margin-right: 0;
-    padding-right: 0;
-    border-radius: 18px;
-}
-
-.right-adjoined-card {
-    width: 30vw;
-    height: 66vh;
-    margin-left: 0;
-    border-radius: 0 18px 18px 0;
-    padding-left: 0;
-}
-
-.wrap-button:before,
+/* .wrap-button:before,
 .wrap-button:after {
     content: " ";
     width: 45%;
@@ -84,20 +65,129 @@ md-card>img {
     vertical-align: super;
     background-color: var(--wrap-button-background-color);
     display: inline-block;
-}
+} */
 
 .md-button.md-fab {
     box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.25), 0 1px 5px 0 rgba(0, 0, 0, 0.15), 0 10px 8px -4px rgba(0, 0, 0, 0.4);
 }
 
-.top-card {
-    width: 30vw;
-    height: 65vh;
-    margin-right: 0;
-    padding-right: 0;
+.image-card {
+    /* width: 25vw;
+    height: 40vh; */
+    width: 480px;
+    height: 350px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
     border-radius: 18px;
 }
 
-/* .second-card {
-    b
-} */
+.name-card {
+    /* width: 20vw;
+    height: 9vh; */
+    width: 380px;
+    height: 90px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-radius: 10px 10px 0 0;
+    /* background: linear-gradient(to top, #999 0, #ffffff 7px, #ffffff 100%); */
+    box-shadow: inset 0 -7px 9px -7px rgba(0, 0, 0, 0.4);
+}
+
+.other-info-card {
+    /* width: 20vw;
+    height: 10vh; */
+    width: 380px;
+    height: 90px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.stats-card {
+    /* width: 16vw;
+    height: 10vh; */
+    width: 300px;
+    height: 90px;
+    margin-top: 0;
+    padding-top: 0;
+    border-radius: 0 0 10px 10px;
+}
+
+.profile-fab-button {
+    position: relative;
+    z-index: 25;
+    font-size: 30px;
+    margin-top: -45px;
+    margin-left: 0%;
+}
+
+.leaderboard-div {
+    margin: 0 auto;
+    width: var(--leaderboard-card-width);
+    height: var(--leaderboard-card-height);
+    margin-top: 20px;
+}
+
+.table-card-background {
+    z-index: 10;
+    position: absolute;
+    height: var(--leaderboard-card-height);
+    width: var(--leaderboard-card-width);
+}
+
+.table-card-foreground {
+    z-index: 20;
+    position: absolute;
+    height: calc(var(--leaderboard-card-height) - 20px);
+    width: var(--leaderboard-card-width);
+    margin-top: 55px;
+    margin-left: 30px;
+}
+
+/* Table format */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+tr {
+    /* background-color: #FAFAFA; */
+}
+
+tbody tr:hover {
+    background-color: blue;
+    transition: all 0.5s ease-in;
+}
+
+td {
+    padding: 5px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Table end */
+
+.faded_line {
+    margin: 0;
+    margin-top: 5px;
+    height: 1px;
+    background: linear-gradient(to right, white, black, white);
+}
+
+/* Copying Angular Material linear progress bar determinate */
+.leaderboard-progress-bar {
+    position: relative;
+    height: 4px;
+    display: block;
+    background-color: var(--leaderboard-progress-bar-color);
+    border-radius: 2px;
+    background-clip: padding-box;
+    margin: 0.5rem 0 1rem 0;
+    transition: width .3s linear;
+    overflow: hidden;
+}

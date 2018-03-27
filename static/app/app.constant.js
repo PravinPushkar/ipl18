@@ -8,5 +8,4 @@ var app = angular.module('ipl');
  * Contains all the constants for the angular application.
  */
 app.constant('INumberPattern', /^[i|I][0-9]{6}$/)
-    .constant('displayName', 'displayName')
-    .constant('token', 'token');
+    .constant('aliasPattern', /^\w{0,20}$/);
