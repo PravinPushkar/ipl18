@@ -10,17 +10,31 @@ var app = angular.module('ipl');
 app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, $mdBottomSheet, toolbarService, utilsService, urlService) {
     var vm = this;
 
+    var token;
+    
     vm.toggleSidenav = toggleSidenav;
     vm.clickUserMenu = clickUserMenu;
 
     vm.sidenavId = 'left';
     vm.sidebarItems = toolbarService.sidebarItems;
     vm.userMenuItems = toolbarService.userMenuItems;
+    // akshil check this
+    $rootScope.$on('$locationChangeSuccess', function (newState, oldState) {
+        console.log('tt', newState, oldState);
+        vm.profilePic = $window.localStorage.getItem('picLocation'); 
+        vm.imageStyle = {
+            'background-image': `url('${vm.profilePic}')`,
+            'background-size': 'cover',
+            'background-position': 'center center'
+        };
+        console.log('picloc', vm.profilePic);
+    });
 
     $rootScope.$on('$locationChangeStart', function () {
         $mdSidenav(vm.sidenavId).close();
     });
 
+    // Display bottom sheet in moble view
     vm.showGridBottomSheet = function () {
         vm.alert = '';
         $mdBottomSheet.show({
@@ -57,18 +71,25 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
             };
             utilsService.showConfirmDialog(params)
                 .then(function () {
+                    token = $window.localStorage.getItem('token');
                     var params = {
                         url: urlService.logoutUser,
                         method: 'DELETE',
+                        headers: {
+                            'Authorization': token
+                        }
                     };
                     $http(params)
                         .then(function () {
-                            $http.defaults.headers.common.Authorization = '';
-                            // $window.localStorage.removeItem('displayName');
                             $window.localStorage.removeItem('token');
-                            $window.localStorage.remoteItem('iNumber');
+                            $window.localStorage.removeItem('iNumber');
+                            $window.localStorage.removeItem('picLocation');
                             $state.go('login');
                         }, function (err) {
+                            $window.localStorage.removeItem('token');
+                            $window.localStorage.removeItem('iNumber');
+                            $window.localStorage.removeItem('picLocation');
+                            $state.go('login');
                             console.log('Error logging out', err.message);
                         });
                 }, function () {

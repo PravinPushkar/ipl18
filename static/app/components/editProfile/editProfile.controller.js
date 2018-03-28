@@ -7,10 +7,14 @@ var app = angular.module('ipl');
  * 
  * Controller for the edit profile page.
  */
-app.controller('editProfileController', function ($http, $mdToast, $scope, $window, urlService, utilsService, aliasPattern) {
+app.controller('editProfileController', function ($http, $mdToast, $scope, $state, $window, urlService, utilsService, aliasPattern) {
     var vm = this;
 
+    var token;
+
     vm.edit = edit;
+    vm.init = init;
+
     vm.aliasPattern = aliasPattern;
 
     // Get the file name of image uploaded
@@ -21,6 +25,11 @@ app.controller('editProfileController', function ($http, $mdToast, $scope, $wind
     // $scope.$on('fileProgress', function (e, progress) {
     //     vm.progress = progress.loaded / progress.total;
     // });
+
+    // Init function for edit profile
+    function init() {
+        token = $window.localStorage.getItem('token');
+    }
 
     // Send editable data to back-end
     function edit() {
@@ -51,13 +60,15 @@ app.controller('editProfileController', function ($http, $mdToast, $scope, $wind
             fd.append('image', document.getElementById('profilePic').files[0]);
         }
         var currentUserINumber = $window.localStorage.getItem('iNumber');
+
         var params = {
             url: `${urlService.userProfile}/${currentUserINumber}`,
             data: fd,
             method: 'PUT',
             transformRequest: angular.identity,
             headers: {
-                'Content-Type': undefined
+                'Content-Type': undefined,
+                'Authorization': token
             }
         };
         $http(params)
@@ -67,6 +78,7 @@ app.controller('editProfileController', function ($http, $mdToast, $scope, $wind
                     hideDelay: 3000,
                     isError: false
                 });
+                $state.go('main.profile');
                 return;
             }, function (err) {
                 utilsService.showToast({

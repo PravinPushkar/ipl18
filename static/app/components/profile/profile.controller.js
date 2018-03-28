@@ -10,6 +10,8 @@ var app = angular.module('ipl');
 app.controller('profileController', function ($http, $window, urlService, utilsService) {
     var vm = this;
 
+    var token;
+    
     vm.init = init;
 
     // vm.setAlias = $window.localStorage.getItem('setAlias');
@@ -26,11 +28,16 @@ app.controller('profileController', function ($http, $window, urlService, utilsS
 
     function init() {
         var currentUserINumber = $window.localStorage.getItem('iNumber');
+        console.log('inumber',currentUserINumber);
+        console.log('token',$window.localStorage.getItem('token'));
+        console.log('picloc123',$window.localStorage.getItem('picLocation'));
+        token = $window.localStorage.getItem('token');
         var params = {
             url: `${urlService.userProfile}/${currentUserINumber}`,
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': token
             }
         };
         $http(params)
@@ -44,8 +51,7 @@ app.controller('profileController', function ($http, $window, urlService, utilsS
                     coins: res.data.coin,
                     profilePic: res.data.picLocation
                 };
-                // $window.localStorage.setItem('displayName', vm.setAlias ? vm.userData.alias : `${vm.userData.firstName} ${vm.userData.lastName}`);
-                // $window.localStorage.getItem('setAlias', vm.setAlias);
+                $window.localStorage.setItem('picLocation', vm.userData.profilePic);
                 console.log('success');
             }, function(err) {
                 console.log('error', err);

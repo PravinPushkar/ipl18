@@ -2,27 +2,27 @@
 
     <div layout="column" layout-align="center center">
         <!-- Name card -->
-        <md-card class="name-card" layout="column" layout-align="center center">
+        <md-card class="name-card" layout="column" layout-align="center center" style="z-index: 3;">
             <h2 style="margin-bottom: 0;">{{profile.userData.firstName}} {{profile.userData.lastName}}</h2>
             <span class="md-body-2">{{profile.userData.iNumber}}</span>
         </md-card>
         <!-- Name card end -->
 
         <!-- Image card -->
-        <md-card class="image-card" md-whiteframe="15" style="z-index: 100;">
+        <md-card class="image-card" md-whiteframe="15" style="z-index: 10;">
             <img ng-src="{{profile.userData.profilePic}}" style="width: 100% !important; height: 100% !important; border-radius: 18px;" alt="Profile Pic">
         </md-card>
         <!-- Image card end -->
 
         <!-- Other info card -->
-        <md-card class="other-info-card" layout="column" layout-align="center center" md-whiteframe="15" style="z-index: 50;">
+        <md-card class="other-info-card" layout="column" layout-align="center center" md-whiteframe="15" style="z-index: 5;">
             <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.alias}}</h3>
             <div class="md-body-1">alias</div>
         </md-card>
         <!-- Other info card end -->
 
         <!-- Stats card -->
-        <md-card class="stats-card card-shadow" layout="row" layout-align="end center" layout-padding style="z-index: 25;">
+        <md-card class="stats-card card-shadow" layout="row" layout-align="end center" layout-padding style="z-index: 3;">
             <div layout="column" layout-align="start center" flex>
                 <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.points}}</h3>
                 <div class="md-body-1">points</div>

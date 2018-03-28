@@ -1,17 +1,17 @@
-<div layout="column" novalidate>
+<div layout="column">
 
     <!-- Login -->
-    <section layout="row" layout-align="start start" layout-padding flex>
+    <div layout="row" layout-align="start start" layout-padding flex>
         <button class="outline-button" ui-sref="login">Login</button>
         <p>Back to Login</p>
-    </section>
+    </div>
     <!-- Login end -->
 
     <!-- Sign Up form -->
-    <section layout="column" layout-align="center center">
+    <div layout="column" layout-align="center center">
         <span ng-if="register.error">{{register.errorMessage}}</span>
         <span ng-if="register.success">{{register.successMessage}}</span>
-        <form name="registerForm" ng-submit="register.signUp(registerForm.$valid)">
+        <form name="registerForm" ng-submit="register.signUp(registerForm.$valid)" novalidate>
             <md-input-container class="md-block">
                 <label>I-Number</label>
                 <input maxlength="7" ng-pattern="register.iNumberPattern" name="iNumber" ng-model="register.iNumber" required md-no-asterisk>
@@ -57,7 +57,7 @@
             </md-input-container>
             <button type="submit" id="submit" value="Submit">Register</button>
         </form>
-    </section>
+    </div>
     <!-- Sign Up Form end -->
 
 </div>

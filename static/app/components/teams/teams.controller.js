@@ -2,9 +2,11 @@
 
 var app = angular.module('ipl');
 
-app.controller('teamsController', function ($http, urlService) {
+app.controller('teamsController', function ($http, $window, urlService) {
     var vm = this;
 
+    var token;
+    
     vm.init = init;
 
     vm.teamsList = [{
@@ -14,11 +16,13 @@ app.controller('teamsController', function ($http, urlService) {
     }];
 
     function init() {
+        token = $window.localStorage.getItem('token');
         var params = {
             url: urlService.teams,
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': token
             }
         };
         vm.teams = [];

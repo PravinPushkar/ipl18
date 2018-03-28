@@ -7,8 +7,10 @@ var app = angular.module('ipl');
  * 
  * Controller for leaderboard page
  */
-app.controller('leaderboardController', function ($http, utilsService, urlService) {
+app.controller('leaderboardController', function ($http, $window, utilsService, urlService) {
     var vm = this;
+
+    var token;
 
     vm.init = init();
 
@@ -35,11 +37,14 @@ app.controller('leaderboardController', function ($http, utilsService, urlServic
     vm.highestPoints = Math.max(...points);
 
     function init() {
+        token = $window.localStorage.getItem('token');
         var params = {
             url: urlService.leaderboard,
             method: 'GET',
+            
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': token
             }
         };
         $http(params)

@@ -25,7 +25,7 @@ app.controller('loginController', function ($http, $window, $state, INumberPatte
             return;
         }
         var data = {
-            inumber: vm.iNumber,
+            inumber: utilsService.capitalizeFirstLetter(vm.iNumber),
             password: vm.password
         };
         var params = {
@@ -40,14 +40,13 @@ app.controller('loginController', function ($http, $window, $state, INumberPatte
             .then(function (res) {
                 utilsService.showToast({
                     text: 'Login Successful.',
-                    hideDelay: 3000,
+                    hideDelay: 1500,
                     isError: false
                 });
                 console.log('login success');
                 $window.localStorage.setItem('token', res.data.token);
-                $window.localStorage.setItem('iNumber', vm.iNumber);
+                $window.localStorage.setItem('iNumber', utilsService.capitalizeFirstLetter(vm.iNumber));
                 // Add JWT Token as the default token for all back-end requests
-                $http.defaults.headers.common.Authorization = res.data.token;
                 $state.go('main.profile');
             }, function (err) {
                 console.log('error', err);
