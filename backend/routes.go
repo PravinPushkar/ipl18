@@ -56,6 +56,8 @@ func setupApi(r *mux.Router) {
 	r.Handle("/players", handler.PlayersGetHandler{}).Methods("GET")
 	r.Handle("/players/{id}", handler.PlayersGetHandler{}).Methods("GET")
 	r.Handle("/leaders", handler.LeadersGetHandler{}).Methods("GET")
+
+	r.Handle("/bonusQuestion", handler.BonusQuestionGetHandler{}).Methods("GET")
 }
 
 func setupLogging(r http.Handler) http.Handler {
