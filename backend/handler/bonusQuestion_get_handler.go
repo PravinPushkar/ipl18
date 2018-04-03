@@ -39,5 +39,5 @@ func (q BonusQuestionGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 		errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "BonusQuestionGetHandler : db issue in get question query")
 		questions = append(questions, question)
 	}
-	util.StructWriter(w, &questions)
+	util.StructWriter(w, &models.QuestionModel{Questions: questions})
 }
