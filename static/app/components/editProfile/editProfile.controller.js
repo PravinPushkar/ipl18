@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for the edit profile page.
  */
-app.controller('editProfileController', function ($http, $mdToast, $scope, $state, $window, urlService, utilsService, aliasPattern) {
+app.controller('editProfileController', ['$http', '$mdToast', '$scope', '$state', '$window', 'urlService', 'utilsService', 'aliasPattern', function ($http, $mdToast, $scope, $state, $window, urlService, utilsService, aliasPattern) {
     var vm = this;
 
     var token;
@@ -36,7 +36,7 @@ app.controller('editProfileController', function ($http, $mdToast, $scope, $stat
         if ((vm.password !== '' && vm.password !== undefined && vm.password !== null) && (vm.alias !== '' && vm.alias !== undefined && vm.alias !== null) && !(document.getElementById('profilePic').files[0])) {
             utilsService.showToast({
                 text: 'Please enter valid value in the fields.',
-                hideDelay: 3000,
+                hideDelay: 2000,
                 isError: true
             });
             return;
@@ -44,7 +44,7 @@ app.controller('editProfileController', function ($http, $mdToast, $scope, $stat
         if (vm.password !== vm.confirmPassword) {
             utilsService.showToast({
                 text: 'Password and Confirm Password do not match',
-                hideDelay: 3000,
+                hideDelay: 2000,
                 isError: true
             });
             return;
@@ -74,19 +74,23 @@ app.controller('editProfileController', function ($http, $mdToast, $scope, $stat
         $http(params)
             .then(function () {
                 utilsService.showToast({
-                    text: 'User Profile Updated.',
-                    hideDelay: 3000,
+                    text: 'User Profile updated.',
+                    hideDelay: 1500,
                     isError: false
                 });
                 $state.go('main.profile');
                 return;
             }, function (err) {
+                if (err.data.code === 403 && err.data.message === 'token not valid') {
+                    utilsService.logout('Session expired, please re-login', true);
+                    return;
+                }
                 utilsService.showToast({
-                    text: `${err.message}.`,
-                    hideDelay: 3000,
+                    text: 'Error in updating profile',
+                    hideDelay: 2000,
                     isError: true
                 });
                 return;
             });
     }
-});
+}]);

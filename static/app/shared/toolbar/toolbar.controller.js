@@ -7,27 +7,27 @@ var app = angular.module('ipl');
  * 
  * Controller for the toolbar and the sidebar.
  */
-app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, $mdBottomSheet, toolbarService, utilsService, urlService) {
+app.controller('toolbarController', ['$mdSidenav', '$mdComponentRegistry', '$rootScope', '$http', '$window', '$state', '$mdBottomSheet', 'toolbarService', 'utilsService', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, $mdBottomSheet, toolbarService, utilsService) {
     var vm = this;
 
-    var token;
-    
     vm.toggleSidenav = toggleSidenav;
     vm.clickUserMenu = clickUserMenu;
 
     vm.sidenavId = 'left';
     vm.sidebarItems = toolbarService.sidebarItems;
     vm.userMenuItems = toolbarService.userMenuItems;
-    // akshil check this
-    $rootScope.$on('$locationChangeSuccess', function (newState, oldState) {
-        console.log('tt', newState, oldState);
-        vm.profilePic = $window.localStorage.getItem('picLocation'); 
+
+    // Change the profile pic in the toolbar by watching the localstorage
+    function profilePicSet() {
+        return $window.localStorage.getItem('profilePic');
+    }
+
+    $rootScope.$watch(profilePicSet, function (picLocation) {
         vm.imageStyle = {
-            'background-image': `url('${vm.profilePic}')`,
+            'background-image': `url('${picLocation}')`,
             'background-size': 'cover',
             'background-position': 'center center'
         };
-        console.log('picloc', vm.profilePic);
     });
 
     $rootScope.$on('$locationChangeStart', function () {
@@ -36,7 +36,6 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
 
     // Display bottom sheet in moble view
     vm.showGridBottomSheet = function () {
-        vm.alert = '';
         $mdBottomSheet.show({
             templateUrl: '/static/app/shared/toolbar/bottomSheetGrid.html',
             controller: 'bottomSheetGridController',
@@ -55,7 +54,7 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
     }
 
     // Function for when user clicks on the user menu
-    function clickUserMenu(id, event) {
+    function clickUserMenu(id) {
         switch (id) {
         case 'profile':
             $state.go('main.profile');
@@ -66,39 +65,22 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
                 text: 'Are you sure you want to Logout?',
                 aria: 'logout',
                 ok: 'Yes',
-                cancel: 'No',
-                event: event
+                cancel: 'No'
             };
             utilsService.showConfirmDialog(params)
                 .then(function () {
-                    token = $window.localStorage.getItem('token');
-                    var params = {
-                        url: urlService.logoutUser,
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': token
-                        }
-                    };
-                    $http(params)
-                        .then(function () {
-                            $window.localStorage.removeItem('token');
-                            $window.localStorage.removeItem('iNumber');
-                            $window.localStorage.removeItem('picLocation');
-                            $state.go('login');
-                        }, function (err) {
-                            $window.localStorage.removeItem('token');
-                            $window.localStorage.removeItem('iNumber');
-                            $window.localStorage.removeItem('picLocation');
-                            $state.go('login');
-                            console.log('Error logging out', err.message);
-                        });
+                    utilsService.logout('Logout Successful', false);
                 }, function () {
                     console.log('Logout cancelled');
                 });
             break;
         default:
-            console.log('Error, ID is not registered');
+            utilsService.showToast({
+                text: 'ID is not registered',
+                hideDelay: 0,
+                isError: true
+            });
             break;
         }
     }
-});
+}]);

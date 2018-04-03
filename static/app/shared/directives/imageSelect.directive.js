@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Directive to select the image uploading/uploaded.
  */
-app.directive('imageSelect', function ($timeout, imageReader) {
+app.directive('imageSelect', ['$timeout', 'imageReader', function ($timeout, imageReader) {
     return {
         scope: {
             ngModel: '='
@@ -27,4 +27,4 @@ app.directive('imageSelect', function ($timeout, imageReader) {
             });
         }
     };
-});
+}]);

@@ -1,5 +1,20 @@
-<div layout="row" layout-align="center center">
-    <md-card ng-repeat="team in teams.teamsList">
-        {{team.name}}
-    </md-card>
+<div ng-init="teams.init()" layout="column" layout-margin ng-cloak>
+    <md-grid-list md-cols-xs="1" md-cols-sm="2" md-cols-gt-sm="4" md-row-height="1:1" md-row-height-gt-md="9:10" md-gutter="10px" md-gutter-gt-sm="20px">
+        <md-grid-tile ng-repeat="team in teams.teamsList" md-rowspan="1" md-colspan="1" style="width:25%">
+            <md-card style="width:100%; height:100%; margin:0">
+                <div class="team-bg-{{team.alias}}"></div>
+                <div class="team-color-{{team.alias}}" layout="column" layout-align="center center" flex>
+                    <div class="team-logo {{team.alias}}"></div>
+                    <span style="font-size: 32px; font-weight: bold; margin-top: 1rem; color: white; text-align: center;" hide-sm hide-xs>{{team.name}}</span>
+                    <span style="font-size: 20px; font-weight: bold; margin-top: 1rem; color: white; text-align: center;" hide-gt-sm>{{team.name}}</span>
+                </div>
+                <md-grid-tile-footer ui-sref="main.teams.players({teamId: team.id})" layout layout-align="center center" style="cursor: pointer;">
+                    <div>
+                        <span style="font-weight: bold;">Team Info</span>
+                        <md-icon md-font-set="material-icons" style="color: white">chevron_right</md-icon>
+                    </div>
+                </md-grid-tile-footer>
+            </md-card>
+        </md-grid-tile>
+    </md-grid-list>
 </div>

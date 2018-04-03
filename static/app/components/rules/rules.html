@@ -1,0 +1,23 @@
+<div ng-cloak>
+    <md-card>
+        <md-card-title layout layout-align="center center">
+            <span class="md-display-3" style="font-weight: bold;" hide-sm hide-xs>RULES</span>
+            <span class="md-headline" style="font-weight: bold;" hide-gt-xs>RULES</span>
+            <span class="md-display-1" style="font-weight: bold;" hide-gt-sm hide-xs>RULES</span>
+        </md-card-title>
+        <table class="players">
+            <thead class="md-padding">
+                <th>#</th>
+                <th> Rule </th>
+                <th> Points </th>
+            </thead>
+            <tbody>
+                <tr ng-repeat='rule in rules.rulesList' class="md-padding" style="background-color: #FAFAFA">
+                    <td> {{$index + 1}} </td>
+                    <td> {{rule.rule}} </td>
+                    <td> {{rule.points}} </td>
+                </tr>
+            </tbody>
+        </table>
+    </md-card>
+</div>

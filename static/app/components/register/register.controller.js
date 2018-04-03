@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for the register page.
  */
-app.controller('registerController', function ($http, $state, $window, INumberPattern, urlService, aliasPattern, utilsService) {
+app.controller('registerController', ['$http', '$state', '$window', 'INumberPattern', 'urlService', 'aliasPattern', 'utilsService', function ($http, $state, $window, INumberPattern, urlService, aliasPattern, utilsService) {
     var vm = this;
 
     vm.iNumberPattern = INumberPattern;
@@ -20,7 +20,7 @@ app.controller('registerController', function ($http, $state, $window, INumberPa
         if (isFormValid === false) {
             utilsService.showToast({
                 text: 'Please enter valid credentials.',
-                hideDelay: 3000,
+                hideDelay: 2000,
                 isError: true
             });
             return;
@@ -28,7 +28,7 @@ app.controller('registerController', function ($http, $state, $window, INumberPa
         if (vm.password !== vm.confirmPassword) {
             utilsService.showToast({
                 text: 'Password and Confirm Password do not match',
-                hideDelay: 3000,
+                hideDelay: 2000,
                 isError: true
             });
             return;
@@ -52,7 +52,6 @@ app.controller('registerController', function ($http, $state, $window, INumberPa
         };
         $http(params)
             .then(function () {
-                console.log('signup success');
                 utilsService.showToast({
                     text: 'User Registration Successful.',
                     hideDelay: 1500,
@@ -60,7 +59,6 @@ app.controller('registerController', function ($http, $state, $window, INumberPa
                 });
                 $state.go('login');
             }, function (err) {
-                console.log('signup error', err);
                 utilsService.showToast({
                     text: `${err.data.message} .`,
                     hideDelay: 0,
@@ -69,4 +67,4 @@ app.controller('registerController', function ($http, $state, $window, INumberPa
             });
     }
 
-});
+}]);

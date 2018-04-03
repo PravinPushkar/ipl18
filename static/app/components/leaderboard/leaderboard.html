@@ -1,12 +1,13 @@
-<div class="leaderboard-div">
+<div class="leaderboard-div" ng-cloak>
     <!-- Tabs card -->
     <md-card class="table-card-background" md-whiteframe="15">
         <md-tabs md-selected="leaderboard.selectedTabIndex" md-no-ink md-no-ink-bar>
             <md-tab id="tab1">
                 <md-tab-label>All Time</md-tab-label>
             </md-tab>
-            <md-tab id="tab2">
+            <md-tab id="tab2" ng-disabled="false">
                 <md-tab-label>Last 24 hrs</md-tab-label>
+            </md-tab>
         </md-tabs>
     </md-card>
     <!-- Tabs card end -->
@@ -14,7 +15,7 @@
     <!-- Leaderboard card -->
     <md-card class="table-card-foreground" md-whiteframe="15">
         <div ng-if="leaderboard.selectedTabIndex === 0">
-            <table>
+            <table class="leaderboard">
                 <tbody>
                     <tr ng-repeat="user in leaderboard.leaderboardData | orderBy: '-points'">
                         <td>

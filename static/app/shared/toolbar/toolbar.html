@@ -12,7 +12,7 @@
                 <md-button class="md-fab md-no-ink" aria-label="User" ng-click="$mdMenu.open($event)" ng-style="toolbar.imageStyle"></md-button>
                 <md-menu-content width="3" ng-mouseleave="$mdMenu.close()">
                     <md-menu-item ng-repeat="item in toolbar.userMenuItems">
-                        <md-button ng-click="toolbar.clickUserMenu(item.id, $event)">
+                        <md-button ng-click="toolbar.clickUserMenu(item.id)">
                             <div layout="row" flex>
                                 <md-icon md-font-set="material-icons" flex>{{item.icon}}</md-icon>
                                 <p style="text-align: end" flex>{{item.name}}</p>

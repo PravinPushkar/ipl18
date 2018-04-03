@@ -1,0 +1,70 @@
+<div ng-init="mainEvent.init()" layout layout-align="center center" layout-margin ng-cloak>
+
+    <md-card flex-gt-xs="80" flex-xs="90">
+        <md-card-title layout layout-align="center center">
+            <span class="md-display-3" style="font-weight: bold;" hide-sm hide-xs>MAIN EVENT PREDICTIONS</span>
+            <span class="md-headline" style="font-weight: bold;" hide-gt-xs>MAIN EVENT PREDICTIONS</span>
+            <span class="md-display-1" style="font-weight: bold;" hide-gt-sm hide-xs>MAIN EVENT PREDICTIONS</span>
+        </md-card-title>
+        <md-divider></md-divider>
+        <span class="md-caption md-padding">All fields are required</span>
+        <form name="bonusAnswersForm">
+            <md-card-content>
+                <div ng-repeat="question in mainEvent.questions">
+                    <div layout-gt-xs="row" layout-xs="column" layout-align="space-between center" layout-margin layout-padding>
+                        <span flex-gt-xs="50" flex-xs="100" style="text-align: center;">{{question.question}}</span>
+                        <md-input-container flex-gt-xs="50" flex-xs="100" ng-hide="question.relatedEntity === 'teams'">
+                            <label>{{question.relatedEntity}}</label>
+                            <md-select ng-if="question.relatedEntity === 'team'" name="selectedAnswer" ng-model="mainEvent.selectedAnswer[question.id]" required>
+                                <md-option ng-repeat="team in mainEvent.teamsList" ng-value="team.name">{{team.name}}</md-option>
+                            </md-select>
+                            <md-select ng-if="question.relatedEntity === 'player'" name="selectedAnswer" ng-model="mainEvent.selectedAnswer[question.id]" required>
+                                <md-option ng-repeat="player in mainEvent.playersList" ng-value="player.name">{{player.name}}</md-option>
+                            </md-select>
+
+                            <div class="errors" ng-messages="bonusAnswersForm.selectedAnswer.$error">
+                                <div ng-message="required">This is required</div>
+                            </div>
+                        </md-input-container>
+                        <md-chips ng-if="question.relatedEntity === 'teams'" ng-model="mainEvent.selectedAnswer[question.id]" md-autocomplete-snap md-transform-chip="mainEvent.transformChip($chip)" md-require-match="true" flex>
+                            <md-autocomplete md-selected-item="mainEvent.selectedItem[question.id]" md-search-text="mainEvent.searchText[question.id]" md-items="item in mainEvent.querySearch(mainEvent.searchText[question.id])" md-item-text="item.name" placeholder="Enter teams">
+                                <span md-highlight-text="mainEvent.searchText[question.id]">{{item.name}}</span>
+                            </md-autocomplete>
+                            <md-chip-template>
+                                <span>{{$chip.name}}</span>
+                            </md-chip-template>
+                        </md-chips>
+                    </div>
+                    <div class="faded_line" flex></div>
+                </div>
+            </md-card-content>
+
+            <md-card-actions layout="row" layout-align="center start">
+                <button ng-click="mainEvent.save(bonusAnswersForm.$valid)">Submit</button>
+            </md-card-actions>
+        </form>
+    </md-card>
+
+</div>
+
+<!-- <h2 class="md-title">Use <code>md-autocomplete</code>  to build an ordered set of chips.</h2>
+
+    <md-chips ng-model="mainEvent.selectedVegetables" md-autocomplete-snap
+              md-transform-chip="mainEvent.transformChip($chip)"
+              md-require-match="mainEvent.autocompleteDemoRequireMatch">
+      <md-autocomplete
+          md-selected-item="mainEvent.selectedItem"
+          md-search-text="mainEvent.searchText"
+          md-items="item in mainEvent.querySearch(mainEvent.searchText)"
+          md-item-text="item.name"
+          placeholder="Search for a vegetable">
+        <span md-highlight-text="mainEvent.searchText">{{item.name}} :: {{item.type}}</span>
+      </md-autocomplete>
+      <md-chip-template>
+        <span>
+          <strong>{{$chip.name}}</strong>
+          <em>({{$chip.type}})</em>
+        </span>
+      </md-chip-template>
+    </md-chips>
+    <button ng-click="mainEvent.akshil()">aaa</button> -->

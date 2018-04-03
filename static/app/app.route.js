@@ -8,7 +8,7 @@ var app = angular.module('ipl');
  * The routing config for this application.
  * It uses states for routing purposes.
  */
-app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $urlMatcherFactoryProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$urlMatcherFactoryProvider', function ($stateProvider, $urlRouterProvider, $locationProvider, $urlMatcherFactoryProvider) {
 
     // prefixing hash with '' to avoid hashbang
     $locationProvider.hashPrefix('');
@@ -81,6 +81,46 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
                 controllerAs: 'leaderboard'
             }
         }
+    }, {
+        name: 'main.teams.players',
+        url: '/teams/:teamId',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/players/players.html',
+                controller: 'playersController',
+                controllerAs: 'players'
+            }
+        }
+    }, {
+        name: 'main.fixtures',
+        url: '/fixtures',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/fixtures/fixtures.html',
+                controller: 'fixturesController',
+                controllerAs: 'fixtures'
+            }
+        }
+    }, {
+        name: 'main.rules',
+        url: '/rules',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/rules/rules.html',
+                controller: 'rulesController',
+                controllerAs: 'rules'
+            }
+        }
+    }, {
+        name: 'main.mainEvent',
+        url: '/mainevent',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/mainEvent/mainEvent.html',
+                controller: 'mainEventController',
+                controllerAs: 'mainEvent'
+            }
+        }
     }];
 
     // Add every state into the $stateProvider
@@ -90,4 +130,4 @@ app.config(function ($stateProvider, $urlRouterProvider, $locationProvider, $url
 
     // Default page
     $urlRouterProvider.otherwise('/profile');
-});
+}]);

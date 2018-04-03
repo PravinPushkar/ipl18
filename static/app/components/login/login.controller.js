@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for the login page.
  */
-app.controller('loginController', function ($http, $window, $state, INumberPattern, urlService, utilsService) {
+app.controller('loginController', ['$http', '$window', '$state', 'INumberPattern', 'urlService', 'utilsService', function ($http, $window, $state, INumberPattern, urlService, utilsService) {
     var vm = this;
 
     vm.iNumberPattern = INumberPattern;
@@ -43,18 +43,16 @@ app.controller('loginController', function ($http, $window, $state, INumberPatte
                     hideDelay: 1500,
                     isError: false
                 });
-                console.log('login success');
                 $window.localStorage.setItem('token', res.data.token);
                 $window.localStorage.setItem('iNumber', utilsService.capitalizeFirstLetter(vm.iNumber));
                 // Add JWT Token as the default token for all back-end requests
                 $state.go('main.profile');
-            }, function (err) {
-                console.log('error', err);
+            }, function () {
                 utilsService.showToast({
-                    text: 'Please check your credentials.',
+                    text: 'Please check your credentials',
                     hideDelay: 0,
                     isError: true
                 });
             });
     }
-});
+}]);
