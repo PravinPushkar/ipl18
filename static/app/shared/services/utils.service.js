@@ -34,7 +34,7 @@ app.factory('utilsService', ['$state', '$mdDialog', '$mdToast', '$window', funct
     function showToast(params) {
         $mdToast.show(
             $mdToast.simple()
-            .position('top right')
+            .position('bottom right')
             .textContent(params.text)
             .hideDelay(params.hideDelay)
             .theme(params.isError ? 'error-toast' : 'success-toast')
