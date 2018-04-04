@@ -85,14 +85,14 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
         vm.playersList = [];
         $http(questionsParams)
             .then(function (res) {
-                res.data.forEach(function (question) {
+                res.data.questions.forEach(function (question) {
                     vm.questions.push({
-                        id: question.id,
+                        id: question.qid,
                         question: question.question,
-                        entity: question.relatedEntity
+                        relatedEntity: question.relatedEntity
                     });
                     if (question.relatedEntity === 'teams') {
-                        vm.selectedAnswer[question.id] = [];
+                        vm.selectedAnswer[question.qid] = [];
                     }
                 });
                 $http(teamParams)
@@ -116,7 +116,7 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
                 $http(playersParams)
                     .then(function (res) {
                         var role;
-                        res.data.forEach(function (player) {
+                        res.data.players.forEach(function (player) {
                             if (player.role === 'allrounder') {
                                 role = 'All-Rounder';
                             } else {
@@ -170,11 +170,13 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
         utilsService.showConfirmDialog(dialogueParams)
             .then(function () {
                 var iNumber = $window.localStorage.getItem('iNumber');
-                var data = [];
+                var data = {
+                    bonusPredictions: []
+                };
                 vm.questions.forEach(function (question, i) {
-                    data.push({
-                        iNumber: iNumber,
-                        id: question.id,
+                    data.bonusPredictions.push({
+                        inumber: iNumber,
+                        qid: question.id,
                         answer: vm.selectedAnswer[question.id]
                     });
                     if (question.relatedEntity === 'teams') {
