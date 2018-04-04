@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"database/sql"
 	"log"
 	"net/http"
 
@@ -35,9 +36,14 @@ func (q BonusQuestionGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	defer rows.Close()
 	for rows.Next() {
 		question := models.Question{}
-		err := rows.Scan(&question.QuestionId, &question.Question, &question.Answer, &question.RelatedEntity)
+		ans := sql.NullString{}
+		err := rows.Scan(&question.QuestionID, &question.Question, &ans, &question.RelatedEntity)
 		errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "BonusQuestionGetHandler : db issue in get question query")
+		question.Answer = ""
+		if ans.Valid {
+			question.Answer = ans.String
+		}
 		questions = append(questions, question)
 	}
-	util.StructWriter(w, &models.QuestionModel{Questions: questions})
+	util.StructWriter(w, &models.QuestionsModel{Questions: questions})
 }
