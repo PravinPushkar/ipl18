@@ -1,14 +1,14 @@
 package models
 
-import "database/sql"
-
-type QuestionModel struct {
+// QuestionsModel .
+type QuestionsModel struct {
 	Questions []Question `json:"questions"`
 }
 
+// Question ...
 type Question struct {
-	QuestionId    int            `json:"qid"`
-	Question      string         `json:"question"`
-	Answer        sql.NullString `json:"answer"`
-	RelatedEntity string         `json:"relatedEntity"`
+	QuestionID    int    `json:"qid"`
+	Question      string `json:"question"`
+	Answer        string `json:"answer"`
+	RelatedEntity string `json:"relatedEntity"`
 }
