@@ -27,10 +27,10 @@ var (
 )
 
 func (bpred BonusPredictionPostHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Println("BonusPredictionPostHandler : insert bonus prediction")
+	log.Println("BonusPredictionPostHandler : new request")
 	defer func() {
 		if r := recover(); r != nil {
-			log.Println("panicked")
+			log.Println("panicked", r)
 		}
 	}()
 

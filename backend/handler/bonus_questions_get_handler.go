@@ -18,7 +18,7 @@ const (
 )
 
 func (q BonusQuestionGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	log.Println("BonusQuestionGetHandler :: request to get bonus question handler")
+	log.Println("BonusQuestionGetHandler: new request")
 
 	defer func() {
 		if r := recover(); r != nil {
