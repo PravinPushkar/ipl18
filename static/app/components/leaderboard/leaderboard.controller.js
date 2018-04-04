@@ -7,8 +7,10 @@ var app = angular.module('ipl');
  * 
  * Controller for leaderboard page
  */
-app.controller('leaderboardController', function ($http, utilsService, urlService) {
+app.controller('leaderboardController', ['$http', '$window', 'utilsService', 'urlService', function ($http, $window, utilsService, urlService) {
     var vm = this;
+
+    var token;
 
     vm.init = init();
 
@@ -29,17 +31,21 @@ app.controller('leaderboardController', function ($http, utilsService, urlServic
         profilePic: '/static/assets/img/users/galgadot.jpg'
     }];
     var points = [];
-    vm.leaderboardData.forEach(function(user) {
+    vm.leaderboardData.forEach(function (user) {
         points.push(parseInt(user.points));
     });
     vm.highestPoints = Math.max(...points);
 
+    // Init function for the leaderboard view
     function init() {
+        token = $window.localStorage.getItem('token');
         var params = {
             url: urlService.leaderboard,
             method: 'GET',
+
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': token
             }
         };
         $http(params)
@@ -57,12 +63,15 @@ app.controller('leaderboardController', function ($http, utilsService, urlServic
                 //     // profilePic: user.piclocation
                 // });
                 // points.push(parseInt(user.points));
-            // });
-            // vm.highestPoints = Math.max(...points);
+                // });
+                // vm.highestPoints = Math.max(...points);
                 console.log('success');
-            }, function () {
-                console.log('error');
+            }, function (err) {
+                if (err.data.code === 403 && err.data.message === 'token not valid') {
+                    utilsService.logout('Session expired, please re-login', true);
+                    return;
+                }
             });
     }
 
-});
+}]);

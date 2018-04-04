@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for the toolbar and the sidebar.
  */
-app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, $mdBottomSheet, toolbarService, utilsService, urlService) {
+app.controller('toolbarController', ['$mdSidenav', '$mdComponentRegistry', '$rootScope', '$http', '$window', '$state', '$mdBottomSheet', 'toolbarService', 'utilsService', function ($mdSidenav, $mdComponentRegistry, $rootScope, $http, $window, $state, $mdBottomSheet, toolbarService, utilsService) {
     var vm = this;
 
     vm.toggleSidenav = toggleSidenav;
@@ -17,12 +17,25 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
     vm.sidebarItems = toolbarService.sidebarItems;
     vm.userMenuItems = toolbarService.userMenuItems;
 
+    // Change the profile pic in the toolbar by watching the localstorage
+    function profilePicSet() {
+        return $window.localStorage.getItem('profilePic');
+    }
+
+    $rootScope.$watch(profilePicSet, function (picLocation) {
+        vm.imageStyle = {
+            'background-image': `url('${picLocation}')`,
+            'background-size': 'cover',
+            'background-position': 'center center'
+        };
+    });
+
     $rootScope.$on('$locationChangeStart', function () {
         $mdSidenav(vm.sidenavId).close();
     });
 
+    // Display bottom sheet in moble view
     vm.showGridBottomSheet = function () {
-        vm.alert = '';
         $mdBottomSheet.show({
             templateUrl: '/static/app/shared/toolbar/bottomSheetGrid.html',
             controller: 'bottomSheetGridController',
@@ -41,7 +54,7 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
     }
 
     // Function for when user clicks on the user menu
-    function clickUserMenu(id, event) {
+    function clickUserMenu(id) {
         switch (id) {
         case 'profile':
             $state.go('main.profile');
@@ -52,32 +65,22 @@ app.controller('toolbarController', function ($mdSidenav, $mdComponentRegistry, 
                 text: 'Are you sure you want to Logout?',
                 aria: 'logout',
                 ok: 'Yes',
-                cancel: 'No',
-                event: event
+                cancel: 'No'
             };
             utilsService.showConfirmDialog(params)
                 .then(function () {
-                    var params = {
-                        url: urlService.logoutUser,
-                        method: 'DELETE',
-                    };
-                    $http(params)
-                        .then(function () {
-                            $http.defaults.headers.common.Authorization = '';
-                            // $window.localStorage.removeItem('displayName');
-                            $window.localStorage.removeItem('token');
-                            $window.localStorage.remoteItem('iNumber');
-                            $state.go('login');
-                        }, function (err) {
-                            console.log('Error logging out', err.message);
-                        });
+                    utilsService.logout('Logout Successful', false);
                 }, function () {
                     console.log('Logout cancelled');
                 });
             break;
         default:
-            console.log('Error, ID is not registered');
+            utilsService.showToast({
+                text: 'ID is not registered',
+                hideDelay: 0,
+                isError: true
+            });
             break;
         }
     }
-});
+}]);

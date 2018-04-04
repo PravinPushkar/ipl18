@@ -7,12 +7,13 @@ var app = angular.module('ipl');
  * 
  * A collection of utility functions.
  */
-app.factory('utilsService', function ($state, $mdDialog, $mdToast) {
+app.factory('utilsService', ['$state', '$mdDialog', '$mdToast', '$window', function ($state, $mdDialog, $mdToast, $window) {
     var service = {};
 
     service.showConfirmDialog = showConfirmDialog;
     service.showToast = showToast;
     service.capitalizeFirstLetter = capitalizeFirstLetter;
+    service.logout = logout;
 
     return service;
 
@@ -22,7 +23,6 @@ app.factory('utilsService', function ($state, $mdDialog, $mdToast) {
             .title(params.title)
             .textContent(params.text)
             .ariaLabel(params.aria)
-            .targetEvent(params.event)
             .ok(params.ok)
             .cancel(params.cancel)
             .clickOutsideToClose(true);
@@ -42,7 +42,20 @@ app.factory('utilsService', function ($state, $mdDialog, $mdToast) {
         );
     }
 
+    // Capitalizes first letter of an input string
     function capitalizeFirstLetter(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
-});
+
+    // Logout function
+    function logout(message, isError) {
+        $state.go('login');
+        $window.localStorage.removeItem('token');
+        $window.localStorage.removeItem('iNumber');
+        showToast({
+            text: message,
+            hideDelay: 1500,
+            isError: isError
+        });
+    }
+}]);

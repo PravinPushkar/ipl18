@@ -2,37 +2,44 @@
 
 var app = angular.module('ipl');
 
-app.controller('teamsController', function ($http, urlService) {
+app.controller('teamsController', ['$http', '$window', 'urlService', 'utilsService', function ($http, $window, urlService, utilsService) {
     var vm = this;
+
+    var token;
 
     vm.init = init;
 
-    vm.teamsList = [{
-        name: 'csk'
-    },{
-        name: 'dd'
-    }];
-
     function init() {
+        token = $window.localStorage.getItem('token');
         var params = {
             url: urlService.teams,
             method: 'GET',
             headers: {
-                'Accept': 'application/json'
+                'Accept': 'application/json',
+                'Authorization': token
             }
         };
-        vm.teams = [];
+        vm.teamsList = [];
         $http(params)
             .then(function (res) {
-                console.log('success');
-                // res.data.forEach(function(team) {
-                //     vm.teams.push({
-                //         name: team.name,
-                //         alias: team.shortname
-                //     });
-                // });
-            }, function () {
-                console.log('error');
+                res.data.teams.forEach(function (team) {
+                    vm.teamsList.push({
+                        id: team.id,
+                        name: team.name,
+                        alias: team.shortName,
+                        teamPic: team.picLocation
+                    });
+                });
+            }, function (err) {
+                if (err.data.code === 403 && err.data.message === 'token not valid') {
+                    utilsService.logout('Session expired, please re-login', true);
+                    return;
+                }
+                utilsService.showToast({
+                    text: 'Error in fetching teams',
+                    hideDelay: 0,
+                    isError: true
+                });
             });
     }
-});
+}]);

@@ -1,0 +1,38 @@
+<div ng-init="players.init()" ng-cloak>
+    <md-card class="md-padding">
+        <div layout layout-align="start center">
+            <md-card-title>
+                <div class="team-logo {{players.teamAlias}}"></div>
+            </md-card-title>
+            <md-card-title>
+                <span class="md-display-3" style="font-weight: bold;" hide-sm hide-xs>{{players.teamName}}</span>
+                <span class="md-headline" style="font-weight: bold;" hide-gt-xs>{{players.teamName}}</span>
+                <span class="md-display-1" style="font-weight: bold;" hide-gt-sm hide-xs>{{players.teamName}}</span>
+            </md-card-title>
+        </div>
+        <md-card-content layout="row" layout-align="space-between" hide-sm hide-xs>
+            <span>Venue: {{players.teamDetails.venue}}</span>
+            <span>Captain: {{players.teamDetails.captain}}</span>
+            <span>Championships: {{players.teamDetails.championships}}</span>
+        </md-card-content>
+        <md-card-content layout="column" layout-align="space-around" hide-gt-sm>
+                <span>Venue: {{players.teamDetails.venue}}</span>
+                <span>Captain: {{players.teamDetails.captain}}</span>
+                <span>Championships: {{players.teamDetails.championships}}</span>
+            </md-card-content>
+        <table class="players">
+            <thead>
+                <th>#</th>
+                <th> Player Name </th>
+                <th> Role </th>
+            </thead>
+            <tbody>
+                <tr ng-repeat='player in players.playersList' class="md-padding" style="background-color: #FAFAFA">
+                    <td> {{$index + 1}} </td>
+                    <td> {{player.name}} </td>
+                    <td> {{player.role}} </td>
+                </tr>
+            </tbody>
+        </table>
+    </md-card>
+</div>

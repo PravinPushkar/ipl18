@@ -9,10 +9,10 @@
             </md-button>
             <h2 md-truncate style="text-align: center" flex>IPL PREDICTIONS 2018</h2>
             <md-menu md-offset="-60 0" md-position-mode="target-right target" hide-sm hide-xs>
-                <md-button class="md-fab md-no-ink" aria-label="User" ng-click="$mdMenu.open($event)" style="background-image: url('/static/assets/img/users/batman.jpeg'); background-size: cover; background-position: center center;"></md-button>
+                <md-button class="md-fab md-no-ink" aria-label="User" ng-click="$mdMenu.open($event)" ng-style="toolbar.imageStyle"></md-button>
                 <md-menu-content width="3" ng-mouseleave="$mdMenu.close()">
                     <md-menu-item ng-repeat="item in toolbar.userMenuItems">
-                        <md-button ng-click="toolbar.clickUserMenu(item.id, $event)">
+                        <md-button ng-click="toolbar.clickUserMenu(item.id)">
                             <div layout="row" flex>
                                 <md-icon md-font-set="material-icons" flex>{{item.icon}}</md-icon>
                                 <p style="text-align: end" flex>{{item.name}}</p>

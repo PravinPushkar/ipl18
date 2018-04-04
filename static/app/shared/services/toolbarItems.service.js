@@ -12,9 +12,14 @@ app.factory('toolbarService', function () {
     var service = {};
 
     service.sidebarItems = [{
-            name: 'Home',
-            icon: 'home',
-            state: 'main.home'
+            name: 'Fixtures',
+            icon: 'event',
+            state: 'main.fixtures'
+        },
+        {
+            name: 'Main Event Predictions',
+            icon: 'star',
+            state: 'main.mainEvent'
         },
         {
             name: 'Leaderboard',
@@ -22,14 +27,14 @@ app.factory('toolbarService', function () {
             state: 'main.leaderboard'
         },
         {
-            name: 'Rules',
-            icon: 'assignment',
-            state: 'main.rules'
-        },
-        {
             name: 'Teams',
             icon: 'people',
             state: 'main.teams'
+        },
+        {
+            name: 'Rules',
+            icon: 'assignment',
+            state: 'main.rules'
         }
     ];
     service.userMenuItems = [{

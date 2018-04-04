@@ -17,7 +17,8 @@ app.factory('urlService', function () {
     service.userProfile = '/api/users';
     service.leaderboard = '/api/leaders';
     service.teams = '/api/teams';
-    service.team = '/api/team';
+    service.bonus = '/api/bonus';
+    service.players = '/api/players';
 
     return service;
 });

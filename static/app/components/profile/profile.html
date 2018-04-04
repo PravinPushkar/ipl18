@@ -1,80 +1,83 @@
-<div ng-init="profile.init()" layout layout-align="center center" layout-margin flex hide-xs>
+<div ng-init="profile.init()" ng-cloak>
+    <div layout layout-align="center center" layout-margin flex hide-xs>
 
-    <div layout="column" layout-align="center center">
-        <!-- Name card -->
-        <md-card class="name-card" layout="column" layout-align="center center">
-            <h2 style="margin-bottom: 0;">{{profile.userData.firstName}} {{profile.userData.lastName}}</h2>
-            <span class="md-body-2">{{profile.userData.iNumber}}</span>
-        </md-card>
-        <!-- Name card end -->
+        <div layout="column" layout-align="center center" >
+            <!-- Name card -->
+            <md-card class="name-card" layout="column" layout-align="center center" md-whiteframe="15" style="z-index: 3;">
+                <h2 style="margin-bottom: 0;">{{profile.userData.firstName}} {{profile.userData.lastName}}</h2>
+                <span class="md-body-2">{{profile.userData.iNumber}}</span>
+            </md-card>
+            <!-- Name card end -->
 
-        <!-- Image card -->
-        <md-card class="image-card" md-whiteframe="15" style="z-index: 100;">
-            <img ng-src="{{profile.userData.profilePic}}" style="width: 100% !important; height: 100% !important; border-radius: 18px;" alt="Profile Pic">
-        </md-card>
-        <!-- Image card end -->
+            <!-- Image card -->
+            <md-card class="image-card" md-whiteframe="15" style="z-index: 10;">
+                <img ng-src="{{profile.userData.profilePic}}" style="width: 100% !important; height: 100% !important; border-radius: 18px;" alt="Profile Pic">
+            </md-card>
+            <!-- Image card end -->
 
-        <!-- Other info card -->
-        <md-card class="other-info-card" layout="column" layout-align="center center" md-whiteframe="15" style="z-index: 50;">
-            <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.alias}}</h3>
-            <div class="md-body-1">alias</div>
-        </md-card>
-        <!-- Other info card end -->
+            <!-- Other info card -->
+            <md-card class="other-info-card" layout="column" layout-align="center center" md-whiteframe="15" style="z-index: 5;">
+                <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.alias}}</h3>
+                <div class="md-body-1">alias</div>
+            </md-card>
+            <!-- Other info card end -->
 
-        <!-- Stats card -->
-        <md-card class="stats-card card-shadow" layout="row" layout-align="end center" layout-padding style="z-index: 25;">
-            <div layout="column" layout-align="start center" flex>
-                <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.points}}</h3>
-                <div class="md-body-1">points</div>
+            <!-- Stats card -->
+            <md-card class="stats-card card-shadow" layout="row" layout-align="end center" layout-padding style="z-index: 3;">
+                <div layout="column" layout-align="start center" flex>
+                    <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.points}}</h3>
+                    <div class="md-body-1">points</div>
+                </div>
+                <span flex></span>
+                <div layout="column" layout-align="center center" flex>
+                    <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.coins}}</h3>
+                    <div class="md-body-1">coins</div>
+                </div>
+            </md-card>
+            <!-- Stats card end -->
+            <div class="profile-fab-button">
+                <md-button class="md-fab md-accent" ui-sref="main.editProfile">
+                    <md-icon md-font-set="material-icons">edit</md-icon>
+                </md-button>
             </div>
-            <span flex></span>
-            <div layout="column" layout-align="center center" flex>
-                <h3 class="md-title" style="font-weight: 600; margin-bottom: 0;">{{profile.userData.coins}}</h3>
-                <div class="md-body-1">coins</div>
-            </div>
-        </md-card>
-        <!-- Stats card end -->
-        <div class="profile-fab-button">
-            <md-button class="md-fab md-accent" ui-sref="main.editProfile">
-                <md-icon md-font-set="material-icons">edit</md-icon>
-            </md-button>
+
         </div>
-
     </div>
+
+    <!-- For small layout -->
+    <div layout-margin flex hide-gt-xs>
+        <md-card md-whiteframe="15">
+            <img ng-src="{{profile.userData.profilePic}}" class="md-card-image" alt="Profile Pic">
+            <div class="profile-fab-button" layout layout-align="end end">
+                <md-button class="md-fab md-accent" ui-sref="main.editProfile">
+                    <md-icon md-font-set="material-icons">edit</md-icon>
+                </md-button>
+            </div>
+            <md-card-title>
+                <md-card-title-text layout="column">
+                    <span class="md-headline" style="font-weight: bold;">{{profile.userData.firstName}} {{profile.userData.lastName}}</span>
+                    <span class="md-subhead">{{profile.userData.iNumber}}</span>
+                    <md-divider></md-divider>
+
+                </md-card-title-text>
+            </md-card-title>
+
+            <md-card-content>
+                <div layout="column" layout-align="center center">
+                    <h3 style="line-height: 0.1;">{{profile.userData.alias}}</h3>
+                    <div class="profile-card-subheader">alias</div>
+                </div>
+                <div layout="column" layout-align="start center" flex>
+                    <h3 style="line-height: 0.1;">{{profile.userData.points}}</h3>
+                    <div class="profile-card-subheader">points</div>
+                </div>
+                <div layout="column" layout-align="center center" flex>
+                    <h3 style="line-height: 0.1;">{{profile.userData.coins}}</h3>
+                    <div class="profile-card-subheader">coins</div>
+                </div>
+            </md-card-content>
+        </md-card>
+    </div>
+    <!-- Small layout end -->
+
 </div>
-
-<!-- For small layout -->
-<div ng-init="profile.init()" layout-margin flex hide-gt-xs>
-    <md-card md-whiteframe="15">
-        <img ng-src="{{profile.userData.profilePic}}" class="md-card-image" alt="Profile Pic">
-        <div class="profile-fab-button" layout layout-align="end end">
-            <md-button class="md-fab md-accent" ui-sref="main.editProfile">
-                <md-icon md-font-set="material-icons">edit</md-icon>
-            </md-button>
-        </div>
-        <md-card-title>
-            <md-card-title-text layout="column">
-                <span class="md-headline" style="font-weight: bold;">{{profile.userData.firstName}} {{profile.userData.lastName}}</span>
-                <span class="md-subhead">{{profile.userData.iNumber}}</span>
-                <md-divider></md-divider>
-
-            </md-card-title-text>
-        </md-card-title>
-
-        <md-card-content>
-            <div layout="column" layout-align="center center">
-                <h3 style="line-height: 0.1;">{{profile.userData.alias}}</h3>
-                <div class="profile-card-subheader">alias</div>
-            </div>
-            <div layout="column" layout-align="start center" flex>
-                <h3 style="line-height: 0.1;">{{profile.userData.points}}</h3>
-                <div class="profile-card-subheader">points</div>
-            </div>
-            <div layout="column" layout-align="center center" flex>
-                <h3 style="line-height: 0.1;">{{profile.userData.coins}}</h3>
-                <div class="profile-card-subheader">coins</div>
-            </div>
-        </md-card-content>
-    </md-card>
-</div>
-<!-- Small layout end -->

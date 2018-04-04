@@ -3,7 +3,7 @@
         <md-list flex layout="row" layout-align="space-between center">
             <md-list-item ng-repeat="item in bottomSheet.menuItems">
                 <div>
-                    <md-button class="md-grid-item-content">
+                    <md-button class="md-grid-item-content" ng-click="bottomSheet.clickMenuItem(item.id)">
                         <md-icon md-font-set="material-icons">{{item.icon}}</md-icon>
                         <div class="md-grid-text">{{item.name}}</div>
                     </md-button>

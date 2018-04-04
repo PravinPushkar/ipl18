@@ -7,8 +7,8 @@ var app = angular.module('ipl');
  * 
  * The theming config for the application
  */
-app.config(function ($mdThemingProvider) {
+app.config(['$mdThemingProvider', function ($mdThemingProvider) {
     // Add themes for toast
     $mdThemingProvider.theme('error-toast');
     $mdThemingProvider.theme('success-toast');
-});
+}]);

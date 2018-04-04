@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Service to read image being uploaded.
  */
-app.factory('imageReader', function ($q) {
+app.factory('imageReader', ['$q', function ($q) {
     var onLoad = function (reader, deferred, scope) {
         return function () {
             scope.$apply(function () {
@@ -53,4 +53,4 @@ app.factory('imageReader', function ($q) {
     return {
         readAsDataUrl: readAsDataURL
     };
-});
+}]);
