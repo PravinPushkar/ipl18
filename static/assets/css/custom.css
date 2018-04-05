@@ -174,7 +174,7 @@ table.players tr {
     text-align: center;
 }
 
-table.players tr:hover td{
+table.players tr:hover td {
     background-color: #6CCECB;
     transition: all 0.1s ease-in;
     color: white;
@@ -240,7 +240,7 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-    
+
 }
 
 .team-bg-KXIP {
@@ -252,7 +252,7 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-    
+
 }
 
 .team-bg-RR {
@@ -264,7 +264,7 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-    
+
 }
 
 .team-bg-MI {
@@ -276,7 +276,7 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-    
+
 }
 
 .team-bg-RCB {
@@ -288,7 +288,7 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-    
+
 }
 
 .team-bg-DD {
@@ -300,7 +300,7 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-    
+
 }
 
 .team-bg-SH {
@@ -312,7 +312,7 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-    
+
 }
 
 .team-color-CSK {
@@ -380,3 +380,34 @@ table.players td {
 }
 
 /* Team css end */
+
+.md-fab-fixture {
+    line-height: 5.6rem;
+    min-width: 0;
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+}
+
+.pressed-effect {
+    background-color: grey;
+}
+
+.selectHeaderClass .select-header {
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1), 0 0 0 0 rgba(0, 0, 0, 0.14), 0 0 0 0 rgba(0, 0, 0, 0.12);
+    padding-left: 10.667px;
+    height: 48px;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: auto;
+}
+
+.selectHeaderClass .select-header-searchbox {
+    border: none;
+    outline: none;
+    height: 100%;
+    width: 100%;
+    padding: 0;
+}

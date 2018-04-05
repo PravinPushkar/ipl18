@@ -15,11 +15,17 @@
                         <span flex-gt-xs="50" flex-xs="100" style="text-align: center;">{{question.question}}</span>
                         <md-input-container flex-gt-xs="50" flex-xs="100" ng-hide="question.relatedEntity === 'teams'">
                             <label>{{question.relatedEntity}}</label>
-                            <md-select ng-if="question.relatedEntity === 'team'" name="selectedAnswer" ng-model="mainEvent.selectedAnswer[question.id]" required>
-                                <md-option ng-repeat="team in mainEvent.teamsList" ng-value="team.name">{{team.name}}</md-option>
+                            <md-select ng-if="question.relatedEntity === 'team'" name="selectedAnswer" md-on-close="mainEvent.clearSearchItem()" ng-model="mainEvent.selectedAnswer[question.id]" data-md-container-class="selectHeaderClass" required>
+                                <md-select-header class="select-header">
+                                    <input ng-model="mainEvent.searchItem" type="search" placeholder="Search for a player" class="select-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
+                                </md-select-header>
+                                <md-option ng-repeat="team in mainEvent.teamsList | filter:mainEvent.searchItem" ng-value="team.name">{{team.name}}</md-option>
                             </md-select>
-                            <md-select ng-if="question.relatedEntity === 'player'" name="selectedAnswer" ng-model="mainEvent.selectedAnswer[question.id]" required>
-                                <md-option ng-repeat="player in mainEvent.playersList" ng-value="player.name">{{player.name}}</md-option>
+                            <md-select ng-if="question.relatedEntity === 'player'" name="selectedAnswer" md-on-close="mainEvent.clearSearchItem()" ng-model="mainEvent.selectedAnswer[question.id]" data-md-container-class="selectHeaderClass" required>
+                                <md-select-header class="select-header">
+                                    <input ng-model="mainEvent.searchItem" type="search" placeholder="Search for a player" class="select-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
+                                </md-select-header>
+                                <md-option ng-repeat="player in mainEvent.playersList | filter:mainEvent.searchItem" ng-value="player.name">{{player.name}}</md-option>
                             </md-select>
 
                             <div class="errors" ng-messages="bonusAnswersForm.selectedAnswer.$error">

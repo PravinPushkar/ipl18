@@ -10,12 +10,19 @@ var app = angular.module('ipl');
 app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsService', function ($http, $window, urlService, utilsService) {
     var vm = this;
     var token;
+    var teamsQuestionIds = [];
 
     vm.init = init;
     vm.save = save;
     vm.transformChip = transformChip;
     vm.querySearch = querySearch;
+    vm.clearSearchItem = clearSearchItem;
     vm.selectedAnswer = [];
+
+    // Clears the search bar for select box
+    function clearSearchItem() {
+        vm.searchItem = '';
+    }
 
     // Return the proper object when the append is called.
     function transformChip(chip) {
@@ -83,6 +90,7 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
         vm.questions = [];
         vm.teamsList = [];
         vm.playersList = [];
+        teamsQuestionIds = [];
         $http(questionsParams)
             .then(function (res) {
                 res.data.questions.forEach(function (question) {
@@ -93,6 +101,7 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
                     });
                     if (question.relatedEntity === 'teams') {
                         vm.selectedAnswer[question.qid] = [];
+                        teamsQuestionIds.push(question.qid);
                     }
                 });
                 $http(teamParams)
@@ -160,14 +169,25 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
             });
             return;
         }
-        var dialogueParams = {
+        teamsQuestionIds.forEach(function (id) {
+            if (vm.selectedAnswer[id].length === 0) {
+                utilsService.showToast({
+                    text: 'Please enter valid credentials.',
+                    hideDelay: 2000,
+                    isError: true
+                });
+                return;
+            }
+        });
+
+        var dialogParams = {
             title: 'WARNING!',
             text: 'You can submit this only once. You cannot change your answers later.',
             aria: 'Submit Answers',
             ok: 'Continue',
             cancel: 'Cancel'
         };
-        utilsService.showConfirmDialog(dialogueParams)
+        utilsService.showConfirmDialog(dialogParams)
             .then(function () {
                 var iNumber = $window.localStorage.getItem('iNumber');
                 var data = {
