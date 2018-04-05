@@ -62,6 +62,8 @@ func setupApi(r *mux.Router) {
 
 	r.Handle("/matches", handler.MatchesGetHandler{}).Methods("GET")
 	r.Handle("/matches/{id}", handler.MatchesGetHandler{}).Methods("GET")
+
+	// r.Handle("/predict", handler.PredictPutHandler{}).Methods("PUT")
 }
 
 func setupLogging(r http.Handler) http.Handler {
