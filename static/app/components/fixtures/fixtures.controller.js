@@ -57,30 +57,6 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         }
     }
 
-    vm.fixturesList = [{
-        teamId1: 3,
-        teamId2: 4,
-        venue: 'Chinna',
-        timestamp: '4/4/2018',
-        status: 'NotCompleted',
-        matchId: 1,
-        result: 3,
-        manOfMatch: 2,
-        star: true,
-        lockPred: false
-    }, {
-        teamId1: 3,
-        teamId2: 6,
-        venue: 'Chinna',
-        timestamp: '4/4/2018',
-        status: 'Completed',
-        matchId: 2,
-        result: 6,
-        manOfMatch: 1,
-        star: false,
-        lockPred: true
-    }];
-
     // Function to get team object from team id
     function getTeamFromId(teamId) {
         return vm.teamsList.find(function (team) {
@@ -116,7 +92,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                 'Authorization': token
             }
         };
-        // vm.fixturesList = [];
+        vm.fixturesList = [];
         vm.teamsList = [];
         vm.playersList = [];
         var teamPromise = $http(teamParams);
@@ -146,35 +122,31 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                         teamId: player.teamId
                     });
                 });
-                // Akshil -> remove later
-                vm.fixturesList.forEach(function (fixture) {
-                    fixture.team1 = getTeamFromId(fixture.teamId1);
-                    fixture.team2 = getTeamFromId(fixture.teamId2);
-                    vm.flag[fixture.matchId] = {};
-                    vm.coinIcon[fixture.matchId] = 'attach_money';
-                    vm.coinFlag[fixture.matchId] = false;
-                });
+
                 $http(fixturesParams)
                     .then(function (res) {
-                        res.data.fixtures.forEach(function (fixture) {
+                        res.data.matches.forEach(function (fixture) {
                             vm.fixturesList.push({
-                                teamId1: fixture.tid1,
-                                teamId2: fixture.tid2,
+                                teamId1: fixture.teamId1,
+                                teamId2: fixture.teamId2,
                                 venue: fixture.venue,
-                                timestamp: fixture.time,
+                                timestamp: moment(fixture.date).format('MMMM Do YYYY, h:mm:ss a'),
                                 status: fixture.status,
-                                matchId: fixture.mid,
-                                result: fixture.result,
+                                matchId: fixture.id,
+                                result: fixture.winner,
                                 manOfMatch: fixture.mom,
                                 star: fixture.star,
-                                lockPred: fixture.lockPred,
-                                team1: getTeamFromId(fixture.tid1),
-                                team2: getTeamFromId(fixture.tid2),
+                                lockPred: fixture.lock,
+                                team1: getTeamFromId(fixture.teamId1),
+                                team2: getTeamFromId(fixture.teamId2),
                             });
                             vm.flag[fixture.mid] = {};
-                            vm.coinIcon[fixture.mid] = 'money_off';
-                            vm.coinFlag[fixture.mid] = false;
+                            vm.coinIcon[fixture.id] = 'money_off';
+                            vm.coinFlag[fixture.id] = false;
                         });
+                        vm.fixturesList.sort(function(a, b){
+                            return a.matchId-b.matchId
+                        })
 
                     }, function (err) {
                         if (err.data.code === 403 && err.data.message === 'token not valid') {

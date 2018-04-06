@@ -19,7 +19,7 @@ app.factory('urlService', function () {
     service.teams = '/api/teams';
     service.bonus = '/api/bonus';
     service.players = '/api/players';
-    service.fixtures = '/api/match';
+    service.fixtures = '/api/matches';
     service.predictions = '/api/predictions';
 
     return service;
