@@ -11,10 +11,11 @@ import (
 	"github.wdf.sap.corp/I334816/ipl18/backend/util"
 )
 
+// BonusQuestionGetHandler ..
 type BonusQuestionGetHandler struct{}
 
 const (
-	qSelectBonusQuestion = "SELECT qid, question , answer,relatedEntity FROM bonusquestion"
+	qSelectBonusQuestion = "SELECT qid, question , answer,relatedEntity,points FROM bonusquestion"
 )
 
 func (q BonusQuestionGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +38,7 @@ func (q BonusQuestionGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	for rows.Next() {
 		question := models.Question{}
 		ans := sql.NullString{}
-		err := rows.Scan(&question.QuestionID, &question.Question, &ans, &question.RelatedEntity)
+		err := rows.Scan(&question.QuestionID, &question.Question, &ans, &question.RelatedEntity, &question.Points)
 		errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "BonusQuestionGetHandler : db issue in get question query")
 		question.Answer = ""
 		if ans.Valid {
