@@ -68,9 +68,10 @@ func (m MatchesGetHandler) handleSpecificMatch(w http.ResponseWriter, r *http.Re
 		match.Predictions = &models.PredictionsModel{
 			TeamVote:     int(voteTeam.Int64),
 			MoMVote:      int(voteMom.Int64),
-			CoinUsed:     coinUsed.Bool,
+			CoinUsed:     &coinUsed.Bool,
 			MatchId:      int(predMid.Int64),
 			PredictionId: pId,
+			INumber:      inumber,
 		}
 	}
 	util.StructWriter(w, &match)
@@ -99,9 +100,10 @@ func (m MatchesGetHandler) handleAllMatches(w http.ResponseWriter, r *http.Reque
 			match.Predictions = &models.PredictionsModel{
 				TeamVote:     int(voteTeam.Int64),
 				MoMVote:      int(voteMom.Int64),
-				CoinUsed:     coinUsed.Bool,
+				CoinUsed:     &coinUsed.Bool,
 				MatchId:      int(predMid.Int64),
 				PredictionId: pId,
+				INumber:      inumber,
 			}
 		}
 		matches = append(matches, match)
