@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -24,11 +25,13 @@ const (
 	qUpdatePrediction    = "update prediction set"
 	qSelectPrediction    = "select pid,inumber,mid,vote_team,vote_mom,coinused from prediction where pid=$1"
 	qUpdateProfile       = "update ipluser set coin=coin%s where inumber=$1"
+	qSelectMatchTime     = "select matchdate from match where mid=$1"
 )
 
 var (
-	errInvalidPredId      = fmt.Errorf("prediction id not valid")
-	errPredictionNotFound = fmt.Errorf("could not find prediction with specified id")
+	errInvalidPredId       = fmt.Errorf("prediction id not valid")
+	errPredictionNotFound  = fmt.Errorf("could not find prediction with specified id")
+	errTimeToPredictPassed = fmt.Errorf("cannot predict after 15 minutes to game")
 )
 
 func (p PredictionHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -64,8 +67,23 @@ func (p PredictionHandler) parseBody(w http.ResponseWriter, r *http.Request, inu
 	return &info
 }
 
+func (p PredictionHandler) checkTime(w http.ResponseWriter, mid int) {
+	log.Println("PredictionHandler: checking match time")
+
+	var dt time.Time
+	err := db.DB.QueryRow(qSelectMatchTime, mid).Scan(&dt)
+	errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "PredictionHandler: could not fetch match time info")
+
+	log.Println("PredictionHandler: match time", dt, "current time ", time.Now())
+	if dt.Sub(time.Now()).Seconds() < 60*15.0 {
+		errors.ErrWriterPanic(w, http.StatusForbidden, errTimeToPredictPassed, errTimeToPredictPassed, "PredictionHandler: cannot allow prediction, time passed")
+	}
+}
+
 func (p PredictionHandler) handlePost(w http.ResponseWriter, r *http.Request, inumber string) {
 	info := p.parseBody(w, r, inumber)
+	p.checkTime(w, info.MatchId)
+
 	var tVote, mVote *int
 	var coinUsed *bool
 	tVote = new(int)
@@ -98,6 +116,8 @@ func (p PredictionHandler) handlePost(w http.ResponseWriter, r *http.Request, in
 
 func (p PredictionHandler) handlePut(w http.ResponseWriter, r *http.Request, inumber string) {
 	info := p.parseBody(w, r, inumber)
+	p.checkTime(w, info.MatchId)
+
 	var suffixes []string
 	var values []interface{}
 	index := 1

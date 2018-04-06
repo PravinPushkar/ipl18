@@ -51,7 +51,7 @@ var LoginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 	log.Println("LoginHandler: new user login request ")
 	defer func() {
 		if r := recover(); r != nil {
-			log.Println("panicked")
+			log.Println("panicked", r)
 		}
 	}()
 
@@ -65,7 +65,8 @@ var LoginHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 	hashPass := util.GetHash([]byte(lm.Password))
 	log.Println("got details:", lm.INumber, hashPass)
 
-	if err := db.DB.QueryRow("select inumber from ipluser where inumber=$1 and password=$2", lm.INumber, hashPass).Scan(&inumber); err == sql.ErrNoRows {
+	err = db.DB.QueryRow("select inumber from ipluser where inumber=$1 and password=$2", lm.INumber, hashPass).Scan(&inumber)
+	if err == sql.ErrNoRows {
 		errors.ErrWriterPanic(w, http.StatusForbidden, err, errUserNotFound, "UserGetHandler: user not found in db")
 	}
 	errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "UserGetHandler: could not query db")
