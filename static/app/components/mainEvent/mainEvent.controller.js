@@ -97,7 +97,8 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
                     vm.questions.push({
                         id: question.qid,
                         question: question.question,
-                        relatedEntity: question.relatedEntity
+                        relatedEntity: question.relatedEntity,
+                        points : question.points
                     });
                     if (question.relatedEntity === 'teams') {
                         vm.selectedAnswer[question.qid] = [];

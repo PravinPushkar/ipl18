@@ -14,7 +14,7 @@
         <form name="registerForm" ng-submit="register.signUp(registerForm.$valid)" novalidate>
             <md-input-container class="md-block">
                 <label>I-Number</label>
-                <input maxlength="7" ng-pattern="register.iNumberPattern" name="iNumber" ng-model="register.iNumber" required md-no-asterisk>
+                <input maxlength="6" ng-pattern="register.iNumberPattern" name="iNumber" ng-model="register.iNumber" required md-no-asterisk>
                 <div ng-messages="registerForm.iNumber.$error">
                     <div ng-message="required">This is required.</div>
                     <div ng-message="pattern">This must be a valid I-Number.</div>

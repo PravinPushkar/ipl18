@@ -13,10 +13,10 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     var iNumber;
 
     vm.init = init;
-    vm.flag = [];
+    vm.flag = {};
     vm.coinIcon = [];
     vm.coinFlag = [];
-    vm.selectedTeam = [];
+    vm.selectedTeam = {};
     vm.searchItem = '';
     vm.toggleFlag = toggleFlag;
     vm.useCoin = useCoin;
@@ -24,6 +24,27 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     vm.clearSearchItem = clearSearchItem;
     vm.playerInTeam = playerInTeam;
     vm.openPredictionDialog = openPredictionDialog;
+    vm.checkMOMSelection = checkMOMSelection;
+    vm.showTeamVote = showTeamVote;
+    vm.decideClassName = decideClassName;
+
+    function decideClassName(predictions) {
+        if(predictions && predictions.teamVote){
+            return "voted";
+        }
+        return "not-voted";
+    }
+
+    function showTeamVote(predictions) { 
+        if(predictions && predictions.teamVote) {
+            var teamObj = vm.teamsList.find(function (team) {
+                return team.id === predictions.teamVote;
+            });
+            return "You voted for : " + teamObj.name;
+        }
+        return "You have not voted for any team yet";
+
+    }
 
     // Finds if player is part of the playing teams
     function playerInTeam(playerTeamId, teamId1, teamId2) {
@@ -35,6 +56,11 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         }
     }
 
+    function checkMOMSelection(player,predictions) {
+        if(predictions)
+            return player.playerId === predictions.momVote;
+    }
+
     // Clears the search bar for select
     function clearSearchItem() {
         vm.searchItem = '';
@@ -42,8 +68,9 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
 
     // Toggle a flag and select the team chosen to predict
     function toggleFlag(id, teamId1, teamId2) {
-        vm.flag[id][teamId1] = true;
-        vm.flag[id][teamId2] = false;
+        vm.flag.id={};
+        vm.flag.id.teamId1 = true;
+        vm.flag.id.teamId2 = false;
         vm.selectedTeam[id] = teamId1;
     }
 
@@ -130,7 +157,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                                 teamId1: fixture.teamId1,
                                 teamId2: fixture.teamId2,
                                 venue: fixture.venue,
-                                timestamp: moment(fixture.date).format('MMMM Do YYYY, h:mm:ss a'),
+                                timestamp: moment(fixture.date).format('LLLL'),
                                 status: fixture.status,
                                 matchId: fixture.id,
                                 result: fixture.winner,
@@ -139,6 +166,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                                 lockPred: fixture.lock,
                                 team1: getTeamFromId(fixture.teamId1),
                                 team2: getTeamFromId(fixture.teamId2),
+                                predictions: fixture.predictions
                             });
                             vm.flag[fixture.mid] = {};
                             vm.coinIcon[fixture.id] = 'money_off';
@@ -179,9 +207,9 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         var data = {
             mid: id,
             inumber: iNumber,
-            vote_team: vm.selectedTeam[id],
-            vote_mom: vm.mom[id],
-            coinused: vm.coinFlag[id]
+            teamVote: vm.selectedTeam[id],
+            momVote: vm.mom[id],
+            coinUsed: vm.coinFlag[id]
         };
         var params = {
             url: urlService.predictions,
