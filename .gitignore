@@ -12,7 +12,9 @@
 
 # Project-local glide cache, RE: https://github.com/Masterminds/glide/issues/736
 .glide/
-
+.vscode
+debug
 bin/
 ipl18
-static/assets/img/users/
+static/assets/img/users/*
+!static/assets/img/users/default.png

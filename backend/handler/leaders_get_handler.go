@@ -12,10 +12,11 @@ import (
 	"github.wdf.sap.corp/I334816/ipl18/backend/util"
 )
 
+// LeadersGetHandler .
 type LeadersGetHandler struct{}
 
 const (
-	qSelectLeaders = "SELECT firstname,lastname,inumber,point FROM ipluser ORDER BY point DESC"
+	qSelectLeaders = "SELECT firstname,lastname,alias,piclocation,inumber,points FROM ipluser where points is not null ORDER BY points DESC"
 )
 
 var errLeaderNotFound = fmt.Errorf("leader not found in db")
@@ -38,7 +39,7 @@ func (l LeadersGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer rows.Close()
 	for rows.Next() {
 		leader := models.Leader{}
-		err := rows.Scan(&leader.Firstname, &leader.Lastname, &leader.INumber, &leader.Point)
+		err := rows.Scan(&leader.Firstname, &leader.Lastname, &leader.Alias, &leader.Piclocation, &leader.INumber, &leader.Points)
 		if err == sql.ErrNoRows {
 			errors.ErrWriterPanic(w, http.StatusNotFound, err, errLeaderNotFound, "LeadersGetHandler: leader not found")
 		}

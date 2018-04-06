@@ -35,7 +35,7 @@ var RegistrationHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.R
 	err := json.NewDecoder(r.Body).Decode(&user)
 	errors.ErrWriterPanic(w, http.StatusBadRequest, err, errors.ErrParseRequest, "RegistrationHandler: could not parse user information")
 
-	_, err = db.DB.Exec("insert into ipluser(firstname, lastname, password, coin, alias, piclocation, inumber) values($1, $2, $3, $4, $5, '', $6)",
+	_, err = db.DB.Exec("insert into ipluser(firstname, lastname, password, coin, alias, inumber) values($1, $2, $3, $4, $5, $6)",
 		user.Firstname,
 		user.Lastname,
 		util.GetHash([]byte(user.Password)),

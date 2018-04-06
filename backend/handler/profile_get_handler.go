@@ -14,11 +14,12 @@ import (
 	"github.wdf.sap.corp/I334816/ipl18/backend/util"
 )
 
+// UserGetHandler .
 type UserGetHandler struct {
 }
 
 const (
-	qFetchUserDetails = "select firstname, lastname, coin, alias, piclocation, inumber from ipluser where inumber=$1"
+	qFetchUserDetails = "select firstname, lastname, coin, alias, piclocation, inumber, points from ipluser where inumber=$1"
 )
 
 var (
@@ -44,11 +45,12 @@ func (p UserGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var pic sql.NullString
 	info := models.ProfileViewModel{}
 
-	if err := db.DB.QueryRow(qFetchUserDetails, inumber).Scan(&info.Firstname, &info.Lastname, &info.Coin, &info.Alias, &pic, &info.INumber); err == sql.ErrNoRows {
+	if err := db.DB.QueryRow(qFetchUserDetails, inumber).Scan(&info.Firstname, &info.Lastname, &info.Coin, &info.Alias, &pic, &info.INumber, &info.Points); err == sql.ErrNoRows {
 		errors.ErrWriterPanic(w, http.StatusForbidden, err, errUserNotFound, "UserGetHandler: user not found in db")
 	}
 	errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "UserGetHandler: could not query db")
 
 	info.PicLocation = pic.String
+	log.Println("UserGetHandler:", info)
 	util.StructWriter(w, &info)
 }

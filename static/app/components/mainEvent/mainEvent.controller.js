@@ -191,10 +191,10 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
             .then(function () {
                 var iNumber = $window.localStorage.getItem('iNumber');
                 var data = {
-                    bonusPredictions: []
+                    predictions: []
                 };
                 vm.questions.forEach(function (question, i) {
-                    data.bonusPredictions.push({
+                    data.predictions.push({
                         inumber: iNumber,
                         qid: question.id,
                         answer: vm.selectedAnswer[question.id]
@@ -204,7 +204,7 @@ app.controller('mainEventController', ['$http', '$window', 'urlService', 'utilsS
                         vm.selectedAnswer[question.id].forEach(function (item) {
                             tempList.push(item.name);
                         });
-                        data[i].answer = tempList.join(', ');
+                        data.predictions[i].answer = tempList.join(', ');
                     }
                 });
                 var submitAnswersparams = {
