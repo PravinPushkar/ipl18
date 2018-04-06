@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 )
 
 var ErrWriter = func(w http.ResponseWriter, code int, msg interface{}) {
@@ -33,6 +35,25 @@ var ErrWriterPanic = func(w http.ResponseWriter, code int, errActual error, errE
 		data = GetJsonErrMessage(code, errActual)
 	} else {
 		data = GetJsonErrMessage(code, errExpected)
+	}
+	w.Write(data)
+	dataStr := string(data)
+	panic(dataStr)
+}
+
+var ErrDAOWriterPanic = func(w http.ResponseWriter, err *models.DaoError, logMsg string) {
+	if err == nil || err.ActualErr == nil {
+		return
+	}
+
+	log.Println(fmt.Sprintf("%s-%s", logMsg, err.ActualErr.Error()))
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(err.Code)
+	data := []byte{}
+	if err.ActualErr == nil {
+		data = GetJsonErrMessage(err.Code, err.ActualErr)
+	} else {
+		data = GetJsonErrMessage(err.Code, err.UserErr)
 	}
 	w.Write(data)
 	dataStr := string(data)

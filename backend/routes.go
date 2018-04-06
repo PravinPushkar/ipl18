@@ -5,11 +5,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/handler"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
+
+var PDao dao.PredictionDAO
 
 var SetupAndGetRouter = func() http.Handler {
 	log.Println("Setting up routes...")
@@ -63,11 +66,15 @@ func setupApi(r *mux.Router) {
 	r.Handle("/matches", handler.MatchesGetHandler{}).Methods("GET")
 	r.Handle("/matches/{id}", handler.MatchesGetHandler{}).Methods("GET")
 
-	r.Handle("/predictions", handler.PredictionHandler{}).Methods("POST")
-	r.Handle("/predictions/{id}", handler.PredictionHandler{}).Methods("PUT")
-	r.Handle("/predictions/{id}", handler.PredictionHandler{}).Methods("GET")
+	r.Handle("/predictions", handler.PredictionHandler{PDao}).Methods("POST")
+	r.Handle("/predictions/{id}", handler.PredictionHandler{PDao}).Methods("PUT")
+	r.Handle("/predictions/{id}", handler.PredictionHandler{PDao}).Methods("GET")
 }
 
 func setupLogging(r http.Handler) http.Handler {
 	return handlers.LoggingHandler(os.Stdout, r)
+}
+
+func init() {
+	PDao = dao.PredictionDAO{}
 }
