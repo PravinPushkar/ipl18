@@ -19,3 +19,8 @@ type Match struct {
 type Matches struct {
 	Matches []Match `json:"matches"`
 }
+
+type MatchStats struct {
+	TeamsStats   *[]TeamStats   `json:"teamStats,omitempty"`
+	PlayersStats *[]PlayerStats `json:"playerStats,omitempty"`
+}

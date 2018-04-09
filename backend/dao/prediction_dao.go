@@ -20,10 +20,15 @@ const (
 	qUpdatePrediction    = "update prediction set"
 	qInsertNewPrediction = "insert into prediction(inumber,mid,vote_team,vote_mom,coinused) values($1,$2,$3,$4,$5) returning pid"
 	qSelectMatchTime     = "select matchdate from match where mid=$1"
+
+	qTeamValidMatch   = "select mid from match where mid=$1 and (tid1=$2 or tid2=$2)"
+	qPlayerValidMatch = "select pid from player p where p.pid=$1 and p.tid in (select tid1 from match where mid=$2 union select tid2 from match where mid=$2)"
 )
 
 var (
 	errPredictionNotFound = fmt.Errorf("could not find prediction with specified id")
+	errTeamInvalid        = fmt.Errorf("team not playing in match")
+	errPlayerInvalid      = fmt.Errorf("player not playing in match")
 )
 
 func (p PredictionDAO) CanMakePrediction(mid int) bool {
@@ -67,12 +72,20 @@ func (p PredictionDAO) UpdatePredictionById(pid int, info *models.PredictionsMod
 	index := 1
 
 	if info.TeamVote != 0 {
+		if err := p.checkTeamValidity(info.TeamVote, info.MatchId); err != nil {
+			return err
+		}
+
 		suffixes = append(suffixes, fmt.Sprintf("vote_team=$%d", index))
 		values = append(values, info.TeamVote)
 		index += 1
 	}
 
 	if info.MoMVote != 0 {
+		if err := p.checkPlayerValidity(info.MoMVote, info.MatchId); err != nil {
+			return err
+		}
+
 		suffixes = append(suffixes, fmt.Sprintf("vote_mom=$%d", index))
 		values = append(values, info.MoMVote)
 		index += 1
@@ -110,12 +123,18 @@ func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*mode
 	coinUsed = new(bool)
 
 	if info.TeamVote != 0 {
+		if err := p.checkTeamValidity(info.TeamVote, info.MatchId); err != nil {
+			return nil, err
+		}
 		*tVote = info.TeamVote
 	} else {
 		tVote = nil
 	}
 
 	if info.MoMVote != 0 {
+		if err := p.checkPlayerValidity(info.MoMVote, info.MatchId); err != nil {
+			return nil, err
+		}
 		*mVote = info.MoMVote
 	} else {
 		mVote = nil
@@ -133,4 +152,30 @@ func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*mode
 	log.Println("PredictionDAO: inserted row with id", info.PredictionId)
 
 	return &models.GeneralId{info.PredictionId}, nil
+}
+
+func (p PredictionDAO) checkTeamValidity(tid int, mid int) *models.DaoError {
+	var midRes int
+	err := db.DB.QueryRow(qTeamValidMatch, mid, tid).Scan(&midRes)
+	if err != nil {
+		if err == sql.ErrNoRows || midRes != mid {
+			return &models.DaoError{http.StatusPreconditionFailed, err, errTeamInvalid}
+		}
+		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+	}
+
+	return nil
+}
+
+func (p PredictionDAO) checkPlayerValidity(pid int, mid int) *models.DaoError {
+	var pidRes int
+	err := db.DB.QueryRow(qPlayerValidMatch, pid, mid).Scan(&pidRes)
+	if err != nil {
+		if err == sql.ErrNoRows || pidRes != pid {
+			return &models.DaoError{http.StatusPreconditionFailed, err, errPlayerInvalid}
+		}
+		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+	}
+
+	return nil
 }

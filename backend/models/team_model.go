@@ -10,3 +10,8 @@ type Team struct {
 type Teams struct {
 	Teams []Team `json:"teams"`
 }
+
+type TeamStats struct {
+	TeamId int `json:"teamId"`
+	Votes  int `json:"votes"`
+}
