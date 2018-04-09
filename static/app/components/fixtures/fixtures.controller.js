@@ -203,17 +203,26 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     }
 
     // Function to send prediction data to the backend
-    function makePreditction(id) {
+    function makePreditction(fixture) {
         var data = {
-            mid: id,
+            mid: fixture.matchId,
             inumber: iNumber,
-            teamVote: vm.selectedTeam[id],
-            momVote: vm.mom[id],
-            coinUsed: vm.coinFlag[id]
+            teamVote: vm.selectedTeam[fixture.matchId],
+            momVote: vm.mom[fixture.matchId],
+            coinUsed: vm.coinFlag[fixture.matchId]
         };
+        var method,url;
+        if(!fixture.predictions){
+            method = "POST";
+            url = urlService.predictions
+        }
+        else {
+            method = "PUT";
+            url = urlService.predictions + "/" + fixture.predictions.predId;
+        }
         var params = {
-            url: urlService.predictions,
-            method: 'POST',
+            url: url,
+            method: method,
             data: data,
             headers: {
                 'Accept': 'application/json',
@@ -221,7 +230,11 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
             }
         };
         $http(params)
-            .then(function () {
+            .then(function (res) {
+                if(!fixture.predictions) { 
+                    fixture.predictions = {};
+                    fixture.predictions.predId = res.data.id;
+                }
                 utilsService.showToast({
                     text: 'Successfully submitted prediction',
                     hideDelay: 1500,
