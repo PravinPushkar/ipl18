@@ -23,12 +23,15 @@ const (
 
 	qTeamValidMatch   = "select mid from match where mid=$1 and (tid1=$2 or tid2=$2)"
 	qPlayerValidMatch = "select pid from player p where p.pid=$1 and p.tid in (select tid1 from match where mid=$2 union select tid2 from match where mid=$2)"
+	qCoinValidMatch   = "select 1,count(coinused) from prediction where coinused=true and inumber=$1 group by inumber union select 2,mid from match where star=true and mid=$2"
 )
 
 var (
 	errPredictionNotFound = fmt.Errorf("could not find prediction with specified id")
 	errTeamInvalid        = fmt.Errorf("team not playing in match")
 	errPlayerInvalid      = fmt.Errorf("player not playing in match")
+	errCannotUseCoin      = fmt.Errorf("cannot use coin in match")
+	errCoinQuotaOver      = fmt.Errorf("all coins used up")
 )
 
 func (p PredictionDAO) CanMakePrediction(mid int) bool {
@@ -92,6 +95,12 @@ func (p PredictionDAO) UpdatePredictionById(pid int, info *models.PredictionsMod
 	}
 
 	if info.CoinUsed != nil {
+		if *info.CoinUsed {
+			if err := p.checkCoinValidity(info.INumber, info.MatchId); err != nil {
+				return err
+			}
+		}
+
 		suffixes = append(suffixes, fmt.Sprintf("coinused=$%d", index))
 		values = append(values, *info.CoinUsed)
 		index += 1
@@ -141,6 +150,12 @@ func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*mode
 	}
 
 	if info.CoinUsed != nil {
+		if *info.CoinUsed {
+			if err := p.checkCoinValidity(info.INumber, info.MatchId); err != nil {
+				return nil, err
+			}
+		}
+
 		*coinUsed = *info.CoinUsed
 	}
 
@@ -177,5 +192,50 @@ func (p PredictionDAO) checkPlayerValidity(pid int, mid int) *models.DaoError {
 		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 
+	return nil
+}
+
+func (p PredictionDAO) checkCoinValidity(inumber string, mid int) *models.DaoError {
+	var vType, vVal int
+	log.Println("PredictionDAO:", qCoinValidMatch, inumber, mid)
+
+	if res, err := db.DB.Query(qCoinValidMatch, inumber, mid); err != nil {
+		log.Println("error executing query to validate coin")
+		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+	} else {
+		defer res.Close()
+		results := map[int]int{}
+
+		for res.Next() {
+			err := res.Scan(&vType, &vVal)
+			if err != nil {
+				return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+			}
+			results[vType] = vVal
+		}
+
+		//no error
+		status := 0
+		//some coins used
+		if val, ok := results[1]; ok {
+			//all coins used error
+			if val == 12 {
+				status = 1
+			}
+		}
+		if _, ok := results[2]; !ok {
+			//match is not star match error
+			status = 2
+		}
+
+		switch status {
+		case 1:
+			log.Println("PredictionDAO:", inumber, mid, "all coins used")
+			return &models.DaoError{http.StatusPreconditionFailed, errCoinQuotaOver, errCoinQuotaOver}
+		case 2:
+			log.Println("PredictionDAO:", inumber, mid, "not star match")
+			return &models.DaoError{http.StatusPreconditionFailed, errCannotUseCoin, errCannotUseCoin}
+		}
+	}
 	return nil
 }
