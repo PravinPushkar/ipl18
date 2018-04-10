@@ -1,0 +1,22 @@
+<div class="container">
+    <div class="page-header" style="padding: 0; margin: 0;">
+        <h1 style="margin-top: 0;">
+            <small>In case you missed something...</small>
+        </h1>
+    </div>
+    <md-input-container class="md-block">
+        <label>Buzz here</label>
+        <textarea ng-model="feeds.buzz" md-maxlength="150" rows="5" md-select-on-focus></textarea>
+        <md-button class="md-raised md-primary" ng-click="feeds.submit()">Submit</md-button>
+    </md-input-container>
+    <section>
+        <div ng-repeat="entry in feeds.feedEntries | orderBy:'-date'" class="feed-entry">
+            <span class="pull-right text-muted" am-time-ago="entry.date"></span>
+            <i class="fa fa-user text-muted"></i>
+            <span class="text-muted">{{entry.name}}</span>
+            <small class="meta">
+                {{entry.message}}
+            </small>
+        </div>
+    </section>
+</div>
