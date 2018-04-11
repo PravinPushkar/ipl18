@@ -21,9 +21,11 @@ const (
 	qInsertNewPrediction = "insert into prediction(inumber,mid,vote_team,vote_mom,coinused) values($1,$2,$3,$4,$5) returning pid"
 	qSelectMatchTime     = "select matchdate from match where mid=$1"
 
-	qTeamValidMatch   = "select mid from match where mid=$1 and (tid1=$2 or tid2=$2)"
-	qPlayerValidMatch = "select pid from player p where p.pid=$1 and p.tid in (select tid1 from match where mid=$2 union select tid2 from match where mid=$2)"
-	qCoinValidMatch   = "select 1,count(coinused) from prediction where coinused=true and inumber=$1 group by inumber union select 2,mid from match where star=true and mid=$2"
+	qTeamValidMatch         = "select mid from match where mid=$1 and (tid1=$2 or tid2=$2)"
+	qPlayerValidMatch       = "select pid from player p where p.pid=$1 and p.tid in (select tid1 from match where mid=$2 union select tid2 from match where mid=$2)"
+	qCoinValidMatch         = "select 1,count(coinused) from prediction where coinused=true and inumber=$1 group by inumber union select 2,mid from match where star=true and mid=$2"
+	qSelectAllPredictions   = "select pid,inumber,mid,vote_team,vote_mom,coinused from prediction"
+	qInsertPredictionResult = "insert into predictionresult(pid,vote_team_correct,vote_mom_correct,points) values($1,$2,$3,$4)"
 )
 
 var (
@@ -33,6 +35,39 @@ var (
 	errCannotUseCoin      = fmt.Errorf("cannot use coin in match")
 	errCoinQuotaOver      = fmt.Errorf("all coins used up")
 )
+
+func (p PredictionDAO) GetAllPredictions() ([]*models.PredictionsModel, *models.DaoError) {
+	log.Println("PredictionDAO: GetAllPredictions")
+	res, err := db.DB.Query(qSelectAllPredictions)
+	if err != nil {
+		log.Println("PredictionDAO: GetAllPredictions match info not found")
+		return nil, &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+	}
+
+	defer res.Close()
+
+	var voteTeam, voteMom sql.NullInt64
+	var coinUsed sql.NullBool
+	predictions := []*models.PredictionsModel{}
+
+	for res.Next() {
+		pred := models.PredictionsModel{}
+		err = res.Scan(&pred.PredictionId, &pred.INumber, &pred.MatchId, &voteTeam, &voteMom, &coinUsed)
+		if err == sql.ErrNoRows {
+			log.Println("PredictionDAO: GetAllPredictions match info not found")
+			return nil, &models.DaoError{http.StatusNotFound, err, err}
+		} else if err != nil {
+			return nil, &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		}
+
+		pred.MoMVote = int(voteMom.Int64)
+		pred.TeamVote = int(voteTeam.Int64)
+
+		predictions = append(predictions, &pred)
+	}
+	log.Println("PredictionDAO: GetAllPredictions found", len(predictions), "predictions")
+	return predictions, nil
+}
 
 func (p PredictionDAO) CanMakePrediction(mid int) bool {
 	var dt time.Time
@@ -236,6 +271,15 @@ func (p PredictionDAO) checkCoinValidity(inumber string, mid int) *models.DaoErr
 			log.Println("PredictionDAO:", inumber, mid, "not star match")
 			return &models.DaoError{http.StatusPreconditionFailed, errCannotUseCoin, errCannotUseCoin}
 		}
+	}
+	return nil
+}
+
+func (p PredictionDAO) WritePredictionResult(pid, team, mom, points int) *models.DaoError {
+	log.Println("PredictionDAO: UpdatePredictionResult")
+	if _, err := db.DB.Exec(qInsertPredictionResult, pid, team, mom, points); err != nil {
+		log.Println("PredictionDAO: failed to update prediction result", err)
+		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 	return nil
 }

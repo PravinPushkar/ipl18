@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 
@@ -24,18 +25,10 @@ var (
 	errScrapingTeam   = fmt.Errorf("error getting team info")
 	errScrapingMeta   = fmt.Errorf("error getting match metadata info")
 
-	regMatchNo     *regexp.Regexp
-	regMatchWinner *regexp.Regexp
-	matches        map[int]*models.ScraperMatchModel
+	regMatchNo *regexp.Regexp
+	matches    map[int]*models.ScraperMatchModel
+	teamCache  map[string]int
 )
-
-func getDocument(url string) *goquery.Document {
-	log.Println("scraper: hitting", url)
-	doc, err := goquery.NewDocument(url)
-	errors.PanicOnErr(err, "scraper: error creating document for goquery")
-
-	return doc
-}
 
 func Start() {
 	defer func() {
@@ -59,35 +52,61 @@ func Start() {
 					no,
 					"",
 					"",
-					"",
+					"To be decided",
 					getMoM(s),
+					false,
 				}
 			}
 		})
 	}
 
 	index := 0
+	failed := false
 	getDocument(winnerUrl).Find("b").Each(func(i int, s *goquery.Selection) {
 		if (i & 1) == 1 {
 			index = index%len(matches) + 1
-			if res := regMatchWinner.FindStringSubmatch(s.Text()); len(res) != 3 {
-				errors.PanicOnErr(errScrapingTeam, "scraper: could not parse team name")
+			winner, isAbandoned := getWinnerInfo(s.Text())
+			if isAbandoned {
+				log.Println("scraper: match abandoned")
+				matches[index].Abandoned = true
+			} else if winner != "" {
+				matches[index].Winner = strings.Trim(winner, " ")
 			} else {
-				matches[index].Winner = res[1]
+				log.Println("scraper: failed to determine result")
+				failed = true
 			}
 		}
 	})
+	if failed {
+		return
+	}
 
 	for k, v := range matches {
 		log.Println("scraper:", k, v)
 	}
+
+	upd8 := Updater{
+		PlayerDao: dao.PlayerDAO{},
+		TDao:      dao.TeamDAO{},
+		PDao:      dao.PredictionDAO{},
+		MDao:      dao.MatchesDAO{},
+	}
+	upd8.Update(matches)
+}
+
+func getDocument(url string) *goquery.Document {
+	log.Println("scraper: hitting", url)
+	doc, err := goquery.NewDocument(url)
+	errors.PanicOnErr(err, "scraper: error creating document for goquery")
+
+	return doc
 }
 
 func getMoM(s *goquery.Selection) string {
 	player := s.Find("div .gp__cricket__player-match__player__detail__link").Before("span").Text()
 	if player != "" {
 		log.Println("scraper: found mom data", player)
-		return player
+		return strings.Trim(player, " ")
 	} else {
 		errors.PanicOnErr(errScrapingPlayer, "scraper:")
 	}
@@ -114,8 +133,37 @@ func getMatchMetaData(s *goquery.Selection) int {
 	return -1
 }
 
+func getWinnerInfo(data string) (string, bool) {
+	log.Println("scraper: getting winner info")
+
+	if strings.Contains(data, " abandoned ") {
+		log.Println("scraper: match abandoned")
+		return "", true
+	} else {
+		//search for teams
+		for k, _ := range teamCache {
+			if strings.Contains(data, k) {
+				log.Println("scraper: found team", k)
+				return k, false
+			}
+		}
+		log.Println("scraper: winner team not found in tied match")
+		return "", false
+	}
+	return "", false
+}
+
 func init() {
 	regMatchNo, _ = regexp.Compile(`^\d+`)
-	regMatchWinner, _ = regexp.Compile(`^([a-zA-Z0-9 ]+)(won by)`)
 	matches = map[int]*models.ScraperMatchModel{}
+	teamCache = map[string]int{}
+	tdao := dao.TeamDAO{}
+	if info, err := tdao.GetAllTeams(); err != nil {
+		log.Println("error building team cache")
+	} else {
+		for _, v := range info.Teams {
+			teamCache[v.TeamName] = v.TeamId
+		}
+	}
+	log.Println("teamCache", teamCache)
 }

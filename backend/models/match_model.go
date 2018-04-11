@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type Match struct {
 	TeamId1     int               `json:"teamId1"`
@@ -23,4 +26,8 @@ type Matches struct {
 type MatchStats struct {
 	TeamsStats   *[]TeamStats   `json:"teamStats,omitempty"`
 	PlayersStats *[]PlayerStats `json:"playerStats,omitempty"`
+}
+
+func (m *Match) String() string {
+	return fmt.Sprintln(m.TeamId1, m.TeamId2, m.Venue, m.Date, m.Status, m.Result, m.MatchId, m.MoM, m.Star, m.Lock)
 }
