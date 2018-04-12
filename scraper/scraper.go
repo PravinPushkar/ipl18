@@ -90,6 +90,7 @@ func Start() {
 		TDao:      dao.TeamDAO{},
 		PDao:      dao.PredictionDAO{},
 		MDao:      dao.MatchesDAO{},
+		UDao:      dao.UserDAO{},
 	}
 	upd8.Update(matches)
 }

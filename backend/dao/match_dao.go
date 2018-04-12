@@ -63,7 +63,6 @@ func (m MatchesDAO) GetAllMatchesWithPred(inumber string) (*models.Matches, *mod
 }
 
 func (m MatchesDAO) GetAllMatches() (*models.Matches, *models.DaoError) {
-	log.Println("MatchesDAO: GetAllMatches")
 	log.Println("MatchesDAO: GetAllMatches", qSelectAllMatches)
 	res, err := db.DB.Query(qSelectAllMatches)
 	if err != nil {
