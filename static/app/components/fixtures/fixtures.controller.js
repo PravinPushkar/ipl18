@@ -27,6 +27,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     vm.checkMOMSelection = checkMOMSelection;
     vm.showTeamVote = showTeamVote;
     vm.decideClassName = decideClassName;
+    vm.showMatchStats = showMatchStats;
 
     function decideClassName(predictions) {
         if(predictions && predictions.teamVote){
@@ -204,12 +205,15 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
 
     // Function to send prediction data to the backend
     function makePreditction(fixture) {
+        var matchId = fixture.matchId;
+        var teamVote = typeof (vm.selectedTeam[matchId]) === "undefined" ? null : vm.selectedTeam[matchId];
+        var momVote = typeof (vm.mom[matchId]) === "undefined" ? null : vm.mom[matchId];
         var data = {
-            mid: fixture.matchId,
+            mid: matchId,
             inumber: iNumber,
-            teamVote: vm.selectedTeam[fixture.matchId],
-            momVote: vm.mom[fixture.matchId],
-            coinUsed: vm.coinFlag[fixture.matchId]
+            teamVote: teamVote,
+            momVote: momVote,
+            coinUsed: vm.coinFlag[matchId]
         };
         var method,url;
         if(!fixture.predictions){
@@ -267,6 +271,25 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
 
     function fixturesDialogController($scope, matchId) {
         $scope.playersList = vm.playersList;
+    }
+
+    function showMatchStats(event,id) {
+        $mdDialog.show({
+            templateUrl: '/static/app/components/fixtures/matchStats.html',
+            controller: 'matchStats',
+            controllerAs: 'mst',
+            targetEvent: event,
+            locals: {
+                matchId: id,
+                teamList: vm.teamsList,
+                playerList: vm.playersList
+            },
+            clickOutesideToClose: true
+        }).then(function(answer) {
+            vm.status = 'You said the information was "' + answer + '".';
+          }, function() {
+            vm.status = 'You cancelled the dialog.';
+          });
     }
 
 }]);

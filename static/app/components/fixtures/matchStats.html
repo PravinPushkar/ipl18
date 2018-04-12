@@ -1,0 +1,35 @@
+<md-dialog aria-label="Total Votes" ng-init="mst.init()" ng-cloak style="width: 500px;">
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Total Votes</h2>
+        <span flex></span>
+      </div>
+    </md-toolbar>
+    <md-dialog-content style="max-width:800px;max-height:810px; ">
+      <md-tabs md-dynamic-height md-border-bottom>
+        <md-tab label="Team Votes">
+          <md-content class="md-padding">
+            <div layout="row" layout-xs="column" ng-repeat="team in mst.teamStats">
+              <div flex style="text-align:center">{{ team.teamName }}</div>
+              <div flex style="text-align:center">{{team.votes}}</div>
+            </div>
+          </md-content>
+        </md-tab>
+        <md-tab label="MOM votes">
+          <md-content class="md-padding">
+            <div layout="row" layout-xs="column" ng-repeat="player in mst.playerStats">
+              <div flex style="text-align:center">{{ player.playerName }}</div>
+              <div flex style="text-align:center">{{player.votes}}</div>
+            </div>
+          </md-content>
+        </md-tab>
+      </md-tabs>
+    </md-dialog-content>
+    <md-dialog-actions layout="row">
+      <md-button ng-click="mst.close()">
+        Close
+      </md-button>
+    </md-dialog-actions>
+  </form>
+</md-dialog>
