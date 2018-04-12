@@ -13,7 +13,7 @@ type WebSocketManager struct {
 	conns     map[*models.ConnModel]bool
 	rch       chan *models.FeedsMessageModel
 	cDao      dao.ChatDAO
-	userCache map[string]string
+	userCache map[string][]string
 }
 
 //SocketHandler - interface exposed by the service
@@ -27,7 +27,7 @@ func NewWebSocketManager() *WebSocketManager {
 		conns:     make(map[*models.ConnModel]bool),
 		rch:       make(chan *models.FeedsMessageModel),
 		cDao:      dao.ChatDAO{},
-		userCache: make(map[string]string),
+		userCache: make(map[string][]string),
 	}
 	ws.buildUserCache()
 	return &ws
@@ -39,7 +39,7 @@ func (ws *WebSocketManager) buildUserCache() {
 		log.Println("WebSocketManager:buildUserCache: unable to get users info", err)
 	} else {
 		for _, user := range users {
-			ws.userCache[user.INumber] = user.Name
+			ws.userCache[user.INumber] = []string{user.Name, user.PicLocation}
 		}
 		log.Println("WebSocketManager:buildUserCache: user cache built", len(users))
 	}
@@ -63,7 +63,9 @@ func (ws *WebSocketManager) writeInitialFeed(c *models.ConnModel) {
 	} else {
 		log.Println("WebSocketManager: writing initial chat history to", c.Conn.RemoteAddr())
 		for _, chat := range chats {
-			chat.Name = ws.userCache[chat.INumber]
+			items := ws.userCache[chat.INumber]
+			chat.Name = items[0]
+			chat.PicLocation = items[1]
 			c.Conn.WriteJSON(chat)
 		}
 	}
@@ -96,7 +98,8 @@ func (ws *WebSocketManager) poll(c *models.ConnModel) {
 		msg := string(message)
 		log.Println("WebSocketManager: poll new message", mt, msg)
 		date := time.Now()
-		ws.rch <- &models.FeedsMessageModel{c.INumber, ws.userCache[c.INumber], msg, date}
+		items := ws.userCache[c.INumber]
+		ws.rch <- &models.FeedsMessageModel{c.INumber, items[0], msg, date, items[1]}
 		ws.cDao.InsertChat(message, c.INumber, date)
 	}
 }

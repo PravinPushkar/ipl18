@@ -12,6 +12,7 @@ type User struct {
 }
 
 type UserBasic struct {
-	INumber string `json:"inumber"`
-	Name    string `json:"name"`
+	INumber     string `json:"inumber"`
+	Name        string `json:"name"`
+	PicLocation string `json:"picLocation"`
 }

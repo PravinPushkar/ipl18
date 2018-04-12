@@ -12,11 +12,11 @@
     <section>
         <div ng-repeat="entry in feeds.feedEntries | orderBy:'-date'" class="feed-entry">
             <span class="pull-right text-muted" am-time-ago="entry.date"></span>
-            <i class="fa fa-user text-muted"></i>
+            <img ng-src="{{entry.picLocation}}" style="width: 30px; height: 30px;display: inline-block;margin-right: 12px"/>
             <span class="text-muted">{{entry.name}}</span>
-            <small class="meta">
+            <span class="meta" style="font-size: 15px">
                 {{entry.message}}
-            </small>
+            </span>
         </div>
     </section>
 </div>

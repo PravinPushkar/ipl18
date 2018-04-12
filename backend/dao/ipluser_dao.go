@@ -13,7 +13,7 @@ type UserDAO struct{}
 
 const (
 	qUpdatePointsIplUser = "update ipluser set points=points+$1 where inumber=$2"
-	qSelectAllUsers      = "select concat(firstname,' ',lastname) as name,inumber from ipluser"
+	qSelectAllUsers      = "select concat(firstname,' ',lastname) as name,inumber,piclocation from ipluser"
 )
 
 func (u UserDAO) UpdateUserPointsByINumber(by int, inumber string) *models.DaoError {
@@ -41,7 +41,7 @@ func (u UserDAO) GetAllUsersBasicInfo() ([]*models.UserBasic, *models.DaoError) 
 	users := []*models.UserBasic{}
 	for res.Next() {
 		user := models.UserBasic{}
-		if err := res.Scan(&user.Name, &user.INumber); err != nil {
+		if err := res.Scan(&user.Name, &user.INumber, &user.PicLocation); err != nil {
 			log.Println("UserDAO:GetAllUsersBasicInfo error scanning user", err)
 			return nil, &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 		}

@@ -11,8 +11,9 @@ type FeedsAuthModel struct {
 
 // FeedsMessageModel ..
 type FeedsMessageModel struct {
-	INumber string    `json:"inumber"`
-	Name    string    `json:"name"`
-	Message string    `json:"message"`
-	Date    time.Time `json:"date"`
+	INumber     string    `json:"inumber"`
+	Name        string    `json:"name"`
+	Message     string    `json:"message"`
+	Date        time.Time `json:"date"`
+	PicLocation string    `json:"picLocation"`
 }
