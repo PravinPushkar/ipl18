@@ -2,7 +2,7 @@ package models
 
 // QuestionsModel .
 type QuestionsModel struct {
-	Questions []Question `json:"questions"`
+	Questions []*Question `json:"questions"`
 }
 
 // Question ...

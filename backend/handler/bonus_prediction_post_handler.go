@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strings"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/db"
+	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 
 	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
@@ -15,11 +14,9 @@ import (
 )
 
 // BonusPredictionPostHandler ...
-type BonusPredictionPostHandler struct{}
-
-const (
-	qInsertIntoBonusPrediction = "INSERT INTO bonusprediction (qid , answer, inumber) VALUES"
-)
+type BonusPredictionPostHandler struct {
+	BDao dao.BonusDAO
+}
 
 var (
 	errNotAllAnswered = fmt.Errorf("all questions were not answered")
@@ -42,9 +39,10 @@ func (bpred BonusPredictionPostHandler) ServeHTTP(w http.ResponseWriter, r *http
 	err = json.NewDecoder(r.Body).Decode(&bonusPredictions)
 	errors.ErrWriterPanic(w, http.StatusBadRequest, err, errors.ErrEncodingResponse, "BonusPredictionPostHandler: could not decode request body")
 
-	suffixes := []string{}
-	info := []interface{}{}
-	j := 1
+	if len(bonusPredictions.Predictions) != 8 {
+		errors.ErrWriterPanic(w, http.StatusBadRequest, errNotAllAnswered, errNotAllAnswered, "BonusPredictionHandler: all questions not answered")
+	}
+
 	for _, data := range bonusPredictions.Predictions {
 		if inumber != data.INumber {
 			errors.ErrWriterPanic(w, http.StatusForbidden, errINumberDiff, errors.ErrTokenInfoMismatch, "BonusPredictionPostHandler: token info and payload mismatch")
@@ -52,19 +50,8 @@ func (bpred BonusPredictionPostHandler) ServeHTTP(w http.ResponseWriter, r *http
 		if data.Answer == "" {
 			errors.ErrWriterPanic(w, http.StatusBadRequest, errNoAnswer, errNoAnswer, fmt.Sprintf("BonusPredictionPostHandler: answer to question not provided %v", data))
 		}
-		suffixes = append(suffixes, fmt.Sprintf("($%d,$%d,$%d)", j, j+1, j+2))
-		info = append(info, data.QuestionID, data.Answer, data.INumber)
-		j += 3
 	}
 
-	if len(suffixes) != 8 {
-		errors.ErrWriterPanic(w, http.StatusBadRequest, errNotAllAnswered, errNotAllAnswered, "BonusPredictionHandler: all questions not answered")
-	}
-
-	query := qInsertIntoBonusPrediction + strings.Join(suffixes, ",")
-	log.Println("BonusPredictionHandler:", query, info)
-
-	_, err = db.DB.Query(query, info...)
-	errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "BonusPredictionPostHandler: insert into bonus prediction failed")
+	errors.ErrAnalyzePanic(w, bpred.BDao.InsertPredictions(&bonusPredictions), "BonusPredictionPostHandler: unable to insert predictions")
 	util.OkWriter(w)
 }

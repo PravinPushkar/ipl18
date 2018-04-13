@@ -20,9 +20,9 @@ type PredictionHandler struct {
 
 type predictor interface {
 	CanMakePrediction(int) bool
-	GetPredictionById(int) (*models.PredictionsModel, *models.DaoError)
-	CreateNewPrediction(*models.PredictionsModel) (*models.GeneralId, *models.DaoError)
-	UpdatePredictionById(int, *models.PredictionsModel) *models.DaoError
+	GetPredictionById(int) (*models.PredictionsModel, error)
+	CreateNewPrediction(*models.PredictionsModel) (*models.GeneralId, error)
+	UpdatePredictionById(int, *models.PredictionsModel) error
 }
 
 var (
@@ -70,7 +70,7 @@ func (p PredictionHandler) handlePost(w http.ResponseWriter, r *http.Request, in
 	}
 
 	if gid, err := p.PDao.CreateNewPrediction(info); err != nil {
-		errors.ErrDAOWriterPanic(w, err, "PredictionHandler:")
+		errors.ErrAnalyzePanic(w, err, "PredictionHandler:")
 	} else {
 		util.StructWriter(w, gid)
 	}
@@ -88,7 +88,7 @@ func (p PredictionHandler) handlePut(w http.ResponseWriter, r *http.Request, inu
 		errors.ErrWriterPanic(w, http.StatusBadRequest, err, errInvalidPredId, "PredictionHandler: invalid prediction id in put")
 
 		errDao := p.PDao.UpdatePredictionById(pid, info)
-		errors.ErrDAOWriterPanic(w, errDao, "PredictionHandler:")
+		errors.ErrAnalyzePanic(w, errDao, "PredictionHandler:")
 	}
 
 	util.OkWriter(w)
@@ -101,7 +101,7 @@ func (p PredictionHandler) handleGet(w http.ResponseWriter, r *http.Request, inu
 		errors.ErrWriterPanic(w, http.StatusBadRequest, err, errInvalidPredId, "PredictionHandler: invalid prediction id in get")
 
 		if info, err := p.PDao.GetPredictionById(pid); err != nil {
-			errors.ErrDAOWriterPanic(w, err, "PredictionHandler:")
+			errors.ErrAnalyzePanic(w, err, "PredictionHandler:")
 		} else {
 			util.StructWriter(w, info)
 		}

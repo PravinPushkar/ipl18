@@ -3,12 +3,10 @@ package errors
 import (
 	"bytes"
 	"encoding/json"
-
-	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 )
 
 var GetJsonErrMessage = func(code int, msg interface{}) []byte {
-	err := models.Error{}
+	err := Error{}
 	err.Code = code
 	switch msg.(type) {
 	case string:

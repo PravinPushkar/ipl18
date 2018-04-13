@@ -36,12 +36,12 @@ var (
 	errCoinQuotaOver      = fmt.Errorf("all coins used up")
 )
 
-func (p PredictionDAO) GetAllPredictions() ([]*models.PredictionsModel, *models.DaoError) {
+func (p PredictionDAO) GetAllPredictions() ([]*models.PredictionsModel, error) {
 	log.Println("PredictionDAO: GetAllPredictions")
 	res, err := db.DB.Query(qSelectAllPredictions)
 	if err != nil {
 		log.Println("PredictionDAO: GetAllPredictions match info not found")
-		return nil, &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 
 	defer res.Close()
@@ -55,9 +55,9 @@ func (p PredictionDAO) GetAllPredictions() ([]*models.PredictionsModel, *models.
 		err = res.Scan(&pred.PredictionId, &pred.INumber, &pred.MatchId, &voteTeam, &voteMom, &coinUsed)
 		if err == sql.ErrNoRows {
 			log.Println("PredictionDAO: GetAllPredictions match info not found")
-			return nil, &models.DaoError{http.StatusNotFound, err, err}
+			return nil, &errors.DaoError{http.StatusNotFound, err, err}
 		} else if err != nil {
-			return nil, &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+			return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 		}
 
 		pred.MoMVote = int(voteMom.Int64)
@@ -83,7 +83,7 @@ func (p PredictionDAO) CanMakePrediction(mid int) bool {
 	return true
 }
 
-func (p PredictionDAO) GetPredictionById(pid int) (*models.PredictionsModel, *models.DaoError) {
+func (p PredictionDAO) GetPredictionById(pid int) (*models.PredictionsModel, error) {
 	log.Println("PredictionDAO: GetPredictionById", pid)
 
 	var voteTeam, voteMom sql.NullInt64
@@ -95,15 +95,15 @@ func (p PredictionDAO) GetPredictionById(pid int) (*models.PredictionsModel, *mo
 	info.MoMVote = int(voteMom.Int64)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return nil, &models.DaoError{http.StatusNotFound, err, errPredictionNotFound}
+			return nil, &errors.DaoError{http.StatusNotFound, err, errPredictionNotFound}
 		}
-		return nil, &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 
 	return &info, nil
 }
 
-func (p PredictionDAO) UpdatePredictionById(pid int, info *models.PredictionsModel) *models.DaoError {
+func (p PredictionDAO) UpdatePredictionById(pid int, info *models.PredictionsModel) error {
 	log.Println("PredictionDAO: UpdatePredictionById", pid, info)
 	var suffixes []string
 	var values []interface{}
@@ -147,19 +147,19 @@ func (p PredictionDAO) UpdatePredictionById(pid int, info *models.PredictionsMod
 		log.Println("UpdatePredictionById: ", query, suffixes, values)
 		res, err := db.DB.Exec(query, values...)
 		if err != nil {
-			return &models.DaoError{http.StatusInternalServerError, err, errPredictionNotFound}
+			return &errors.DaoError{http.StatusInternalServerError, err, errPredictionNotFound}
 		}
 
 		if rowCount, err := res.RowsAffected(); err != nil {
-			return &models.DaoError{http.StatusInternalServerError, err, errPredictionNotFound}
+			return &errors.DaoError{http.StatusInternalServerError, err, errPredictionNotFound}
 		} else if rowCount == 0 {
-			return &models.DaoError{http.StatusNotFound, errPredictionNotFound, errPredictionNotFound}
+			return &errors.DaoError{http.StatusNotFound, errPredictionNotFound, errPredictionNotFound}
 		}
 	}
 	return nil
 }
 
-func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*models.GeneralId, *models.DaoError) {
+func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*models.GeneralId, error) {
 	var tVote, mVote *int
 	var coinUsed *bool
 	tVote = new(int)
@@ -196,7 +196,7 @@ func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*mode
 
 	log.Println("PredictionDAO:", qInsertNewPrediction, info)
 	if err := db.DB.QueryRow(qInsertNewPrediction, info.INumber, info.MatchId, tVote, mVote, coinUsed).Scan(&info.PredictionId); err != nil {
-		return nil, &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 
 	log.Println("PredictionDAO: inserted row with id", info.PredictionId)
@@ -204,39 +204,39 @@ func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*mode
 	return &models.GeneralId{info.PredictionId}, nil
 }
 
-func (p PredictionDAO) checkTeamValidity(tid int, mid int) *models.DaoError {
+func (p PredictionDAO) checkTeamValidity(tid int, mid int) error {
 	var midRes int
 	err := db.DB.QueryRow(qTeamValidMatch, mid, tid).Scan(&midRes)
 	if err != nil {
 		if err == sql.ErrNoRows || midRes != mid {
-			return &models.DaoError{http.StatusPreconditionFailed, err, errTeamInvalid}
+			return &errors.DaoError{http.StatusPreconditionFailed, err, errTeamInvalid}
 		}
-		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		return &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 
 	return nil
 }
 
-func (p PredictionDAO) checkPlayerValidity(pid int, mid int) *models.DaoError {
+func (p PredictionDAO) checkPlayerValidity(pid int, mid int) error {
 	var pidRes int
 	err := db.DB.QueryRow(qPlayerValidMatch, pid, mid).Scan(&pidRes)
 	if err != nil {
 		if err == sql.ErrNoRows || pidRes != pid {
-			return &models.DaoError{http.StatusPreconditionFailed, err, errPlayerInvalid}
+			return &errors.DaoError{http.StatusPreconditionFailed, err, errPlayerInvalid}
 		}
-		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		return &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 
 	return nil
 }
 
-func (p PredictionDAO) checkCoinValidity(inumber string, mid int) *models.DaoError {
+func (p PredictionDAO) checkCoinValidity(inumber string, mid int) error {
 	var vType, vVal int
 	log.Println("PredictionDAO:", qCoinValidMatch, inumber, mid)
 
 	if res, err := db.DB.Query(qCoinValidMatch, inumber, mid); err != nil {
 		log.Println("error executing query to validate coin")
-		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		return &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	} else {
 		defer res.Close()
 		results := map[int]int{}
@@ -244,7 +244,7 @@ func (p PredictionDAO) checkCoinValidity(inumber string, mid int) *models.DaoErr
 		for res.Next() {
 			err := res.Scan(&vType, &vVal)
 			if err != nil {
-				return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+				return &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 			}
 			results[vType] = vVal
 		}
@@ -266,20 +266,20 @@ func (p PredictionDAO) checkCoinValidity(inumber string, mid int) *models.DaoErr
 		switch status {
 		case 1:
 			log.Println("PredictionDAO:", inumber, mid, "all coins used")
-			return &models.DaoError{http.StatusPreconditionFailed, errCoinQuotaOver, errCoinQuotaOver}
+			return &errors.DaoError{http.StatusPreconditionFailed, errCoinQuotaOver, errCoinQuotaOver}
 		case 2:
 			log.Println("PredictionDAO:", inumber, mid, "not star match")
-			return &models.DaoError{http.StatusPreconditionFailed, errCannotUseCoin, errCannotUseCoin}
+			return &errors.DaoError{http.StatusPreconditionFailed, errCannotUseCoin, errCannotUseCoin}
 		}
 	}
 	return nil
 }
 
-func (p PredictionDAO) WritePredictionResult(pid, team, mom, points int) *models.DaoError {
+func (p PredictionDAO) WritePredictionResult(pid, team, mom, points int) error {
 	log.Println("PredictionDAO: UpdatePredictionResult")
 	if _, err := db.DB.Exec(qInsertPredictionResult, pid, team, mom, points); err != nil {
 		log.Println("PredictionDAO: failed to update prediction result", err)
-		return &models.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		return &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 	}
 	return nil
 }

@@ -1,7 +1,7 @@
 package models
 
 type PlayersModel struct {
-	Players []Player `json:"players"`
+	Players []*Player `json:"players"`
 }
 
 type Player struct {

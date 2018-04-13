@@ -2,7 +2,7 @@ package models
 
 // LeadersModel .
 type LeadersModel struct {
-	Leaders []Leader `json:"leaders"`
+	Leaders []*Leader `json:"leaders"`
 }
 
 // Leader .

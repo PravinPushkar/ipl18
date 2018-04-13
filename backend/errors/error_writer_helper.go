@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
-	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 )
 
 var ErrWriter = func(w http.ResponseWriter, code int, msg interface{}) {
@@ -37,25 +35,22 @@ var ErrWriterPanic = func(w http.ResponseWriter, code int, errActual error, errE
 		data = GetJsonErrMessage(code, errExpected)
 	}
 	w.Write(data)
-	dataStr := string(data)
-	panic(dataStr)
+	panic(string(data))
 }
 
-var ErrDAOWriterPanic = func(w http.ResponseWriter, err *models.DaoError, logMsg string) {
-	if err == nil || err.ActualErr == nil {
+//checks a few categories
+var ErrAnalyzePanic = func(w http.ResponseWriter, err error, logMsg string) {
+	if err == nil {
 		return
 	}
-
-	log.Println(fmt.Sprintf("%s-%s", logMsg, err.ActualErr.Error()))
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(err.Code)
-	data := []byte{}
-	if err.ActualErr == nil {
-		data = GetJsonErrMessage(err.Code, err.ActualErr)
-	} else {
-		data = GetJsonErrMessage(err.Code, err.UserErr)
+	switch err.(type) {
+	case error:
+		ErrWriterPanic(w, http.StatusInternalServerError, err, err, logMsg)
+	case *DaoError:
+		de := err.(*DaoError)
+		ErrWriterPanic(w, de.Code, de.ActualErr, de.UserErr, logMsg)
+	case *Error:
+		de := err.(*Error)
+		ErrWriterPanic(w, de.Code, err, err, logMsg)
 	}
-	w.Write(data)
-	dataStr := string(data)
-	panic(dataStr)
 }

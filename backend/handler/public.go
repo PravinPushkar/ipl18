@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.wdf.sap.corp/I334816/ipl18/backend/auth"
+	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/db"
 	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
@@ -23,6 +24,7 @@ var PingHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 })
 
 var RegistrationHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	uDao := dao.UserDAO{}
 	log.Println("RegistrationHandler: new user registration request ")
 	defer func() {
 		if r := recover(); r != nil {
@@ -35,15 +37,7 @@ var RegistrationHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.R
 	err := json.NewDecoder(r.Body).Decode(&user)
 	errors.ErrWriterPanic(w, http.StatusBadRequest, err, errors.ErrParseRequest, "RegistrationHandler: could not parse user information")
 
-	_, err = db.DB.Exec("insert into ipluser(firstname, lastname, password, coin, alias, inumber) values($1, $2, $3, $4, $5, $6)",
-		user.Firstname,
-		user.Lastname,
-		util.GetHash([]byte(user.Password)),
-		12,
-		user.Alias,
-		user.INumber)
-
-	errors.ErrWriterPanic(w, http.StatusInternalServerError, err, errors.ErrDBIssue, "RegistrationHandler: could not register new user")
+	errors.ErrAnalyzePanic(w, uDao.InsertUser(&user), "RegistrationHandler: could not register new user")
 	util.OkWriter(w)
 })
 

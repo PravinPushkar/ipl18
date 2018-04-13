@@ -13,8 +13,15 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var PDao dao.PredictionDAO
-var wsManager *service.WebSocketManager
+var (
+	pDao      dao.PredictionDAO
+	uDao      dao.UserDAO
+	tDao      dao.TeamDAO
+	playerDao dao.PlayerDAO
+	bDao      dao.BonusDAO
+	mDao      dao.MatchesDAO
+	wsManager *service.WebSocketManager
+)
 
 var SetupAndGetRouter = func() http.Handler {
 	log.Println("Setting up routes...")
@@ -54,25 +61,26 @@ func setupApi(r *mux.Router) {
 	r.Handle("/users/{inumber}", handler.UserGetHandler{}).Methods("GET")
 	r.Handle("/users/{inumber}", handler.UserPutHandler{}).Methods("PUT")
 
-	r.Handle("/teams", handler.TeamsGetHandler{}).Methods("GET")
-	r.Handle("/teams/{id}", handler.TeamsGetHandler{}).Methods("GET")
-	r.Handle("/teams/{id}/players", handler.TeamsGetHandler{}).Methods("GET")
-	r.Handle("/teams/{id}/players/{pid}", handler.TeamsGetHandler{}).Methods("GET")
+	r.Handle("/teams", handler.TeamsGetHandler{playerDao, tDao}).Methods("GET")
+	r.Handle("/teams/{id}", handler.TeamsGetHandler{playerDao, tDao}).Methods("GET")
+	r.Handle("/teams/{id}/players", handler.TeamsGetHandler{playerDao, tDao}).Methods("GET")
+	r.Handle("/teams/{id}/players/{pid}", handler.TeamsGetHandler{playerDao, tDao}).Methods("GET")
 
-	r.Handle("/players", handler.PlayersGetHandler{}).Methods("GET")
-	r.Handle("/players/{id}", handler.PlayersGetHandler{}).Methods("GET")
-	r.Handle("/leaders", handler.LeadersGetHandler{}).Methods("GET")
+	r.Handle("/players", handler.PlayersGetHandler{playerDao}).Methods("GET")
+	r.Handle("/players/{id}", handler.PlayersGetHandler{playerDao}).Methods("GET")
 
-	r.Handle("/bonus", handler.BonusQuestionGetHandler{}).Methods("GET")
-	r.Handle("/bonus", handler.BonusPredictionPostHandler{}).Methods("POST")
+	r.Handle("/leaders", handler.LeadersGetHandler{uDao}).Methods("GET")
 
-	r.Handle("/matches", handler.MatchesGetHandler{}).Methods("GET")
-	r.Handle("/matches/{id}", handler.MatchesGetHandler{}).Methods("GET")
-	r.Handle("/matches/{id}/stats", handler.MatchesGetHandler{}).Methods("GET")
+	r.Handle("/bonus", handler.BonusQuestionGetHandler{bDao}).Methods("GET")
+	r.Handle("/bonus", handler.BonusPredictionPostHandler{bDao}).Methods("POST")
 
-	r.Handle("/predictions", handler.PredictionHandler{PDao}).Methods("POST")
-	r.Handle("/predictions/{id}", handler.PredictionHandler{PDao}).Methods("PUT")
-	r.Handle("/predictions/{id}", handler.PredictionHandler{PDao}).Methods("GET")
+	r.Handle("/matches", handler.MatchesGetHandler{mDao}).Methods("GET")
+	r.Handle("/matches/{id}", handler.MatchesGetHandler{mDao}).Methods("GET")
+	r.Handle("/matches/{id}/stats", handler.MatchesGetHandler{mDao}).Methods("GET")
+
+	r.Handle("/predictions", handler.PredictionHandler{pDao}).Methods("POST")
+	r.Handle("/predictions/{id}", handler.PredictionHandler{pDao}).Methods("PUT")
+	r.Handle("/predictions/{id}", handler.PredictionHandler{pDao}).Methods("GET")
 }
 
 func setupLogging(r http.Handler) http.Handler {
@@ -80,7 +88,12 @@ func setupLogging(r http.Handler) http.Handler {
 }
 
 func init() {
-	PDao = dao.PredictionDAO{}
+	pDao = dao.PredictionDAO{}
+	playerDao = dao.PlayerDAO{}
+	tDao = dao.TeamDAO{}
+	uDao = dao.UserDAO{}
+	bDao = dao.BonusDAO{}
+	mDao = dao.MatchesDAO{}
 	wsManager = service.NewWebSocketManager()
 	wsManager.Start()
 }
