@@ -121,6 +121,16 @@ app.config(['$stateProvider', '$urlRouterProvider', '$locationProvider', '$urlMa
                 controllerAs: 'mainEvent'
             }
         }
+    }, {
+        name: 'main.feeds',
+        url: '/feeds',
+        views: {
+            'body@main': {
+                templateUrl: '/static/app/components/feeds/feeds.html',
+                controller: 'feedsController',
+                controllerAs: 'feeds'
+            }
+        }
     }];
 
     // Add every state into the $stateProvider

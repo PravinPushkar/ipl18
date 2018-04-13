@@ -7,12 +7,14 @@ import (
 
 	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/handler"
+	"github.wdf.sap.corp/I334816/ipl18/backend/service"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 var PDao dao.PredictionDAO
+var wsManager *service.WebSocketManager
 
 var SetupAndGetRouter = func() http.Handler {
 	log.Println("Setting up routes...")
@@ -34,6 +36,7 @@ func setupRoutes(r *mux.Router) {
 	apiRouter := r.PathPrefix("/api").Subrouter()
 	setupApi(apiRouter)
 	apiRouter.Use(handler.IsAuthenticated)
+	r.PathPrefix("/feeds").Handler(handler.FeedsSocketHandler{wsManager})
 }
 
 func setupStatic(r *mux.Router) {
@@ -78,4 +81,6 @@ func setupLogging(r http.Handler) http.Handler {
 
 func init() {
 	PDao = dao.PredictionDAO{}
+	wsManager = service.NewWebSocketManager()
+	wsManager.Start()
 }

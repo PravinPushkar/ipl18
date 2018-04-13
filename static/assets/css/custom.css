@@ -240,7 +240,6 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-
 }
 
 .team-bg-KXIP {
@@ -252,7 +251,6 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-
 }
 
 .team-bg-RR {
@@ -264,7 +262,6 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-
 }
 
 .team-bg-MI {
@@ -276,7 +273,6 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-
 }
 
 .team-bg-RCB {
@@ -288,7 +284,6 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-
 }
 
 .team-bg-DD {
@@ -300,7 +295,6 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-
 }
 
 .team-bg-SH {
@@ -312,7 +306,6 @@ table.players td {
     bottom: 0;
     position: absolute;
     opacity: 0.2;
-
 }
 
 .team-color-CSK {
@@ -413,7 +406,8 @@ table.players td {
 }
 
 /****** fixture css *******/
-.card-smaller-font{
+
+.card-smaller-font {
     font-size: 20px;
 }
 
@@ -428,9 +422,53 @@ table.players td {
     font-weight: bold;
     margin-top: 5px;
 }
-.voted{
+
+.voted {
     color: green;
 }
+
 .not-voted {
     color: orange;
 }
+
+/****** Feeds *****/
+
+.feed-entry {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 12px;
+    padding-top: 12px;
+}
+
+.feed-entry .fa {
+    margin-right: 12px;
+}
+
+.feed-entry .meta {
+    display: block;
+    margin-left: 32px;
+    max-width: 80%;
+}
+
+/*****  Will be used for animation! ****/
+
+/* .animation {
+    -webkit-transition:all linear 0.5s;
+    transition:all linear 0.5s;
+}
+
+.animation.ng-enter {
+    opacity: 0;
+}
+
+.animation.ng-leave {
+    opacity: 1;
+}
+
+.animation.ng-enter.ng-enter-active {
+    opacity: 1;
+}
+
+.animation.ng-leave.ng-leave-active {
+    opacity: 0;
+} */
+/**** feeds ends ******/

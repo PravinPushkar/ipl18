@@ -35,6 +35,11 @@ app.factory('toolbarService', function () {
             name: 'Rules',
             icon: 'assignment',
             state: 'main.rules'
+        },
+        {
+            name: 'Feeds',
+            icon: 'people',
+            state: 'main.feeds'
         }
     ];
     service.userMenuItems = [{

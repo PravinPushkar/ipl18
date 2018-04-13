@@ -10,3 +10,9 @@ type User struct {
 	Alias       string `json:"alias"`
 	PicLocation string `json:"picLocation"`
 }
+
+type UserBasic struct {
+	INumber     string `json:"inumber"`
+	Name        string `json:"name"`
+	PicLocation string `json:"picLocation"`
+}
