@@ -68,7 +68,9 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     }
 
     // Toggle a flag and select the team chosen to predict
-    function toggleFlag(id, teamId1, teamId2) {
+    function toggleFlag(id, teamId1, teamId2,elm) {
+        $('.md-fab-fixture,.md-primary').removeClass('highlightTeam');
+        $(elm.currentTarget).addClass('highlightTeam');
         vm.flag.id = {};
         vm.flag.id.teamId1 = true;
         vm.flag.id.teamId2 = false;

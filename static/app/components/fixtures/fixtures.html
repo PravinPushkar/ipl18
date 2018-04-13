@@ -7,7 +7,7 @@
                 <div hide-xs hide-sm layout>
                     <div layout="row" layout-align="start center" flex>
                         <span flex>
-                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2)" ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId1], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId1], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId1]}"
+                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2,$event)" ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId1], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId1], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId1]}"
                                 aria-label="Team {{fixture.team.alias}}">
                                 <div class="team-logo {{fixture.team1.alias}}"></div>
                             </md-button>
@@ -20,7 +20,7 @@
 
                         </div>
                         <span flex>
-                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1)" ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId2], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId2], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId2]}"
+                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1,$event)" ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId2], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId2], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId2]}"
                                 aria-label="Team {{fixture.team.alias}}">
                                 <div class="team-logo {{fixture.team2.alias}}"></div>
                             </md-button>
@@ -68,10 +68,10 @@
                         <span class="team-vote" ng-bind="fixtures.showTeamVote(fixture.predictions)" ng-class="fixtures.decideClassName(fixture.predictions)"></span>
                         <div layout="row">
                             <div flex>
-                                <md-button class="md-raised md-primary" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2)">Vote {{fixture.team1.alias}}</md-button>
+                                <md-button class="md-raised md-primary" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2,$event)">Vote {{fixture.team1.alias}}</md-button>
                             </div>
                             <div flex>
-                                <md-button class="md-raised md-primary" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1)">Vote {{fixture.team2.alias}}</md-button>
+                                <md-button class="md-raised md-primary" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1,$event)">Vote {{fixture.team2.alias}}</md-button>
                             </div>
                         </div>
 
