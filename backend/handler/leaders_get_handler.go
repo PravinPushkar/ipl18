@@ -28,5 +28,5 @@ func (l LeadersGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	leaders, err := l.UDao.GetLeaders()
 	errors.ErrAnalyzePanic(w, err, "LeadersGetHandler: unable to fetch leaders")
 
-	util.StructWriter(w, &leaders)
+	util.StructWriter(w, leaders)
 }
