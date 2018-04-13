@@ -7,7 +7,7 @@ var app = angular.module('ipl');
  * 
  * Controller for fixtures page.
  */
-app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'utilsService', 'urlService', function ($http, $window, $q, $mdDialog, utilsService, urlService) {
+app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'utilsService', 'urlService', '$scope', '$timeout', function ($http, $window, $q, $mdDialog, utilsService, urlService, $scope, $timeout) {
     var vm = this;
     var token;
     var iNumber;
@@ -30,14 +30,14 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     vm.showMatchStats = showMatchStats;
 
     function decideClassName(predictions) {
-        if(predictions && predictions.teamVote){
+        if (predictions && predictions.teamVote) {
             return "voted";
         }
         return "not-voted";
     }
 
-    function showTeamVote(predictions) { 
-        if(predictions && predictions.teamVote) {
+    function showTeamVote(predictions) {
+        if (predictions && predictions.teamVote) {
             var teamObj = vm.teamsList.find(function (team) {
                 return team.id === predictions.teamVote;
             });
@@ -57,8 +57,8 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         }
     }
 
-    function checkMOMSelection(player,predictions) {
-        if(predictions)
+    function checkMOMSelection(player, predictions) {
+        if (predictions)
             return player.playerId === predictions.momVote;
     }
 
@@ -69,7 +69,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
 
     // Toggle a flag and select the team chosen to predict
     function toggleFlag(id, teamId1, teamId2) {
-        vm.flag.id={};
+        vm.flag.id = {};
         vm.flag.id.teamId1 = true;
         vm.flag.id.teamId2 = false;
         vm.selectedTeam[id] = teamId1;
@@ -94,6 +94,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
 
     // Init function for main fixtures view
     function init() {
+        vm.isLoaded = false;
         token = $window.localStorage.getItem('token');
         iNumber = $window.localStorage.getItem('iNumber');
         var fixturesParams = {
@@ -154,6 +155,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                 $http(fixturesParams)
                     .then(function (res) {
                         res.data.matches.forEach(function (fixture) {
+                            vm.isLoaded = true;
                             vm.fixturesList.push({
                                 teamId1: fixture.teamId1,
                                 teamId2: fixture.teamId2,
@@ -173,11 +175,12 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                             vm.coinIcon[fixture.id] = 'money_off';
                             vm.coinFlag[fixture.id] = false;
                         });
-                        vm.fixturesList.sort(function(a, b){
-                            return a.matchId-b.matchId
+                        vm.fixturesList.sort(function (a, b) {
+                            return a.matchId - b.matchId
                         })
 
                     }, function (err) {
+                        vm.isLoaded = true;
                         if (err.data.code === 403 && err.data.message === 'token not valid') {
                             utilsService.logout('Session expired, please re-login', true);
                             return;
@@ -215,12 +218,11 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
             momVote: momVote,
             coinUsed: vm.coinFlag[matchId]
         };
-        var method,url;
-        if(!fixture.predictions){
+        var method, url;
+        if (!fixture.predictions) {
             method = "POST";
             url = urlService.predictions
-        }
-        else {
+        } else {
             method = "PUT";
             url = urlService.predictions + "/" + fixture.predictions.predId;
         }
@@ -235,7 +237,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         };
         $http(params)
             .then(function (res) {
-                if(!fixture.predictions) { 
+                if (!fixture.predictions) {
                     fixture.predictions = {};
                     fixture.predictions.predId = res.data.id;
                 }
@@ -257,23 +259,28 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
             });
     }
 
-    function openPredictionDialog(event, id) {
+    function openPredictionDialog(event, fixture) {
         $mdDialog.show({
             templateUrl: '/static/app/components/fixtures/fixturesDialog.html',
             controller: fixturesDialogController,
+            scope: $scope,
+            preserveScope: true,
             targetEvent: event,
             locals: {
-                matchId: id
+                fixture: fixture
             },
             clickOutesideToClose: true
         });
     }
 
-    function fixturesDialogController($scope, matchId) {
-        $scope.playersList = vm.playersList;
+    function fixturesDialogController($scope, fixture) {
+        //var fdc = this;
+        // fdc.playersList = vm.playersList;
+        $scope.fixture = fixture;
+
     }
 
-    function showMatchStats(event,id) {
+    function showMatchStats(event, id) {
         $mdDialog.show({
             templateUrl: '/static/app/components/fixtures/matchStats.html',
             controller: 'matchStats',
@@ -285,11 +292,11 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                 playerList: vm.playersList
             },
             clickOutesideToClose: true
-        }).then(function(answer) {
+        }).then(function (answer) {
             vm.status = 'You said the information was "' + answer + '".';
-          }, function() {
+        }, function () {
             vm.status = 'You cancelled the dialog.';
-          });
+        });
     }
 
 }]);
