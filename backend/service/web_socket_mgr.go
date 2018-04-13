@@ -4,16 +4,16 @@ import (
 	"log"
 	"time"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/cache"
 	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 )
 
 //WebSocketManager and its dependencies
 type WebSocketManager struct {
-	conns     map[*models.ConnModel]bool
-	rch       chan *models.FeedsMessageModel
-	cDao      dao.ChatDAO
-	userCache map[string][]string
+	conns map[*models.ConnModel]bool
+	rch   chan *models.FeedsMessageModel
+	cDao  dao.ChatDAO
 }
 
 //SocketHandler - interface exposed by the service
@@ -24,25 +24,11 @@ type SocketHandler interface {
 //NewWebSocketManager - Constructor for service
 func NewWebSocketManager() *WebSocketManager {
 	ws := WebSocketManager{
-		conns:     make(map[*models.ConnModel]bool),
-		rch:       make(chan *models.FeedsMessageModel),
-		cDao:      dao.ChatDAO{},
-		userCache: make(map[string][]string),
+		conns: make(map[*models.ConnModel]bool),
+		rch:   make(chan *models.FeedsMessageModel),
+		cDao:  dao.ChatDAO{},
 	}
-	ws.buildUserCache()
 	return &ws
-}
-
-func (ws *WebSocketManager) buildUserCache() {
-	uDao := dao.UserDAO{}
-	if users, err := uDao.GetAllUsersBasicInfo(); err != nil {
-		log.Println("WebSocketManager:buildUserCache: unable to get users info", err)
-	} else {
-		for _, user := range users {
-			ws.userCache[user.INumber] = []string{user.Name, user.PicLocation}
-		}
-		log.Println("WebSocketManager:buildUserCache: user cache built", len(users))
-	}
 }
 
 //Start - start monitoring channels
@@ -63,9 +49,9 @@ func (ws *WebSocketManager) writeInitialFeed(c *models.ConnModel) {
 	} else {
 		log.Println("WebSocketManager: writing initial chat history to", c.Conn.RemoteAddr())
 		for _, chat := range chats {
-			items := ws.userCache[chat.INumber]
-			chat.Name = items[0]
-			chat.PicLocation = items[1]
+			user := cache.UserINumberCache[chat.INumber]
+			chat.Name = user.Name
+			chat.PicLocation = user.PicLocation
 			c.Conn.WriteJSON(chat)
 		}
 	}
@@ -98,8 +84,8 @@ func (ws *WebSocketManager) poll(c *models.ConnModel) {
 		msg := string(message)
 		log.Println("WebSocketManager: poll new message", mt, msg)
 		date := time.Now()
-		items := ws.userCache[c.INumber]
-		ws.rch <- &models.FeedsMessageModel{c.INumber, items[0], msg, date, items[1]}
+
+		ws.rch <- &models.FeedsMessageModel{c.INumber, cache.UserINumberCache[c.INumber].Name, msg, date, cache.UserINumberCache[c.INumber].PicLocation}
 		ws.cDao.InsertChat(message, c.INumber, date)
 	}
 }

@@ -20,7 +20,7 @@ type Match struct {
 }
 
 type Matches struct {
-	Matches []Match `json:"matches"`
+	Matches []*Match `json:"matches"`
 }
 
 type MatchStats struct {

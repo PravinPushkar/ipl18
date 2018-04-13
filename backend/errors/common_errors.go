@@ -9,4 +9,5 @@ var (
 	ErrParseRequest      = fmt.Errorf("could not parse request")
 	ErrEncodingResponse  = fmt.Errorf("error encoding response")
 	ErrGettingToken      = fmt.Errorf("could not get new token")
+	ErrUserNotFound      = fmt.Errorf("user not found")
 )

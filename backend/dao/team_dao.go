@@ -25,7 +25,6 @@ type TeamDAO struct{}
 
 func (t TeamDAO) GetAllTeams() (*models.Teams, error) {
 	log.Println("TeamDAO: GetAllTeams ")
-	teams := []models.Team{}
 
 	rows, err := db.DB.Query(qSelectAllTeams)
 	if err != nil {
@@ -34,6 +33,7 @@ func (t TeamDAO) GetAllTeams() (*models.Teams, error) {
 	}
 	defer rows.Close()
 
+	teams := []*models.Team{}
 	pic := sql.NullString{}
 	for rows.Next() {
 		team := models.Team{}
@@ -42,7 +42,7 @@ func (t TeamDAO) GetAllTeams() (*models.Teams, error) {
 			return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 		}
 		team.PicLocation = pic.String
-		teams = append(teams, team)
+		teams = append(teams, &team)
 	}
 
 	return &models.Teams{teams}, nil

@@ -53,8 +53,8 @@ func setupStatic(r *mux.Router) {
 }
 
 func setupPublic(r *mux.Router) {
-	r.Handle("/register", handler.RegistrationHandler).Methods("POST")
-	r.Handle("/login", handler.LoginHandler).Methods("POST")
+	r.Handle("/register", handler.PublicUserHandler{uDao}).Methods("POST")
+	r.Handle("/login", handler.PublicUserHandler{uDao}).Methods("POST")
 }
 
 func setupApi(r *mux.Router) {

@@ -7,7 +7,7 @@ type PlayersModel struct {
 type Player struct {
 	PlayerId int    `json:"id"`
 	Name     string `json:"name"`
-	TeamId   string `json:"teamId"`
+	TeamId   int    `json:"teamId"`
 	Role     string `json:"role"`
 }
 

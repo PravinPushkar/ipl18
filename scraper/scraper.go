@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/cache"
 	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
@@ -27,7 +28,6 @@ var (
 
 	regMatchNo *regexp.Regexp
 	matches    map[int]*models.ScraperMatchModel
-	teamCache  map[string]int
 )
 
 func Start() {
@@ -142,7 +142,7 @@ func getWinnerInfo(data string) (string, bool) {
 		return "", true
 	} else {
 		//search for teams
-		for k, _ := range teamCache {
+		for k, _ := range cache.TeamNameCache {
 			if strings.Contains(data, k) {
 				log.Println("scraper: found team", k)
 				return k, false
@@ -157,14 +157,4 @@ func getWinnerInfo(data string) (string, bool) {
 func init() {
 	regMatchNo, _ = regexp.Compile(`^\d+`)
 	matches = map[int]*models.ScraperMatchModel{}
-	teamCache = map[string]int{}
-	tdao := dao.TeamDAO{}
-	if info, err := tdao.GetAllTeams(); err != nil {
-		log.Println("error building team cache")
-	} else {
-		for _, v := range info.Teams {
-			teamCache[v.TeamName] = v.TeamId
-		}
-	}
-	log.Println("teamCache", teamCache)
 }

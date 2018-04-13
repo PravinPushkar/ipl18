@@ -19,6 +19,7 @@ const (
 	qSelectAllUsers      = "select concat(firstname,' ',lastname) as name,inumber,piclocation from ipluser"
 	qSelectLeaders       = "SELECT firstname,lastname,alias,piclocation,inumber,points FROM ipluser where points is not null ORDER BY points DESC"
 	qInsertUser          = "insert into ipluser(firstname, lastname, password, coin, alias, inumber) values($1, $2, $3, $4, $5, $6)"
+	qVerifyUser          = "select inumber from ipluser where inumber=$1 and password=$2"
 )
 
 var errLeaderNotFound = fmt.Errorf("leader not found in db")
@@ -102,4 +103,17 @@ func (u UserDAO) GetAllUsersBasicInfo() ([]*models.UserBasic, error) {
 		users = append(users, &user)
 	}
 	return users, nil
+}
+
+func (u UserDAO) VerifyUser(inumber string, pass string) error {
+	inum := ""
+	err := db.DB.QueryRow(qVerifyUser, inumber, pass).Scan(&inum)
+	if err == sql.ErrNoRows {
+		log.Println("UserDAO: VerifyUser user not found", err)
+		return &errors.DaoError{http.StatusForbidden, errors.ErrUserNotFound, errors.ErrUserNotFound}
+	} else if err != nil {
+		log.Println("UserDAO: VerifyUser could not verify user", err)
+		return &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+	}
+	return nil
 }

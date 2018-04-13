@@ -7,8 +7,10 @@ import (
 
 	"github.com/gorilla/mux"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/cache"
 	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
+	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 	"github.wdf.sap.corp/I334816/ipl18/backend/util"
 )
 
@@ -32,6 +34,11 @@ func (p PlayersGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		pid, err := strconv.Atoi(pidS)
 		errors.ErrAnalyzePanic(w, err, "PlayersGetHandler: pid is not valid")
 
+		if player, ok := cache.PlayerIdCache[pid]; ok {
+			util.StructWriter(w, player)
+			return
+		}
+
 		player, err := p.PDao.GetPlayerById(pid)
 		errors.ErrAnalyzePanic(w, err, "PlayersGetHandler: unable to get player by id")
 
@@ -41,7 +48,17 @@ func (p PlayersGetHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	//all players
 	log.Println("PlayersGetHandler: all players query")
-	players, err := p.PDao.GetAllPlayers()
-	errors.ErrAnalyzePanic(w, err, "PlayersGetHandler: unable to get player by id")
+	players, err := func() (*models.PlayersModel, error) {
+		players := []*models.Player{}
+		if len(cache.PlayerIdCache) != 0 {
+			for _, player := range cache.PlayerIdCache {
+				players = append(players, player)
+			}
+			return &models.PlayersModel{players}, nil
+		} else {
+			return p.PDao.GetAllPlayers()
+		}
+	}()
+	errors.ErrAnalyzePanic(w, err, "TeamsGetHandler: unable to get all teams")
 	util.StructWriter(w, players)
 }

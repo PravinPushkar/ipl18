@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 	"strings"
-	"sync"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/cache"
 	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
 )
@@ -21,18 +21,15 @@ func (c *cacheModel) String() string {
 
 var tl = strings.ToLower
 
-type cache map[int]*cacheModel
+type scraperCache map[int]*cacheModel
 
 type Updater struct {
-	MDao        dao.MatchesDAO
-	PDao        dao.PredictionDAO
-	TDao        dao.TeamDAO
-	PlayerDao   dao.PlayerDAO
-	UDao        dao.UserDAO
-	cache       cache
-	teamCache   map[string]int
-	playerCache map[string]int
-	once        sync.Once
+	MDao      dao.MatchesDAO
+	PDao      dao.PredictionDAO
+	TDao      dao.TeamDAO
+	PlayerDao dao.PlayerDAO
+	UDao      dao.UserDAO
+	cache     scraperCache
 }
 
 func (u *Updater) Update(scrap map[int]*models.ScraperMatchModel) {
@@ -51,8 +48,8 @@ func (u *Updater) assignPoints(scrap map[int]*models.ScraperMatchModel) {
 	for mid, _ := range scrap {
 		log.Println("Updater: scrap", mid)
 		result := scrap[mid]
-		cTeam := u.teamCache[tl(result.Winner)]
-		cMoM := u.playerCache[tl(result.MoM)]
+		cTeam := cache.TeamNameCache[result.Winner].TeamId
+		cMoM := cache.PlayerNameCache[result.MoM].PlayerId
 
 		mType := map[bool]int{true: 0, false: 1}[result.Abandoned]
 
@@ -150,44 +147,12 @@ func (u *Updater) getPoints(cTeam, cMoM, mType int, pInfo *models.PredictionsMod
 
 func (u *Updater) buildCaches() {
 	log.Println("Updater:building caches")
-	u.once.Do(func() {
-		u.buildPermCaches()
-	})
-
 	u.buildMatchCache()
-}
-
-func (u *Updater) buildPermCaches() {
-	log.Println("Updater:building perm cache")
-	u.teamCache = map[string]int{}
-	u.playerCache = map[string]int{}
-
-	//buildTeamCache
-	if info, err := u.TDao.GetAllTeams(); err != nil {
-		log.Println("Updater:error building team cache")
-		panic(err)
-	} else {
-		for _, v := range info.Teams {
-			u.teamCache[tl(v.TeamName)] = v.TeamId
-		}
-	}
-	log.Println("Updater:teamCache", len(u.teamCache))
-
-	//buildPlayerCache
-	if info, err := u.PlayerDao.GetAllPlayers(); err != nil {
-		log.Println("Updater:error building player cache")
-		panic(err)
-	} else {
-		for _, v := range info.Players {
-			u.playerCache[tl(v.Name)] = v.PlayerId
-		}
-	}
-	log.Println("Updater:playerCache", len(u.playerCache))
 }
 
 func (u *Updater) buildMatchCache() {
 	log.Println("Updater:building match cache")
-	u.cache = cache{}
+	u.cache = scraperCache{}
 	//get all matches
 	if matches, err := u.MDao.GetAllMatches(); err != nil || len(matches.Matches) == 0 {
 		log.Println("Updater: error building cache", err)
@@ -196,7 +161,7 @@ func (u *Updater) buildMatchCache() {
 		for _, m := range matches.Matches {
 			//necessary otherwise overwrites happen
 			p := m
-			u.cache[m.MatchId] = &cacheModel{match: &p}
+			u.cache[m.MatchId] = &cacheModel{match: p}
 		}
 	}
 

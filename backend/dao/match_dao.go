@@ -39,7 +39,7 @@ func (m MatchesDAO) GetAllMatchesWithPred(inumber string) (*models.Matches, erro
 
 	var winTeam, mom, voteTeam, voteMom, predMid, predPid sql.NullInt64
 	var coinUsed sql.NullBool
-	matches := []models.Match{}
+	matches := []*models.Match{}
 
 	for res.Next() {
 		match := models.Match{}
@@ -64,7 +64,7 @@ func (m MatchesDAO) GetAllMatchesWithPred(inumber string) (*models.Matches, erro
 				INumber:      inumber,
 			}
 		}
-		matches = append(matches, match)
+		matches = append(matches, &match)
 	}
 
 	return &models.Matches{matches}, nil
@@ -81,7 +81,7 @@ func (m MatchesDAO) GetAllMatches() (*models.Matches, error) {
 	defer res.Close()
 
 	var winTeam, mom sql.NullInt64
-	matches := []models.Match{}
+	matches := []*models.Match{}
 
 	for res.Next() {
 		match := models.Match{}
@@ -92,7 +92,7 @@ func (m MatchesDAO) GetAllMatches() (*models.Matches, error) {
 		} else if err != nil {
 			return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 		}
-		matches = append(matches, match)
+		matches = append(matches, &match)
 	}
 
 	log.Println("MatchesDAO: GetAllMatches found ", len(matches), "matches")

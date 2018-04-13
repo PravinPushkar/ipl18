@@ -8,7 +8,7 @@ type Team struct {
 }
 
 type Teams struct {
-	Teams []Team `json:"teams"`
+	Teams []*Team `json:"teams"`
 }
 
 type TeamStats struct {
