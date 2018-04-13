@@ -480,3 +480,6 @@ table.players td {
     left: 32%;
     width: 600px;
 }
+.highlightTeam{
+    background-color: green !important;
+}
