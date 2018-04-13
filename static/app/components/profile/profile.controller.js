@@ -38,7 +38,7 @@ app.controller('profileController', ['$http', '$window', '$rootScope', 'urlServi
                     profilePic: res.data.picLocation
                 };
                 $window.localStorage.setItem('profilePic', vm.userData.profilePic);
-                $window.localStorage.setItem('Name', firstName + " " +lastName);
+                $window.localStorage.setItem('Name', vm.userData.firstName + " " +vm.userData.lastName);
             }, function (err) {
                 if (err.data.code === 403 && err.data.message === 'token not valid') {
                     utilsService.logout('Session expired, please re-login', true);

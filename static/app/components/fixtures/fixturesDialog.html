@@ -1,20 +1,46 @@
-<md-dialog layout="column" layout-align="center center">
-    <div layout="row" layout-align="center center">
-        <span class="md-padding">DD</span>
-        <md-switch ng-model="cb1" aria-label="Switch">
-            RR
-        </md-switch>
-    </div>
-    <div>
-        {{playersList}}
-            <md-input-container flex "50">
-                    <label>Man of the Match</label>
-                    <md-select name="mom" ng-model="fixtures.mom[fixture.matchId]" md-on-close="fixtures.clearSearchItem()" data-md-container-class="selectHeaderClass" required>
-                        <md-select-header class="select-header">
-                            <input ng-model="fixtures.searchItem" type="search" placeholder="Search for a player" class="select-header-searchbox md-text" ng-keydown="$event.stopPropagation()">
-                        </md-select-header>
-                        <md-option ng-repeat="player in fixtures.playersList | filter:fixtures.searchItem" ng-if="fixtures.playerInTeam(player.teamId, fixture.teamId1, fixture.teamId2)" ng-value="player.playerId">{{player.name}}</md-option>
-                    </md-select>
+<md-dialog layout="column" layout-align="center center" style="width: 500px">
+    <div style="margin: 15px">
+        <div layout="row" layout-align="center center">
+            <div flex>
+                <md-radio-group ng-model="data.group1">
+
+                    <md-radio-button value="Apple" class="md-primary">{{$scope.fixture.team1.alias}}</md-radio-button>
+                    <md-radio-button value="Banana"> {{$scope.fixture.team2.alias}} </md-radio-button>
+
+                </md-radio-group>
+            </div>
+            <div flex>
+                <md-input-container flex "50">
+                    <span class="md-headline card-smaller-font">Man of the Match</span>
+                    <md-input-container flex "50">
+                        <label>Select Player</label>
+                        <md-select name="mom" ng-model="$scope.fixtures.mom[fixture.matchId]" md-on-close="$scope.fixtures.clearSearchItem()" data-md-container-class="selectHeaderClass"
+                            required>
+                            <md-select-header class="select-header">
+                                <input ng-model="$scope.fixtures.searchItem" type="search" placeholder="Search for a player" class="select-header-searchbox md-text"
+                                    ng-keydown="$event.stopPropagation()">
+                            </md-select-header>
+                            <md-option ng-repeat="player in $scope.fixtures.playersList | filter:$scope.fixtures.searchItem" ng-if="$scope.fixtures.playerInTeam(player.teamId, fixture.teamId1, fixture.teamId2)"
+                                ng-value="player.playerId" ng-selected="$scope.fixtures.checkMOMSelection(player,fixture.predictions)">{{player.name}}</md-option>
+                        </md-select>
+                    </md-input-container>
                 </md-input-container>
+            </div>
+        </div>
     </div>
+    <!-- <div>
+        {{playersList}}
+        <md-input-container flex "50">
+            <label>Man of the Match</label>
+            <md-select name="mom" ng-model="fixtures.mom[fixture.matchId]" md-on-close="fixtures.clearSearchItem()" data-md-container-class="selectHeaderClass"
+                required>
+                <md-select-header class="select-header">
+                    <input ng-model="fixtures.searchItem" type="search" placeholder="Search for a player" class="select-header-searchbox md-text"
+                        ng-keydown="$event.stopPropagation()">
+                </md-select-header>
+                <md-option ng-repeat="player in fixtures.playersList | filter:fixtures.searchItem" ng-if="fixtures.playerInTeam(player.teamId, fixture.teamId1, fixture.teamId2)"
+                    ng-value="player.playerId">{{player.name}}</md-option>
+            </md-select>
+        </md-input-container>
+    </div> -->
 </md-dialog>
