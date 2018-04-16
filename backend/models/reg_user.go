@@ -9,6 +9,7 @@ type User struct {
 	UID         int    `json:"id"`
 	Alias       string `json:"alias"`
 	PicLocation string `json:"picLocation"`
+	Points      int    `json:"points,omitempty"`
 }
 
 type UserBasic struct {

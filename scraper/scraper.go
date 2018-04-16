@@ -6,8 +6,8 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/cache"
 	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
 	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
@@ -28,63 +28,17 @@ var (
 
 	regMatchNo *regexp.Regexp
 	matches    map[int]*models.ScraperMatchModel
+	teamCache  map[string]int
 )
 
-func Start() {
+func Start(kill chan bool) {
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("scraper panicked", r)
 		}
 	}()
 
-	urls := []string{}
-	getDocument(apiUrl).Find("div #results a").Each(func(i int, s *goquery.Selection) {
-		url := s.AttrOr("href", "/")
-		log.Println("scraper: found result url:", url)
-		urls = append(urls, url)
-	})
-
-	for _, url := range urls {
-		getDocument(baseUrl + url).Find("div .gp__cricket__gameHeader").Each(func(i int, s *goquery.Selection) {
-			if i == 0 {
-				no := getMatchMetaData(s)
-				matches[no] = &models.ScraperMatchModel{
-					no,
-					"",
-					"",
-					"To be decided",
-					getMoM(s),
-					false,
-				}
-			}
-		})
-	}
-
-	index := 0
-	failed := false
-	getDocument(winnerUrl).Find("b").Each(func(i int, s *goquery.Selection) {
-		if (i & 1) == 1 {
-			index = index%len(matches) + 1
-			winner, isAbandoned := getWinnerInfo(s.Text())
-			if isAbandoned {
-				log.Println("scraper: match abandoned")
-				matches[index].Abandoned = true
-			} else if winner != "" {
-				matches[index].Winner = strings.Trim(winner, " ")
-			} else {
-				log.Println("scraper: failed to determine result")
-				failed = true
-			}
-		}
-	})
-	if failed {
-		return
-	}
-
-	for k, v := range matches {
-		log.Println("scraper:", k, v)
-	}
-
+	timer := time.NewTimer(time.Hour)
 	upd8 := Updater{
 		PlayerDao: dao.PlayerDAO{},
 		TDao:      dao.TeamDAO{},
@@ -92,7 +46,68 @@ func Start() {
 		MDao:      dao.MatchesDAO{},
 		UDao:      dao.UserDAO{},
 	}
-	upd8.Update(matches)
+	loc, _ := time.LoadLocation("Asia/Kolkata")
+
+	for {
+		select {
+		case <-timer.C:
+			timeNow := time.Now().In(loc)
+			log.Println("scraper: time", timeNow)
+			if timeNow.Hour() == 3 {
+				log.Println("scraper: running")
+				urls := []string{}
+				getDocument(apiUrl).Find("div #results a").Each(func(i int, s *goquery.Selection) {
+					url := s.AttrOr("href", "/")
+					log.Println("scraper: found result url:", url)
+					urls = append(urls, url)
+				})
+
+				for _, url := range urls {
+					getDocument(baseUrl + url).Find("div .gp__cricket__gameHeader").Each(func(i int, s *goquery.Selection) {
+						if i == 0 {
+							no := getMatchMetaData(s)
+							matches[no] = &models.ScraperMatchModel{
+								no,
+								"",
+								"",
+								"To be decided",
+								getMoM(s),
+								false,
+							}
+						}
+					})
+				}
+
+				index := 0
+				failed := false
+				getDocument(winnerUrl).Find("b").Each(func(i int, s *goquery.Selection) {
+					if (i & 1) == 1 {
+						index = index%len(matches) + 1
+						winner, isAbandoned := getWinnerInfo(s.Text())
+						if isAbandoned {
+							log.Println("scraper: match abandoned")
+							matches[index].Abandoned = true
+						} else if winner != "" {
+							matches[index].Winner = strings.Trim(winner, " ")
+						} else {
+							log.Println("scraper: failed to determine result")
+							failed = true
+						}
+					}
+				})
+				continue
+
+				for k, v := range matches {
+					log.Println("scraper:", k, v)
+				}
+
+				upd8.Update(matches)
+			}
+
+		case <-kill:
+			return
+		}
+	}
 }
 
 func getDocument(url string) *goquery.Document {
@@ -142,7 +157,7 @@ func getWinnerInfo(data string) (string, bool) {
 		return "", true
 	} else {
 		//search for teams
-		for k, _ := range cache.TeamNameCache {
+		for k, _ := range teamCache {
 			if strings.Contains(data, k) {
 				log.Println("scraper: found team", k)
 				return k, false
@@ -157,4 +172,14 @@ func getWinnerInfo(data string) (string, bool) {
 func init() {
 	regMatchNo, _ = regexp.Compile(`^\d+`)
 	matches = map[int]*models.ScraperMatchModel{}
+	teamCache = map[string]int{}
+	tdao := dao.TeamDAO{}
+	if info, err := tdao.GetAllTeams(); err != nil {
+		log.Println("error building team cache")
+	} else {
+		for _, v := range info.Teams {
+			teamCache[v.TeamName] = v.TeamId
+		}
+	}
+	log.Println("teamCache", teamCache)
 }

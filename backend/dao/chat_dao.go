@@ -29,6 +29,7 @@ func (cd ChatDAO) InsertChat(message []byte, inumber string, date time.Time) err
 		return &errors.DaoError{http.StatusInternalServerError, errors.ErrDBIssue, errors.ErrDBIssue}
 	}
 	log.Println("ChatDAO: InsertChat: inserted")
+
 	return nil
 }
 

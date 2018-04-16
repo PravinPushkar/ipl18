@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.wdf.sap.corp/I334816/ipl18/backend/cache"
 	"github.wdf.sap.corp/I334816/ipl18/backend/db"
 	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
 	"github.wdf.sap.corp/I334816/ipl18/backend/models"
@@ -25,6 +26,11 @@ type TeamDAO struct{}
 
 func (t TeamDAO) GetAllTeams() (*models.Teams, error) {
 	log.Println("TeamDAO: GetAllTeams ")
+	//check cache or fill
+	if cache.Teams != nil {
+		log.Println("cache hit")
+		return cache.Teams, nil
+	}
 
 	rows, err := db.DB.Query(qSelectAllTeams)
 	if err != nil {
@@ -45,11 +51,28 @@ func (t TeamDAO) GetAllTeams() (*models.Teams, error) {
 		teams = append(teams, &team)
 	}
 
-	return &models.Teams{teams}, nil
+	data := &models.Teams{teams}
+
+	defer cache.Lock.Unlock()
+	cache.Lock.Lock()
+	if cache.Teams == nil {
+		cache.Teams = data
+		for _, v := range data.Teams {
+			cache.TeamIdCache[v.TeamId] = v
+			cache.TeamSNameCache[v.ShortName] = v
+			cache.TeamNameCache[v.TeamName] = v
+		}
+	}
+	return data, nil
 }
 
 func (t TeamDAO) GetTeamById(tid int) (*models.Team, error) {
 	log.Println("TeamDAO: GetTeamsById")
+	if team, ok := cache.TeamIdCache[tid]; ok {
+		log.Println("cache hit")
+		return team, nil
+	}
+
 	team := models.Team{}
 	pic := sql.NullString{}
 
@@ -63,6 +86,15 @@ func (t TeamDAO) GetTeamById(tid int) (*models.Team, error) {
 	}
 
 	team.PicLocation = pic.String
+	data := &team
 
-	return &team, nil
+	defer cache.Lock.Unlock()
+	cache.Lock.Lock()
+	if team, ok := cache.TeamIdCache[tid]; !ok {
+		cache.TeamIdCache[tid] = data
+		cache.TeamSNameCache[team.ShortName] = data
+		cache.TeamNameCache[team.TeamName] = data
+	}
+
+	return data, nil
 }
