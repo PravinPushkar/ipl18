@@ -54,7 +54,7 @@ app.controller('playersController', ['$http', '$stateParams', '$window', 'urlSer
         $http(playersParams)
             .then(function (res) {
                 console.log('res', res);
-                res.data.forEach(function (player) {
+                res.data.players.forEach(function (player) {
                     if (player.role === 'allrounder') {
                         role = 'All-Rounder';
                     } else {

@@ -52,7 +52,7 @@ app.controller('leaderboardController', ['$http', '$window', 'utilsService', 'ur
             .then(function (res) {
                 var points = [];
                 vm.leaderboardData = [];
-                res.data.forEach(function(user){
+                res.data.leaders.forEach(function(user){
                 vm.leaderboardData.push({
                     firstName: utilsService.capitalizeFirstLetter(user.firstname),
                     lastName: utilsService.capitalizeFirstLetter(user.lastname),
