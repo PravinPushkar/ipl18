@@ -7,17 +7,17 @@ var app = angular.module('ipl');
  * 
  * Controller for feeds page
  */
-app.controller('feedsController', ['$http', '$window', 'socket', '$timeout', '$scope', 'utilsService', function ($http, $window, socket, $timeout, $scope, utilsService) {
+app.controller('feedsController', ['$http', '$window', 'socket', '$timeout', '$scope', 'utilsService', '$rootScope', '$location', function ($http, $window, socket, $timeout, $scope, utilsService, $rootScope, $location) {
     var feeds = this;
 
     var token;
-
-    feeds.init = init();
     feeds.feedEntries = [];
+    feeds.init = init();
     feeds.submit = submit;
     var currentUserINumber = $window.localStorage.getItem('iNumber');
     feeds.buzz = "";
-    var reg = /^[a-zA-Z0-9?!_\-, .*()]+$/;
+    var reg = /^[a-zA-Z0-9?!_\-, .*():]+$/;
+    feeds.isLoaded = false;
     function init() {
         token = $window.localStorage.getItem('token');
         var auth = {
@@ -25,16 +25,22 @@ app.controller('feedsController', ['$http', '$window', 'socket', '$timeout', '$s
         }
         socket.onopen(function () {
             socket.send(JSON.stringify(auth));
-            console.log("connection established");
         });
         socket.onmessage(function (data) {
             $timeout(function () {
+                feeds.isLoaded = true;
                 $scope.$apply(function () {
                     feeds.feedEntries.push(JSON.parse(data));
+                    console.log(feeds.feedEntries.length);
                 });
             });
         });
     }
+    $rootScope.$on('$locationChangeStart', function () {
+        if ($location.path() !== '/feeds') {
+            socket.onclose();
+        }
+    });
 
     function submit() {
         if (feeds.buzz && reg.test(feeds.buzz.trim())) {

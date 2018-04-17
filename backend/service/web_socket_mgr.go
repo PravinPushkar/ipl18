@@ -47,7 +47,7 @@ func (ws *WebSocketManager) Add(conn *models.ConnModel) {
 }
 
 func (ws *WebSocketManager) writeInitialFeed(c *models.ConnModel) {
-	if chats, err := ws.cDao.GetRecentChats(30); err != nil {
+	if chats, err := ws.cDao.GetRecentChats(100); err != nil {
 		log.Println("WebSocketManager: error getting recent chats", err)
 	} else {
 		log.Println("WebSocketManager: writing initial chat history to", c.Conn.RemoteAddr())
