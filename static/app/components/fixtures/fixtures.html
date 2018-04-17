@@ -1,5 +1,7 @@
 <div ng-init="fixtures.init()" ng-cloak layout layout-align="center center">
-    <md-progress-linear class="loader" ng-show="!fixtures.isLoaded" md-mode="indeterminate"></md-progress-linear>
+    <div ng-show="!fixtures.isLoaded" class="loading-indicator">
+        <md-progress-linear class="loader" md-mode="indeterminate"></md-progress-linear>
+    </div>
     <md-card layout="column" layout-align="center center" layout-padding layout-margin flex-gt-xs="90" flex-xs="100">
         <md-card ng-repeat="fixture in fixtures.fixturesList" style="width: 100%;">
             <md-card-header style="font-weight:bold" class="cursive-font-card-header">{{fixture.timestamp}}</md-card-header>
@@ -7,7 +9,8 @@
                 <div hide-xs hide-sm layout>
                     <div layout="row" layout-align="start center" flex>
                         <span flex>
-                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2,$event)" ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId1], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId1], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId1]}"
+                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2,$event)"
+                                ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId1], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId1], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId1]}"
                                 aria-label="Team {{fixture.team.alias}}">
                                 <div class="team-logo {{fixture.team1.alias}}"></div>
                             </md-button>
@@ -20,7 +23,8 @@
 
                         </div>
                         <span flex>
-                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1,$event)" ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId2], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId2], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId2]}"
+                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1,$event)"
+                                ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId2], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId2], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId2]}"
                                 aria-label="Team {{fixture.team.alias}}">
                                 <div class="team-logo {{fixture.team2.alias}}"></div>
                             </md-button>
