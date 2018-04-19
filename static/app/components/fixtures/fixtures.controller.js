@@ -123,9 +123,21 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                 'Authorization': token
             }
         };
+        var statParams = {
+            url: urlService.userStats,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': token
+            } 
+        }
         vm.fixturesList = [];
         vm.teamsList = [];
         vm.playersList = [];
+        vm.predMap = {};
+        var playerMap = {};
+        var teamMap = {};
+
         var teamPromise = $http(teamParams);
         var playerPromise = $http(playersParams);
         // Resolve both promises
@@ -138,6 +150,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                         alias: team.shortName,
                         teamPic: team.picLocation
                     });
+                    teamMap[team.id]=team;
                 });
                 var role;
                 data[1].data.players.forEach(function (player) {
@@ -152,7 +165,30 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                         role: role,
                         teamId: player.teamId
                     });
+                    playerMap[player.id]=player;
                 });
+
+                $http(statParams)
+                .then(function(res){
+                    res.data.predictions.forEach(function(pred){
+                        pred.momN=pred.momVote?playerMap[pred.momVote].name:"-";
+                        pred.teamN=pred.teamVote?teamMap[pred.teamVote].shortName:"-";
+                        if (!vm.predMap[pred.mid]){
+                            vm.predMap[pred.mid]=[];
+                        }
+                        vm.predMap[pred.mid].push(pred);
+                    });
+                },function(err){
+                    if (err.data.code === 403 && err.data.message === 'token not valid') {
+                        utilsService.logout('Session expired, please re-login', true);
+                        return;
+                    }
+                    console.log(err)
+                });
+
+                console.log(vm.predMap);
+
+
 
                 $http(fixturesParams)
                     .then(function (res) {
@@ -291,7 +327,8 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
             locals: {
                 matchId: id,
                 teamList: vm.teamsList,
-                playerList: vm.playersList
+                playerList: vm.playersList,
+                userStats:vm.predMap[id]
             },
             clickOutesideToClose: true
         }).then(function (answer) {

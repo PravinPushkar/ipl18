@@ -9,10 +9,21 @@
     <md-dialog-content style="max-width:800px;max-height:810px; ">
       <md-tabs md-dynamic-height md-border-bottom>
         <md-tab label="Team Votes">
-          <md-content class="md-padding">
+          <md-content class="md-padding" style="max-height: 500px;overflow-y: scroll;">
             <div layout="row" layout-xs="column" ng-repeat="team in mst.teamStats">
               <div flex style="text-align:center">{{ team.teamName }}</div>
               <div flex style="text-align:center">{{team.votes}}</div>
+            </div>
+            <hr/>
+            <div layout="row" style="font-weight: bold">
+                <div flex style="text-align:center">Name</div>
+                <div flex style="text-align:center">Team</div>
+                <div flex style="text-align:center">MOM</div>
+              </div>
+            <div layout="row" ng-repeat="ustats in mst.userStats | orderBy:'name'">
+              <div flex style="text-align:center">{{ustats.name}}</div>
+              <div flex style="text-align:center">{{ ustats.teamN }}</div>
+              <div flex style="text-align:center">{{ustats.momN}}</div>
             </div>
           </md-content>
         </md-tab>
