@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 
@@ -23,6 +24,7 @@ type predictor interface {
 	GetPredictionById(int) (*models.PredictionsModel, error)
 	CreateNewPrediction(*models.PredictionsModel) (*models.GeneralId, error)
 	UpdatePredictionById(int, *models.PredictionsModel) error
+	GetPredictionsForMatches() (*models.Predictions, error)
 }
 
 var (
@@ -95,15 +97,21 @@ func (p PredictionHandler) handlePut(w http.ResponseWriter, r *http.Request, inu
 }
 
 func (p PredictionHandler) handleGet(w http.ResponseWriter, r *http.Request, inumber string) {
+	if strings.Contains(r.URL.Path, "userStats") {
+		fmt.Println("XXX in stats")
+		info, err := p.PDao.GetPredictionsForMatches()
+		errors.ErrAnalyzePanic(w, err, "PredictionHandler:")
+		util.StructWriter(w, info)
+		return
+	}
+
 	vars := mux.Vars(r)
 	if pStr, ok := vars["id"]; ok {
 		pid, err := strconv.Atoi(pStr)
 		errors.ErrWriterPanic(w, http.StatusBadRequest, err, errInvalidPredId, "PredictionHandler: invalid prediction id in get")
 
-		if info, err := p.PDao.GetPredictionById(pid); err != nil {
-			errors.ErrAnalyzePanic(w, err, "PredictionHandler:")
-		} else {
-			util.StructWriter(w, info)
-		}
+		info, err := p.PDao.GetPredictionById(pid)
+		errors.ErrAnalyzePanic(w, err, "PredictionHandler:")
+		util.StructWriter(w, info)
 	}
 }

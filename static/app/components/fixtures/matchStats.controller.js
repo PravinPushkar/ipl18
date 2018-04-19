@@ -7,10 +7,10 @@ var app = angular.module('ipl');
  * 
  * Controller for fixtures page.
  */
-app.controller('matchStats', ['$http','$window','$mdDialog','urlService', 'matchId','teamList','playerList', function ($http,$window,$mdDialog,urlService, matchId,teamList,playerList) {
+app.controller('matchStats', ['$http', '$window', '$mdDialog', 'urlService', 'matchId', 'teamList', 'playerList', 'userStats', function ($http, $window, $mdDialog, urlService, matchId, teamList, playerList, userStats) {
     var stats = this;
     var token = $window.localStorage.getItem('token');
-
+    stats.userStats = userStats;
     stats.init = init;
 
     stats.hide = function () {
@@ -39,18 +39,18 @@ app.controller('matchStats', ['$http','$window','$mdDialog','urlService', 'match
             .then(function (res) {
                 stats.teamStats = res.data.teamStats;
                 stats.playerStats = res.data.playerStats;
-                stats.teamStats = stats.teamStats.reduce(function(acc,curVal,index,arr){
-                    curVal.teamName = teamList.filter(function(data){
+                stats.teamStats = stats.teamStats.reduce(function (acc, curVal, index, arr) {
+                    curVal.teamName = teamList.filter(function (data) {
                         return data.id === curVal.teamId;
                     })[0].name;
                     return arr;
-                },[]);
-                stats.playerStats = stats.playerStats.reduce(function(acc,curVal,index,arr){
-                    curVal.playerName = playerList.filter(function(data){
+                }, []);
+                stats.playerStats = stats.playerStats.reduce(function (acc, curVal, index, arr) {
+                    curVal.playerName = playerList.filter(function (data) {
                         return data.playerId === curVal.playerId;
                     })[0].name;
                     return arr;
-                },[]);
+                }, []);
             }, function (err) {
                 if (err.data.code === 403 && err.data.message === 'token not valid') {
                     utilsService.logout('Session expired, please re-login', true);

@@ -21,6 +21,7 @@ app.factory('urlService', function () {
     service.players = '/api/players';
     service.fixtures = '/api/matches';
     service.predictions = '/api/predictions';
+    service.userStats = '/api/matches/userStats';
     service.feeds = '/feeds';
 
     return service;

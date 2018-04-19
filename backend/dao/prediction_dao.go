@@ -26,6 +26,7 @@ const (
 	qCoinValidMatch         = "select 1,count(coinused) from prediction where coinused=true and inumber=$1 group by inumber union select 2,mid from match where star=true and mid=$2"
 	qSelectAllPredictions   = "select pid,inumber,mid,vote_team,vote_mom,coinused from prediction"
 	qInsertPredictionResult = "insert into predictionresult(pid,vote_team_correct,vote_mom_correct,points) values($1,$2,$3,$4)"
+	qSelectPredForMatches   = "select concat(u.firstname,' ',u.lastname) as name,p.vote_team,p.vote_mom,p.mid from prediction p,ipluser u where p.inumber=u.inumber"
 )
 
 var (
@@ -34,6 +35,7 @@ var (
 	errPlayerInvalid      = fmt.Errorf("player not playing in match")
 	errCannotUseCoin      = fmt.Errorf("cannot use coin in match")
 	errCoinQuotaOver      = fmt.Errorf("all coins used up")
+	errNoVote             = fmt.Errorf("vote for team or mom")
 )
 
 func (p PredictionDAO) GetAllPredictions() ([]*models.PredictionsModel, error) {
@@ -103,6 +105,35 @@ func (p PredictionDAO) GetPredictionById(pid int) (*models.PredictionsModel, err
 	return &info, nil
 }
 
+func (p PredictionDAO) GetPredictionsForMatches() (*models.Predictions, error) {
+	log.Println("PredictionDAO: GetPredictionsForMatches")
+	var voteTeam, voteMom sql.NullInt64
+
+	res, err := db.DB.Query(qSelectPredForMatches)
+	if err != nil {
+		log.Println("PredictionDAO: GetPredictionsForMatch error querying preds", err)
+		return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+	}
+	defer res.Close()
+
+	preds := []*models.PredictionStatModel{}
+	for res.Next() {
+		info := models.PredictionStatModel{}
+		err := res.Scan(&info.Name, &voteTeam, &voteMom, &info.MatchId)
+		if err != nil {
+			if err == sql.ErrNoRows {
+				return nil, &errors.DaoError{http.StatusNotFound, err, errPredictionNotFound}
+			}
+			return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
+		}
+		info.TeamVote = int(voteTeam.Int64)
+		info.MoMVote = int(voteMom.Int64)
+
+		preds = append(preds, &info)
+	}
+	return &models.Predictions{preds}, nil
+}
+
 func (p PredictionDAO) UpdatePredictionById(pid int, info *models.PredictionsModel) error {
 	log.Println("PredictionDAO: UpdatePredictionById", pid, info)
 	var suffixes []string
@@ -165,6 +196,11 @@ func (p PredictionDAO) CreateNewPrediction(info *models.PredictionsModel) (*mode
 	tVote = new(int)
 	mVote = new(int)
 	coinUsed = new(bool)
+
+	if info.TeamVote == 0 && info.MoMVote == 0 {
+		log.Println("PredictionDAO: CreateNewPrediction empty prediction")
+		return nil, &errors.DaoError{http.StatusInternalServerError, errNoVote, errNoVote}
+	}
 
 	if info.TeamVote != 0 {
 		if err := p.checkTeamValidity(info.TeamVote, info.MatchId); err != nil {
