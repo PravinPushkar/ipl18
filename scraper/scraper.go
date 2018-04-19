@@ -38,7 +38,7 @@ func Start(kill chan bool) {
 		}
 	}()
 
-	timer := time.NewTimer(time.Hour)
+	timer := time.NewTicker(time.Hour)
 	upd8 := Updater{
 		PlayerDao: dao.PlayerDAO{},
 		TDao:      dao.TeamDAO{},
@@ -55,47 +55,41 @@ func Start(kill chan bool) {
 			log.Println("scraper: time", timeNow)
 			if timeNow.Hour() == 3 {
 				log.Println("scraper: running")
-				urls := []string{}
-				getDocument(apiUrl).Find("div #results a").Each(func(i int, s *goquery.Selection) {
-					url := s.AttrOr("href", "/")
-					log.Println("scraper: found result url:", url)
-					urls = append(urls, url)
-				})
-
-				for _, url := range urls {
-					getDocument(baseUrl + url).Find("div .gp__cricket__gameHeader").Each(func(i int, s *goquery.Selection) {
-						if i == 0 {
-							no := getMatchMetaData(s)
-							matches[no] = &models.ScraperMatchModel{
-								no,
-								"",
-								"",
-								"To be decided",
-								getMoM(s),
-								false,
-							}
+				getDocument(winnerUrl).Find("div .large-5 b").Each(func(i int, s *goquery.Selection) {
+					winner, isAbandoned := getWinnerInfo(s.Text())
+					if isAbandoned {
+						matches[i+1] = &models.ScraperMatchModel{
+							MatchNo:   i + 1,
+							Abandoned: true,
 						}
-					})
-				}
-
-				index := 0
-				failed := false
-				getDocument(winnerUrl).Find("b").Each(func(i int, s *goquery.Selection) {
-					if (i & 1) == 1 {
-						index = index%len(matches) + 1
-						winner, isAbandoned := getWinnerInfo(s.Text())
-						if isAbandoned {
-							log.Println("scraper: match abandoned")
-							matches[index].Abandoned = true
-						} else if winner != "" {
-							matches[index].Winner = strings.Trim(winner, " ")
-						} else {
-							log.Println("scraper: failed to determine result")
-							failed = true
+					} else {
+						if winner != "" {
+							matches[i+1] = &models.ScraperMatchModel{
+								MatchNo:   i + 1,
+								Winner:    winner,
+								Abandoned: false,
+							}
 						}
 					}
 				})
-				continue
+
+				matchCount := len(matches)
+				getDocument(winnerUrl).Find("span .potMatchLink").Each(func(i int, s *goquery.Selection) {
+					if i+1 <= matchCount && !matches[i+1].Abandoned {
+						for _, el := range s.Get(0).Attr {
+							if el.Key == "href" {
+								getDocument(el.Val).Find("div .gp__cricket__gameHeader").Each(func(im int, s *goquery.Selection) {
+									if im == 0 {
+										no := getMatchMetaData(s)
+										if _, ok := matches[no]; ok {
+											matches[no].MoM = getMoM(s)
+										}
+									}
+								})
+							}
+						}
+					}
+				})
 
 				for k, v := range matches {
 					log.Println("scraper:", k, v)
