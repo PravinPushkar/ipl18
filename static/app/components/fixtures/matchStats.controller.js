@@ -7,12 +7,13 @@ var app = angular.module('ipl');
  * 
  * Controller for fixtures page.
  */
-app.controller('matchStats', ['$http', '$window', '$mdDialog', 'urlService', 'matchId', 'teamList', 'playerList', 'userStats', function ($http, $window, $mdDialog, urlService, matchId, teamList, playerList, userStats) {
+app.controller('matchStats', ['$http', '$window', '$mdDialog', 'urlService', 'matchId', 'teamList', 'playerList', 'playerMap','teamMap', function ($http, $window, $mdDialog, urlService, matchId, teamList, playerList,playerMap,teamMap) {
     var stats = this;
     var token = $window.localStorage.getItem('token');
-    stats.userStats = userStats;
+    console.log(playerMap);
+    console.log(teamMap);
     stats.init = init;
-
+    stats.preds=[];
     stats.hide = function () {
         $mdDialog.hide();
     };
@@ -35,6 +36,28 @@ app.controller('matchStats', ['$http', '$window', '$mdDialog', 'urlService', 'ma
                 'Authorization': token
             }
         };
+        var statParams = {
+            url: `${urlService.fixtures}/${matchId}/userStats`,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Authorization': token
+            }
+        }
+        $http(statParams)
+            .then(function (res) {
+                res.data.predictions.forEach(function (pred) {
+                    pred.momN = pred.momVote ? playerMap[pred.momVote].name : "-";
+                    pred.teamN = pred.teamVote ? teamMap[pred.teamVote].shortName : "-";
+                    stats.preds.push(pred);
+                });
+            }, function (err) {
+                if (err.data.code === 403 && err.data.message === 'token not valid') {
+                    utilsService.logout('Session expired, please re-login', true);
+                    return;
+                }
+                console.log(err)
+            });
         $http(params)
             .then(function (res) {
                 stats.teamStats = res.data.teamStats;

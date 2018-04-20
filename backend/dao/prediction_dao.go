@@ -26,7 +26,7 @@ const (
 	qCoinValidMatch         = "select 1,count(coinused) from prediction where coinused=true and inumber=$1 group by inumber union select 2,mid from match where star=true and mid=$2"
 	qSelectAllPredictions   = "select pid,inumber,mid,vote_team,vote_mom,coinused from prediction"
 	qInsertPredictionResult = "insert into predictionresult(pid,vote_team_correct,vote_mom_correct,points) values($1,$2,$3,$4)"
-	qSelectPredForMatches   = "select concat(u.firstname,' ',u.lastname) as name,p.vote_team,p.vote_mom,p.mid from prediction p,ipluser u where p.inumber=u.inumber"
+	qSelectPredForMatches   = "select concat(u.firstname,' ',u.lastname) as name,p.vote_team,p.vote_mom,p.mid from prediction p,ipluser u where p.inumber=u.inumber and p.mid=$1"
 )
 
 var (
@@ -105,11 +105,11 @@ func (p PredictionDAO) GetPredictionById(pid int) (*models.PredictionsModel, err
 	return &info, nil
 }
 
-func (p PredictionDAO) GetPredictionsForMatches() (*models.Predictions, error) {
-	log.Println("PredictionDAO: GetPredictionsForMatches")
+func (p PredictionDAO) GetPredictionsForMatch(mid int) (*models.Predictions, error) {
+	log.Println("PredictionDAO: GetPredictionsForMatch", mid)
 	var voteTeam, voteMom sql.NullInt64
 
-	res, err := db.DB.Query(qSelectPredForMatches)
+	res, err := db.DB.Query(qSelectPredForMatches, mid)
 	if err != nil {
 		log.Println("PredictionDAO: GetPredictionsForMatch error querying preds", err)
 		return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}

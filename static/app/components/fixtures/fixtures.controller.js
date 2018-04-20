@@ -28,6 +28,19 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     vm.showTeamVote = showTeamVote;
     vm.decideClassName = decideClassName;
     vm.showMatchStats = showMatchStats;
+    vm.selectedTeam = 0;
+
+    vm.updatedTeamVote = updatedTeamVote;
+    vm.updatedPlayerVote = updatedPlayerVote;
+    vm.updatedCoin = updatedCoin;
+
+    vm.DisbleCard=DisbleCard;
+
+    function DisbleCard(lockPred){
+        if(lockPred){
+            return "lock-pred";
+        }
+    }
 
     function decideClassName(predictions) {
         if (predictions && predictions.teamVote) {
@@ -68,9 +81,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     }
 
     // Toggle a flag and select the team chosen to predict
-    function toggleFlag(id, teamId1, teamId2,elm) {
-        $('.md-fab-fixture,.md-primary').removeClass('highlightTeam');
-        $(elm.currentTarget).addClass('highlightTeam');
+    function toggleFlag(id, teamId1, teamId2, elm) {
         vm.flag.id = {};
         vm.flag.id.teamId1 = true;
         vm.flag.id.teamId2 = false;
@@ -123,20 +134,11 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                 'Authorization': token
             }
         };
-        var statParams = {
-            url: urlService.userStats,
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json',
-                'Authorization': token
-            } 
-        }
         vm.fixturesList = [];
         vm.teamsList = [];
         vm.playersList = [];
-        vm.predMap = {};
-        var playerMap = {};
-        var teamMap = {};
+        vm.playerMap = {};
+        vm.teamMap = {};
 
         var teamPromise = $http(teamParams);
         var playerPromise = $http(playersParams);
@@ -150,7 +152,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                         alias: team.shortName,
                         teamPic: team.picLocation
                     });
-                    teamMap[team.id]=team;
+                    vm.teamMap[team.id] = team;
                 });
                 var role;
                 data[1].data.players.forEach(function (player) {
@@ -165,30 +167,8 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                         role: role,
                         teamId: player.teamId
                     });
-                    playerMap[player.id]=player;
+                    vm.playerMap[player.id] = player;
                 });
-
-                $http(statParams)
-                .then(function(res){
-                    res.data.predictions.forEach(function(pred){
-                        pred.momN=pred.momVote?playerMap[pred.momVote].name:"-";
-                        pred.teamN=pred.teamVote?teamMap[pred.teamVote].shortName:"-";
-                        if (!vm.predMap[pred.mid]){
-                            vm.predMap[pred.mid]=[];
-                        }
-                        vm.predMap[pred.mid].push(pred);
-                    });
-                },function(err){
-                    if (err.data.code === 403 && err.data.message === 'token not valid') {
-                        utilsService.logout('Session expired, please re-login', true);
-                        return;
-                    }
-                    console.log(err)
-                });
-
-                console.log(vm.predMap);
-
-
 
                 $http(fixturesParams)
                     .then(function (res) {
@@ -198,6 +178,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                                 teamId1: fixture.teamId1,
                                 teamId2: fixture.teamId2,
                                 venue: fixture.venue,
+                                date: fixture.date,
                                 timestamp: moment(fixture.date).format('LLLL'),
                                 status: fixture.status,
                                 matchId: fixture.id,
@@ -216,6 +197,23 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                         vm.fixturesList.sort(function (a, b) {
                             return a.matchId - b.matchId
                         })
+                        vm.fixtureGroup = {};
+                        vm.fixtureModel = [];
+                        for (var fixture of vm.fixturesList) {
+                            var dt = moment(fixture.date).format('dddd LL');
+                            if (!vm.fixtureGroup[dt]) {
+                                vm.fixtureGroup[dt] = [];
+                            }
+                            vm.fixtureGroup[dt].push(fixture);
+                        }
+
+                        for (var k in vm.fixtureGroup) {
+                            var obj = {};
+                            obj[k] = vm.fixtureGroup[k];
+                            vm.fixtureModel.push(obj);
+                        }
+
+                        vm.dateKey = Object.keys(vm.fixtureGroup);
 
                     }, function (err) {
                         vm.isLoaded = true;
@@ -245,17 +243,68 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     }
 
     // Function to send prediction data to the backend
-    function makePreditction(fixture) {
-        var matchId = fixture.matchId;
-        var teamVote = typeof (vm.selectedTeam[matchId]) === "undefined" ? null : vm.selectedTeam[matchId];
-        var momVote = typeof (vm.mom[matchId]) === "undefined" ? null : vm.mom[matchId];
+    function updatedTeamVote(teamId, fixture) {
         var data = {
-            mid: matchId,
+            teamVote: parseInt(teamId),
             inumber: iNumber,
-            teamVote: teamVote,
-            momVote: momVote,
-            coinUsed: vm.coinFlag[matchId]
-        };
+            mid: fixture.matchId,
+        }
+
+        if (fixture.predictions && fixture.predictions.predId) {
+            if (teamId === fixture.predictions.teamVote) {
+                return;
+            }
+            data.predId = fixture.predictions.predId;
+        }
+        vm.makePreditction(data, fixture);
+    }
+
+    function updatedPlayerVote(playerId, fixture) {
+        var data = {
+            momVote: playerId,
+            inumber: iNumber,
+            mid: fixture.matchId,
+        }
+
+        if (fixture.predictions && fixture.predictions.predId) {
+            if (playerId === fixture.predictions.momVote) {
+                return;
+            }
+            data.predId = fixture.predictions.predId;
+        }
+        vm.makePreditction(data, fixture);
+    }
+
+    function updatedCoin(isUsed, fixture) {
+        var data = {
+            coinUsed: isUsed,
+            inumber: iNumber,
+            mid: fixture.matchId,
+        }
+
+        if (fixture.predictions && fixture.predictions.predId) {
+            if (!isUsed) {
+                if (fixture.predictions.coinUsed) {
+                    return;
+                }
+                if (fixture.predictions.coinUsed === false) {
+                    return;
+                }
+            }
+            if (isUsed) {
+                if (fixture.predictions.coinUsed && fixture.predictions.coinUsed === true) {
+                    return;
+                }
+            }
+            data.predId = fixture.predictions.predId;
+        }
+
+        vm.makePreditction(data,fixture);
+    }
+
+
+
+    function makePreditction(data, fixture) {
         var method, url;
         if (!fixture.predictions) {
             method = "POST";
@@ -279,6 +328,15 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                     fixture.predictions = {};
                     fixture.predictions.predId = res.data.id;
                 }
+                if (data.teamVote) {
+                    fixture.predictions.teamVote = data.teamVote;
+                }
+                if (data.momVote) {
+                    fixture.predictions.momVote = data.momVote;
+                }
+                if (data.coinUsed) {
+                    fixture.predictions.coinUsed = data.coinUsed;
+                }
                 utilsService.showToast({
                     text: 'Successfully submitted prediction',
                     hideDelay: 1500,
@@ -290,8 +348,8 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                     return;
                 }
                 utilsService.showToast({
-                    text: 'Error in submitting prediction, try again later',
-                    hideDelay: 0,
+                    text: 'Error: ' + err.data.message,//'Error in submitting prediction, try again later',
+                    hideDelay: 5000,
                     isError: true
                 });
             });
@@ -312,8 +370,6 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     }
 
     function fixturesDialogController($scope, fixture) {
-        //var fdc = this;
-        // fdc.playersList = vm.playersList;
         $scope.fixture = fixture;
 
     }
@@ -328,9 +384,10 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                 matchId: id,
                 teamList: vm.teamsList,
                 playerList: vm.playersList,
-                userStats:vm.predMap[id]
+                playerMap:vm.playerMap,
+                teamMap:vm.teamMap
             },
-            clickOutesideToClose: true
+            clickOutsideToClose: true
         }).then(function (answer) {
             vm.status = 'You said the information was "' + answer + '".';
         }, function () {

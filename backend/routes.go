@@ -74,10 +74,10 @@ func setupApi(r *mux.Router) {
 	r.Handle("/bonus", handler.BonusQuestionGetHandler{bDao}).Methods("GET")
 	r.Handle("/bonus", handler.BonusPredictionPostHandler{bDao}).Methods("POST")
 
-	r.Handle("/matches", handler.MatchesGetHandler{mDao}).Methods("GET")
-	r.Handle("/matches/userStats", handler.PredictionHandler{pDao}).Methods("GET")
-	r.Handle("/matches/{id}", handler.MatchesGetHandler{mDao}).Methods("GET")
+	r.Handle("/matches/{id}/userStats", handler.PredictionHandler{pDao}).Methods("GET")
 	r.Handle("/matches/{id}/stats", handler.MatchesGetHandler{mDao}).Methods("GET")
+	r.Handle("/matches/{id}", handler.MatchesGetHandler{mDao}).Methods("GET")
+	r.Handle("/matches", handler.MatchesGetHandler{mDao}).Methods("GET")
 
 	r.Handle("/predictions", handler.PredictionHandler{pDao}).Methods("POST")
 	r.Handle("/predictions/{id}", handler.PredictionHandler{pDao}).Methods("PUT")

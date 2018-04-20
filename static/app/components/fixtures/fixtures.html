@@ -1,87 +1,45 @@
 <div ng-init="fixtures.init()" ng-cloak layout layout-align="center center">
-    <div ng-show="!fixtures.isLoaded" class="loading-indicator">
-        <md-progress-linear class="loader" md-mode="indeterminate"></md-progress-linear>
-    </div>
-    <md-card layout="column" layout-align="center center" layout-padding layout-margin flex-gt-xs="90" flex-xs="100">
-        <md-card ng-repeat="fixture in fixtures.fixturesList" style="width: 100%;">
-            <md-card-header style="font-weight:bold" class="cursive-font-card-header">{{fixture.timestamp}}</md-card-header>
-            <div>
-                <div hide-xs hide-sm layout>
-                    <div layout="row" layout-align="start center" flex>
-                        <span flex>
-                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2,$event)"
-                                ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId1], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId1], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId1]}"
-                                aria-label="Team {{fixture.team.alias}}">
-                                <div class="team-logo {{fixture.team1.alias}}"></div>
-                            </md-button>
-                        </span>
-
-                        <div layout="column" layout-align="center center" flex=55>
-                            <span class="md-headline card-smaller-font">{{fixture.team1.alias}} vs. {{fixture.team2.alias}}</span>
-                            <span> {{fixture.venue}}</span>
-                            <span class="team-vote" ng-bind="fixtures.showTeamVote(fixture.predictions)" ng-class="fixtures.decideClassName(fixture.predictions)"></span>
-
+    <md-card layout-align="center center" layout-padding layout-margin flex-gt-xs="90" flex-xs="100">
+        <div ng-repeat="(key, value) in fixtures.fixtureGroup" style="width: 100%;">
+            <h3>{{key}}</h3>
+            <md-card ng-repeat="fixture in value" style="width: 100%;border-left:5px solid purple;padding:5px;">
+                <div layout="row" layout-xs="column" layout-sm="cloumn" layout-align="start center">
+                    <div flex>
+                        <div>{{fixture.timestamp}}</div>
+                        <div>{{fixture.venue}}</div>
+                        <div ng-show="{{fixture.lockPred}}">Winner: <b>{{fixtures.teamMap[fixture.result].shortName}}</b></div>
+                        <div ng-show="{{fixture.lockPred}}">MoM: <b>{{fixtures.playerMap[fixture.manOfMatch].name}}</b></div>
+                    </div>
+                    <div flex>
+                        <div layout layout-align="center center">
+                            <p>{{fixture.team1.alias}}</p>
+                            <span class="team-logo {{fixture.team1.alias}}" style="display: inline-block"></span>
+                            <span>v</span>
+                            <span class="team-logo {{fixture.team2.alias}}" style="display: inline-block"></span>
+                            <span>{{fixture.team2.alias}}</span>
                         </div>
-                        <span flex>
-                            <md-button class="md-fab-fixture" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1,$event)"
-                                ng-class="{'md-whiteframe-1dp':fixtures.flag[fixture.matchId][fixture.teamId2], 'md-whiteframe-9dp':!fixtures.flag[fixture.matchId][fixture.teamId2], 'pressed-effect': fixtures.flag[fixture.matchId][fixture.teamId2]}"
-                                aria-label="Team {{fixture.team.alias}}">
-                                <div class="team-logo {{fixture.team2.alias}}"></div>
-                            </md-button>
-                        </span>
                     </div>
-                    <md-divider layout="column"></md-divider>
-                    <div layout="column" layout-align="center center" layout-margin flex="30">
-                        <span class="md-headline card-smaller-font">Man of the Match</span>
-                        <md-input-container flex "50">
-                            <label>Select Player</label>
-                            <md-select name="mom" ng-model="fixtures.mom[fixture.matchId]" md-on-close="fixtures.clearSearchItem()" data-md-container-class="selectHeaderClass"
-                                required>
-                                <md-select-header class="select-header">
-                                    <input ng-model="fixtures.searchItem" type="search" placeholder="Search for a player" class="select-header-searchbox md-text"
-                                        ng-keydown="$event.stopPropagation()">
-                                </md-select-header>
-                                <md-option ng-repeat="player in fixtures.playersList | filter:fixtures.searchItem" ng-if="fixtures.playerInTeam(player.teamId, fixture.teamId1, fixture.teamId2)"
-                                    ng-value="player.playerId" ng-selected="fixtures.checkMOMSelection(player,fixture.predictions)">{{player.name}}</md-option>
-                            </md-select>
-                        </md-input-container>
+                    <div flex ng-class="fixtures.DisbleCard(fixture.lockPred)" style="width:100%">
+                        <div>
+                            <p>
+                                Team:
+                                <span class="" style="font-weight: bold">{{fixtures.teamMap[fixture.predictions.teamVote].name}}</span>
+                            </p>
+                            <p>
+                                MoM:
+                                <span class="" style="font-weight: bold">{{fixtures.playerMap[fixture.predictions.momVote].name}}</span>
+                            </p>
 
-                    </div>
-                    <md-divider layout="column"></md-divider>
-                    <div flex="15" layout layout-align="center center">
-                        <md-button class="md-fab" ng-click="fixtures.useCoin(fixture.matchId)" ng-if="fixture.star" aria-label="Use Coin">
-                            <md-tooltip md-direction="top" md-autohide>Coin</md-tooltip>
-                            <md-icon md-font-set="material-icons">{{fixtures.coinIcon[fixture.matchId]}}</md-icon>
-                        </md-button>
-                        <md-button class="md-fab" ng-click="fixtures.makePreditction(fixture)" aria-label="Save Prediction">
-                            <md-tooltip md-direction="top" md-autohide>Save Prediction</md-tooltip>
-                            <md-icon md-font-set="material-icons">save</md-icon>
-                        </md-button>
-                        <md-button class="md-fab" ng-click="fixtures.showMatchStats($event,fixture.matchId)" aria-label="Get Votes">
-                            <md-tooltip md-direction="top" md-autohide>Get Votes</md-tooltip>
-                            <md-icon md-font-set="material-icons">person_pin</md-icon>
-                        </md-button>
-                    </div>
-                </div>
-
-                <!-- Small and XS layout -->
-                <div hide-gt-sm layout="row" layout-align="space-between center">
-                    <div layout="column" layout-align="center center">
-                        <span>{{fixture.team1.alias}} vs. {{fixture.team2.alias}}</span>
-                        <span class="md-caption"> {{fixture.venue}}</span>
-                        <span class="team-vote" ng-bind="fixtures.showTeamVote(fixture.predictions)" ng-class="fixtures.decideClassName(fixture.predictions)"></span>
-                        <div layout="row">
-                            <div flex>
-                                <md-button class="md-raised md-primary" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId1, fixture.teamId2,$event)">Vote {{fixture.team1.alias}}</md-button>
-                            </div>
-                            <div flex>
-                                <md-button class="md-raised md-primary" ng-click="fixtures.toggleFlag(fixture.matchId, fixture.teamId2, fixture.teamId1,$event)">Vote {{fixture.team2.alias}}</md-button>
+                            <div style="margin-bottom: 5px;">
+                                <md-radio-group ng-model="data.group" ng-init="data.group=fixture.predictions.teamVote" layout="row" ng-change="fixtures.updatedTeamVote(data.group,fixture)">
+                                    <md-radio-button value="{{fixture.teamId1}}">{{fixture.team1.alias}}</md-radio-button>
+                                    <md-radio-button value="{{fixture.teamId2}}"> {{fixture.team2.alias}} </md-radio-button>
+                                </md-radio-group>
                             </div>
                         </div>
-
-                        <div layout="column" layout-align="center center" layout-margin flex="30">
-                            <span class="md-headline card-smaller-font">Man of the Match</span>
-                            <md-input-container flex "50">
+                        <!--for mom-->
+                        <div layout="column">
+                            <md-input-container flex>
                                 <label>Select Player</label>
                                 <md-select name="mom" ng-model="fixtures.mom[fixture.matchId]" md-on-close="fixtures.clearSearchItem()" data-md-container-class="selectHeaderClass"
                                     required>
@@ -90,28 +48,28 @@
                                             ng-keydown="$event.stopPropagation()">
                                     </md-select-header>
                                     <md-option ng-repeat="player in fixtures.playersList | filter:fixtures.searchItem" ng-if="fixtures.playerInTeam(player.teamId, fixture.teamId1, fixture.teamId2)"
-                                        ng-value="player.playerId" ng-selected="fixtures.checkMOMSelection(player,fixture.predictions)">{{player.name}}</md-option>
+                                        ng-value="player.playerId" ng-selected="fixtures.checkMOMSelection(player,fixture.predictions)"
+                                        ng-model="player.playerId" ng-click="fixtures.updatedPlayerVote(player.playerId,fixture)">{{player.name}}</md-option>
                                 </md-select>
                             </md-input-container>
-                        </div>
-                        <div flex="15" layout-align="center center">
-                            <md-button class="md-fab" ng-click="fixtures.useCoin(fixture.matchId)" ng-if="fixture.star" aria-label="Use Coin">
-                                <md-tooltip md-direction="top" md-autohide>Coin</md-tooltip>
-                                <md-icon md-font-set="material-icons">{{fixtures.coinIcon[fixture.matchId]}}</md-icon>
-                            </md-button>
-                            <md-button class="md-fab" ng-click="fixtures.makePreditction(fixture)" aria-label="Save Prediction">
-                                <md-tooltip md-direction="top" md-autohide>Save Prediction</md-tooltip>
-                                <md-icon md-font-set="material-icons">save</md-icon>
-                            </md-button>
-                            <md-button class="md-fab" ng-click="fixtures.showMatchStats($event,fixture.matchId)" aria-label="Get Votes">
-                                <md-tooltip md-direction="top" md-autohide>Get Votes</md-tooltip>
-                                <md-icon md-font-set="material-icons">person_pin</md-icon>
-                            </md-button>
+                            <!-- <span ng-if="fixture.star">Use Coin:</span> -->
+                            <md-checkbox ng-change="fixtures.updatedCoin(data.coinUsed,fixture)" ng-if="fixture.star" ng-model="data.coinUsed" aria-label="Coin"
+                                ng-true-value=true ng-false-value=false>Use Coin
+                            </md-checkbox>
                         </div>
                     </div>
+                    <div flex layout layout-align="end center">
+                        <md-button class="md-fab" ng-click="fixtures.showMatchStats($event,fixture.matchId)" aria-label="Get Votes">
+                            <md-tooltip md-direction="top" md-autohide>Get Stats</md-tooltip>
+                            <md-icon md-font-set="material-icons">graphic_eq</md-icon>
+                        </md-button>
+                    </div>
                 </div>
-            </div>
+            </md-card>
+        </div>
+
+    </md-card>
 </div>
-</md-card>
-</md-card>
+<div ng-show="!fixtures.isLoaded" class="loading-indicator">
+    <md-progress-linear class="loader" md-mode="indeterminate"></md-progress-linear>
 </div>
