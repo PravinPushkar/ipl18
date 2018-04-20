@@ -1,44 +1,20 @@
-<div class="leaderboard-div" ng-cloak>
-    <!-- Tabs card -->
-    <md-card class="table-card-background" md-whiteframe="15">
-        <md-tabs md-selected="leaderboard.selectedTabIndex" md-no-ink md-no-ink-bar>
-            <md-tab id="tab1">
-                <md-tab-label>All Time</md-tab-label>
-            </md-tab>
-            <md-tab id="tab2" ng-disabled="false">
-                <md-tab-label>Last 24 hrs</md-tab-label>
-            </md-tab>
-        </md-tabs>
-    </md-card>
-    <!-- Tabs card end -->
-
-    <!-- Leaderboard card -->
-    <md-card class="table-card-foreground" md-whiteframe="15">
-        <div ng-if="leaderboard.selectedTabIndex === 0">
-            <table class="leaderboard">
-                <tbody>
-                    <tr ng-repeat="user in leaderboard.leaderboardData | orderBy: '-points'">
-                        <td>
-                            <div layout="row">
-                                <md-button class="md-fab md-no-ink" aria-label="User {{$index + 1}}" ng-click="$mdMenu.open($event)" style="background-image: url('{{user.profilePic}}'); background-size: cover; background-position: center center;" disabled></md-button>
-                                <div layout="column" layout-align="start start" flex>
-                                    <div layout="row" layout-align="start start" style="width: 100%;">
-                                        <p>{{$index + 1}}. {{user.alias}}</p>
-                                        <div layout="row" layout-align="end start" flex>
-                                            <p>{{user.points}}</p>
-                                        </div>
-                                    </div>
-                                    <div class="leaderboard-progress-bar" ng-style="{'width': '{{user.points/leaderboard.highestPoints * 100}}%'}"></div>
-                                </div>
-                            </div>
-                            <div class="faded_line"></div>
-                        </td>
-                    </tr>
-                    <md-divider></md-divider>
-                </tbody>
-            </table>
+<div>
+    <md-card style='margin:0 auto;padding:10px;max-width: 500px;'>
+        <!-- <div ng-if="leaderboard.selectedTabIndex === 0"> -->
+        <div ng-repeat="user in leaderboard.leaderboardData | orderBy: '-points'">
+            <div layout="row">
+                <md-button class="md-fab md-no-ink" aria-label="User {{$index + 1}}" ng-click="$mdMenu.open($event)" style="background-image: url('{{user.profilePic}}'); background-size: cover; background-position: center center;"
+                    disabled></md-button>
+                <div layout="column" layout-align="center start" flex>
+                    <div layout="row" layout-align="center start" style="width: 100%;">
+                        <p>{{$index + 1}}. {{user.alias}}</p>
+                        <div layout="row" layout-align="end start" flex>
+                            <p>{{user.points}}</p>
+                        </div>
+                    </div>
+                    <div class="leaderboard-progress-bar" ng-style="{'width': '{{user.points/leaderboard.highestPoints * 100}}%'}"></div>
+                </div>
+            </div>
         </div>
     </md-card>
-    <!-- Leaderboard card end -->
-
 </div>

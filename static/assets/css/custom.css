@@ -214,7 +214,9 @@ table.players td {
 .team-logo {
     background-image: url("../img/teams/logo-sprite-100.png");
     background-size: 400px 400px;
-    margin: 0 auto;
+    margin: 14px;
+    margin-bottom: 6px;
+    margin-top: 6px;
     background-repeat: no-repeat;
     width: 100px;
     height: 100px;
@@ -501,6 +503,11 @@ table.players td {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
-.highlightTeam {
-    background-color: green !important;
+.lock-pred{
+    pointer-events: none;
+    opacity: 0.4;
+    background-color: lightgray;
+}
+md-toast{
+    position: fixed !important;
 }

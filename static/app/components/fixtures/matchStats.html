@@ -2,28 +2,31 @@
   <form>
     <md-toolbar>
       <div class="md-toolbar-tools">
-        <h2>Total Votes</h2>
+        <h2>Votes</h2>
         <span flex></span>
       </div>
     </md-toolbar>
     <md-dialog-content style="max-width:800px;max-height:810px; ">
       <md-tabs md-dynamic-height md-border-bottom>
-        <md-tab label="Team Votes">
+        <md-tab label="User Votes">
           <md-content class="md-padding" style="max-height: 500px;overflow-y: scroll;">
-            <div layout="row" layout-xs="column" ng-repeat="team in mst.teamStats">
-              <div flex style="text-align:center">{{ team.teamName }}</div>
-              <div flex style="text-align:center">{{team.votes}}</div>
-            </div>
-            <hr/>
             <div layout="row" style="font-weight: bold">
-                <div flex style="text-align:center">Name</div>
-                <div flex style="text-align:center">Team</div>
-                <div flex style="text-align:center">MOM</div>
-              </div>
-            <div layout="row" ng-repeat="ustats in mst.userStats | orderBy:'name'">
+              <div flex style="text-align:center">Name</div>
+              <div flex style="text-align:center">Team</div>
+              <div flex style="text-align:center">MOM</div>
+            </div>
+            <div layout="row" ng-repeat="ustats in mst.preds | orderBy:'name'">
               <div flex style="text-align:center">{{ustats.name}}</div>
               <div flex style="text-align:center">{{ ustats.teamN }}</div>
               <div flex style="text-align:center">{{ustats.momN}}</div>
+            </div>
+          </md-content>
+        </md-tab>
+        <md-tab label="Team votes">
+          <md-content class="md-padding">
+            <div layout="row" layout-xs="column" ng-repeat="team in mst.teamStats">
+              <div flex style="text-align:center">{{ team.teamName }}</div>
+              <div flex style="text-align:center">{{team.votes}}</div>
             </div>
           </md-content>
         </md-tab>
