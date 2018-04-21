@@ -22,14 +22,7 @@ app.controller('teamsController', ['$http', '$window', 'urlService', 'utilsServi
         vm.teamsList = [];
         $http(params)
             .then(function (res) {
-                res.data.teams.forEach(function (team) {
-                    vm.teamsList.push({
-                        id: team.id,
-                        name: team.name,
-                        alias: team.shortName,
-                        teamPic: team.picLocation
-                    });
-                });
+                vm.teamsList = res.data.teams;
             }, function (err) {
                 if (err.data.code === 403 && err.data.message === 'token not valid') {
                     utilsService.logout('Session expired, please re-login', true);

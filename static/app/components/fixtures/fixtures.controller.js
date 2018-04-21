@@ -11,53 +11,24 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
     var vm = this;
     var token;
     var iNumber;
-
     vm.init = init;
-    vm.flag = {};
-    vm.coinIcon = [];
-    vm.coinFlag = [];
-    vm.selectedTeam = {};
     vm.searchItem = '';
-    vm.toggleFlag = toggleFlag;
-    vm.useCoin = useCoin;
     vm.makePreditction = makePreditction;
     vm.clearSearchItem = clearSearchItem;
     vm.playerInTeam = playerInTeam;
-    vm.openPredictionDialog = openPredictionDialog;
     vm.checkMOMSelection = checkMOMSelection;
-    vm.showTeamVote = showTeamVote;
-    vm.decideClassName = decideClassName;
     vm.showMatchStats = showMatchStats;
-    vm.selectedTeam = 0;
 
     vm.updatedTeamVote = updatedTeamVote;
     vm.updatedPlayerVote = updatedPlayerVote;
     vm.updatedCoin = updatedCoin;
 
-    vm.DisbleCard=DisbleCard;
+    vm.DisbleCard = DisbleCard;
 
-    function DisbleCard(lockPred){
-        if(lockPred){
+    function DisbleCard(lockPred) {
+        if (lockPred) {
             return "lock-pred";
         }
-    }
-
-    function decideClassName(predictions) {
-        if (predictions && predictions.teamVote) {
-            return "voted";
-        }
-        return "not-voted";
-    }
-
-    function showTeamVote(predictions) {
-        if (predictions && predictions.teamVote) {
-            var teamObj = vm.teamsList.find(function (team) {
-                return team.id === predictions.teamVote;
-            });
-            return "You voted for : " + teamObj.name;
-        }
-        return "You have not voted for any team yet";
-
     }
 
     // Finds if player is part of the playing teams
@@ -72,7 +43,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
 
     function checkMOMSelection(player, predictions) {
         if (predictions)
-            return player.playerId === predictions.momVote;
+            return player.id === predictions.momVote;
     }
 
     // Clears the search bar for select
@@ -80,29 +51,12 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         vm.searchItem = '';
     }
 
-    // Toggle a flag and select the team chosen to predict
-    function toggleFlag(id, teamId1, teamId2, elm) {
-        vm.flag.id = {};
-        vm.flag.id.teamId1 = true;
-        vm.flag.id.teamId2 = false;
-        vm.selectedTeam[id] = teamId1;
-    }
-
-    // Check if user uses coin
-    function useCoin(id) {
-        vm.coinFlag[id] = !vm.coinFlag[id];
-        if (vm.coinFlag[id] === false) {
-            vm.coinIcon[id] = 'attach_money';
-        } else {
-            vm.coinIcon[id] = 'money_off';
-        }
-    }
-
     // Function to get team object from team id
     function getTeamFromId(teamId) {
-        return vm.teamsList.find(function (team) {
-            return team.id === teamId;
-        });
+        // return vm.teamsList.find(function (team) {
+        //     return team.id === teamId;
+        // });
+        return vm.teamMap[teamId];
     }
 
     // Init function for main fixtures view
@@ -121,6 +75,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         var teamParams = {
             url: urlService.teams,
             method: 'GET',
+            cache: true,
             headers: {
                 'Accept': 'application/json',
                 'Authorization': token
@@ -129,6 +84,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         var playersParams = {
             url: urlService.players,
             method: 'GET',
+            cache: true,
             headers: {
                 'Accept': 'application/json',
                 'Authorization': token
@@ -145,60 +101,52 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
         // Resolve both promises
         $q.all([teamPromise, playerPromise])
             .then(function (data) {
-                data[0].data.teams.forEach(function (team) {
-                    vm.teamsList.push({
-                        id: team.id,
-                        name: team.name,
-                        alias: team.shortName,
-                        teamPic: team.picLocation
-                    });
+                vm.teamList = data[0].data.teams;
+                vm.teamList.forEach(function (team) {
                     vm.teamMap[team.id] = team;
                 });
                 var role;
-                data[1].data.players.forEach(function (player) {
+
+                vm.playersList = data[1].data.players;
+                vm.playersList.forEach(function (player) {
                     if (player.role === 'allrounder') {
-                        role = 'All-Rounder';
-                    } else {
-                        role = utilsService.capitalizeFirstLetter(player.role);
+                        player.role = 'All-Rounder';
                     }
-                    vm.playersList.push({
-                        playerId: player.id,
-                        name: player.name,
-                        role: role,
-                        teamId: player.teamId
-                    });
+                    player.role = utilsService.capitalizeFirstLetter(player.role);
+
                     vm.playerMap[player.id] = player;
                 });
 
                 $http(fixturesParams)
                     .then(function (res) {
-                        res.data.matches.forEach(function (fixture) {
+                        vm.fixturesList = res.data.matches;
+                        vm.fixturesList.forEach(function (fixture) {
                             vm.isLoaded = true;
-                            vm.fixturesList.push({
-                                teamId1: fixture.teamId1,
-                                teamId2: fixture.teamId2,
-                                venue: fixture.venue,
-                                date: fixture.date,
-                                timestamp: moment(fixture.date).format('LLLL'),
-                                status: fixture.status,
-                                matchId: fixture.id,
-                                result: fixture.winner,
-                                manOfMatch: fixture.mom,
-                                star: fixture.star,
-                                lockPred: fixture.lock,
-                                team1: getTeamFromId(fixture.teamId1),
-                                team2: getTeamFromId(fixture.teamId2),
-                                predictions: fixture.predictions
-                            });
-                            vm.flag[fixture.mid] = {};
-                            vm.coinIcon[fixture.id] = 'money_off';
-                            vm.coinFlag[fixture.id] = false;
+                            fixture.team1 = getTeamFromId(fixture.teamId1);
+                            fixture.team2 = getTeamFromId(fixture.teamId2);
+                            fixture.timestamp = moment(fixture.date).format('LLLL');
+
+                            // vm.fixturesList.push({
+                            //     teamId1: fixture.teamId1,
+                            //     teamId2: fixture.teamId2,
+                            //     venue: fixture.venue,
+                            //     date: fixture.date,
+                            //     timestamp: moment(fixture.date).format('LLLL'),
+                            //     status: fixture.status,
+                            //     matchId: fixture.id,
+                            //     result: fixture.winner,
+                            //     manOfMatch: fixture.mom,
+                            //     star: fixture.star,
+                            //     lockPred: fixture.lock,
+                            //     team1: getTeamFromId(fixture.teamId1),
+                            //     team2: getTeamFromId(fixture.teamId2),
+                            //     predictions: fixture.predictions
+                            // });
                         });
                         vm.fixturesList.sort(function (a, b) {
-                            return a.matchId - b.matchId
+                            return a.id - b.id
                         })
                         vm.fixtureGroup = {};
-                        vm.fixtureModel = [];
                         for (var fixture of vm.fixturesList) {
                             var dt = moment(fixture.date).format('dddd LL');
                             if (!vm.fixtureGroup[dt]) {
@@ -206,15 +154,6 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                             }
                             vm.fixtureGroup[dt].push(fixture);
                         }
-
-                        for (var k in vm.fixtureGroup) {
-                            var obj = {};
-                            obj[k] = vm.fixtureGroup[k];
-                            vm.fixtureModel.push(obj);
-                        }
-
-                        vm.dateKey = Object.keys(vm.fixtureGroup);
-
                     }, function (err) {
                         vm.isLoaded = true;
                         if (err.data.code === 403 && err.data.message === 'token not valid') {
@@ -299,7 +238,7 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
             data.predId = fixture.predictions.predId;
         }
 
-        vm.makePreditction(data,fixture);
+        vm.makePreditction(data, fixture);
     }
 
 
@@ -338,8 +277,8 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                     fixture.predictions.coinUsed = data.coinUsed;
                 }
                 utilsService.showToast({
-                    text: 'Successfully submitted prediction',
-                    hideDelay: 1500,
+                    text: 'Prediction submitted successfully',
+                    hideDelay: 0,
                     isError: false
                 });
             }, function (err) {
@@ -348,30 +287,11 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                     return;
                 }
                 utilsService.showToast({
-                    text: 'Error: ' + err.data.message,//'Error in submitting prediction, try again later',
-                    hideDelay: 5000,
+                    text: 'Error: ' + err.data.message, //'Error in submitting prediction, try again later',
+                    hideDelay: 0,
                     isError: true
                 });
             });
-    }
-
-    function openPredictionDialog(event, fixture) {
-        $mdDialog.show({
-            templateUrl: '/static/app/components/fixtures/fixturesDialog.html',
-            controller: fixturesDialogController,
-            scope: $scope,
-            preserveScope: true,
-            targetEvent: event,
-            locals: {
-                fixture: fixture
-            },
-            clickOutesideToClose: true
-        });
-    }
-
-    function fixturesDialogController($scope, fixture) {
-        $scope.fixture = fixture;
-
     }
 
     function showMatchStats(event, id) {
@@ -384,15 +304,11 @@ app.controller('fixturesController', ['$http', '$window', '$q', '$mdDialog', 'ut
                 matchId: id,
                 teamList: vm.teamsList,
                 playerList: vm.playersList,
-                playerMap:vm.playerMap,
-                teamMap:vm.teamMap
+                playerMap: vm.playerMap,
+                teamMap: vm.teamMap
             },
             clickOutsideToClose: true
-        }).then(function (answer) {
-            vm.status = 'You said the information was "' + answer + '".';
-        }, function () {
-            vm.status = 'You cancelled the dialog.';
-        });
+        }).then(function () {}, function () {});
     }
 
 }]);

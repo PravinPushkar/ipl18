@@ -56,7 +56,11 @@ app.controller('matchStats', ['$http', '$window', '$mdDialog', 'urlService', 'ma
                     utilsService.logout('Session expired, please re-login', true);
                     return;
                 }
-                console.log(err)
+                utilsService.showToast({
+                    text: 'Error: ' + err.data.message,
+                    hideDelay: 0,
+                    isError: true
+                });
             });
         $http(params)
             .then(function (res) {
@@ -79,6 +83,11 @@ app.controller('matchStats', ['$http', '$window', '$mdDialog', 'urlService', 'ma
                     utilsService.logout('Session expired, please re-login', true);
                     return;
                 }
+                utilsService.showToast({
+                    text: 'Error: ' + err.data.message,
+                    hideDelay: 0,
+                    isError: true
+                });
             });
     }
 

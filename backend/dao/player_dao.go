@@ -53,13 +53,14 @@ func (p PlayerDAO) GetAllPlayers() (*models.PlayersModel, error) {
 	cache.Lock.Lock()
 	if cache.Players == nil {
 		cache.Players = data
-		for _, v := range players {
+		for _, pl := range players {
+			v := pl
 			cache.PlayerIdCache[v.PlayerId] = v
 			cache.PlayerNameCache[v.Name] = v
 			if _, ok := cache.TeamPlayerCache[v.TeamId]; !ok {
 				cache.TeamPlayerCache[v.TeamId] = make(map[int]*models.Player)
-				cache.TeamPlayerCache[v.TeamId][v.PlayerId] = v
 			}
+			cache.TeamPlayerCache[v.TeamId][v.PlayerId] = v
 		}
 	}
 
@@ -91,7 +92,8 @@ func (p PlayerDAO) GetAllPlayersByTeam(tid int) (*models.PlayersModel, error) {
 	if players, ok := cache.TeamPlayerCache[tid]; ok {
 		log.Println("cache hit")
 		allPlayers := []*models.Player{}
-		for _, v := range players {
+		for _, pl := range players {
+			v := pl
 			allPlayers = append(allPlayers, v)
 		}
 		return &models.PlayersModel{allPlayers}, nil
@@ -112,7 +114,6 @@ func (p PlayerDAO) GetAllPlayersByTeam(tid int) (*models.PlayersModel, error) {
 			log.Println("PlayerDAO: GetAllPlayersByTeam error scanning team players", tid)
 			return nil, &errors.DaoError{http.StatusInternalServerError, err, errors.ErrDBIssue}
 		}
-
 		players = append(players, &player)
 	}
 

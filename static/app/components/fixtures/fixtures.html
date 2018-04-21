@@ -7,19 +7,19 @@
                     <div flex>
                         <div>{{fixture.timestamp}}</div>
                         <div>{{fixture.venue}}</div>
-                        <div ng-show="{{fixture.lockPred}}">Winner: <b>{{fixtures.teamMap[fixture.result].shortName}}</b></div>
-                        <div ng-show="{{fixture.lockPred}}">MoM: <b>{{fixtures.playerMap[fixture.manOfMatch].name}}</b></div>
+                        <div ng-show="{{fixture.lock}}">Winner: <b>{{fixtures.teamMap[fixture.winner].shortName}}</b></div>
+                        <div ng-show="{{fixture.lock}}">MoM: <b>{{fixtures.playerMap[fixture.mom].name}}</b></div>
                     </div>
                     <div flex>
                         <div layout layout-align="center center">
-                            <p>{{fixture.team1.alias}}</p>
-                            <span class="team-logo {{fixture.team1.alias}}" style="display: inline-block"></span>
+                            <p>{{fixture.team1.shortName}}</p>
+                            <span class="team-logo {{fixture.team1.shortName}}" style="display: inline-block"></span>
                             <span>v</span>
-                            <span class="team-logo {{fixture.team2.alias}}" style="display: inline-block"></span>
-                            <span>{{fixture.team2.alias}}</span>
+                            <span class="team-logo {{fixture.team2.shortName}}" style="display: inline-block"></span>
+                            <span>{{fixture.team2.shortName}}</span>
                         </div>
                     </div>
-                    <div flex ng-class="fixtures.DisbleCard(fixture.lockPred)" style="width:100%">
+                    <div flex ng-class="fixtures.DisbleCard(fixture.lock)" style="width:100%">
                         <div>
                             <p>
                                 Team:
@@ -32,8 +32,8 @@
 
                             <div style="margin-bottom: 5px;">
                                 <md-radio-group ng-model="data.group" ng-init="data.group=fixture.predictions.teamVote" layout="row" ng-change="fixtures.updatedTeamVote(data.group,fixture)">
-                                    <md-radio-button value="{{fixture.teamId1}}">{{fixture.team1.alias}}</md-radio-button>
-                                    <md-radio-button value="{{fixture.teamId2}}"> {{fixture.team2.alias}} </md-radio-button>
+                                    <md-radio-button value="{{fixture.teamId1}}">{{fixture.team1.shortName}}</md-radio-button>
+                                    <md-radio-button value="{{fixture.teamId2}}"> {{fixture.team2.shortName}} </md-radio-button>
                                 </md-radio-group>
                             </div>
                         </div>
@@ -41,15 +41,15 @@
                         <div layout="column">
                             <md-input-container flex>
                                 <label>Select Player</label>
-                                <md-select name="mom" ng-model="fixtures.mom[fixture.matchId]" md-on-close="fixtures.clearSearchItem()" data-md-container-class="selectHeaderClass"
+                                <md-select name="mom" ng-model="fixtures.mom[fixture.id]" md-on-close="fixtures.clearSearchItem()" data-md-container-class="selectHeaderClass"
                                     required>
                                     <md-select-header class="select-header">
                                         <input ng-model="fixtures.searchItem" type="search" placeholder="Search for a player" class="select-header-searchbox md-text"
                                             ng-keydown="$event.stopPropagation()">
                                     </md-select-header>
                                     <md-option ng-repeat="player in fixtures.playersList | filter:fixtures.searchItem" ng-if="fixtures.playerInTeam(player.teamId, fixture.teamId1, fixture.teamId2)"
-                                        ng-value="player.playerId" ng-selected="fixtures.checkMOMSelection(player,fixture.predictions)"
-                                        ng-model="player.playerId" ng-click="fixtures.updatedPlayerVote(player.playerId,fixture)">{{player.name}}</md-option>
+                                        ng-value="player.id" ng-selected="fixtures.checkMOMSelection(player,fixture.predictions)"
+                                        ng-model="player.id" ng-click="fixtures.updatedPlayerVote(player.id,fixture)">{{player.name}}</md-option>
                                 </md-select>
                             </md-input-container>
                             <!-- <span ng-if="fixture.star">Use Coin:</span> -->
@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <div flex layout layout-align="end center">
-                        <md-button class="md-fab" ng-click="fixtures.showMatchStats($event,fixture.matchId)" aria-label="Get Votes">
+                        <md-button class="md-fab" ng-click="fixtures.showMatchStats($event,fixture.id)" aria-label="Get Votes">
                             <md-tooltip md-direction="top" md-autohide>Get Stats</md-tooltip>
                             <md-icon md-font-set="material-icons">graphic_eq</md-icon>
                         </md-button>

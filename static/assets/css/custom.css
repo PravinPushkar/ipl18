@@ -426,14 +426,6 @@ table.players td {
     margin-top: 5px;
 }
 
-.voted {
-    color: green;
-}
-
-.not-voted {
-    color: orange;
-}
-
 /****** Feeds *****/
 
 .feed-entry {
@@ -452,29 +444,28 @@ table.players td {
     max-width: 80%;
 }
 
-/*****  Will be used for animation! ****/
-
-/* .animation {
-    -webkit-transition:all linear 0.5s;
-    transition:all linear 0.5s;
+.container {
+    padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
 }
 
-.animation.ng-enter {
-    opacity: 0;
+@media (min-width:1200px) {
+    .container {
+        width: 1170px;
+    }
 }
-
-.animation.ng-leave {
-    opacity: 1;
+@media (min-width:992px) {
+    .container {
+        width: 970;
+    }
 }
-
-.animation.ng-enter.ng-enter-active {
-    opacity: 1;
+@media (min-width:768px) {
+    .container {
+        width: 750;
+    }
 }
-
-.animation.ng-leave.ng-leave-active {
-    opacity: 0;
-} */
-
 /**** feeds ends ******/
 
 .loading-indicator {
@@ -503,11 +494,12 @@ table.players td {
     background-color: rgba(0, 0, 0, 0.3);
 }
 
-.lock-pred{
+.lock-pred {
     pointer-events: none;
     opacity: 0.4;
     background-color: lightgray;
 }
-md-toast{
+
+md-toast {
     position: fixed !important;
 }

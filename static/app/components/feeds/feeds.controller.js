@@ -31,7 +31,6 @@ app.controller('feedsController', ['$http', '$window', 'socket', '$timeout', '$s
                 feeds.isLoaded = true;
                 $scope.$apply(function () {
                     feeds.feedEntries.push(JSON.parse(data));
-                    console.log(feeds.feedEntries.length);
                 });
             });
         });

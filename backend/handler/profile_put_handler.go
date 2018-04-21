@@ -52,7 +52,7 @@ func (p UserPutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		errors.ErrWriterPanic(w, http.StatusForbidden, errINumberDiff, errors.ErrTokenInfoMismatch, fmt.Sprintf("UserPutHandler: token info and path var mismatch %s-%s", pathVar["inumber"], inumber))
 	}
 	err = p.parseAndUpdate(r, inumber)
-	errors.ErrWriterPanic(w, http.StatusBadRequest, err, errors.ErrParseRequest, "UserPutHandler: error parsing form data")
+	errors.ErrWriterPanic(w, http.StatusBadRequest, err, err, "UserPutHandler: error parsing form data")
 	util.OkWriter(w)
 }
 
@@ -60,28 +60,26 @@ func (p UserPutHandler) parseAndUpdate(r *http.Request, inumber string) error {
 	log.Println("UserPutHandler: parsing request")
 	err := r.ParseMultipartForm(maxMemory)
 	updates := [4]bool{}
-	if err != nil {
-		return err
-	}
-
 	query := "update ipluser set inumber=$1"
 	values := []interface{}{inumber}
-
 	i := 2
-	if location, err := p.handleImage(r, inumber); err != nil {
-		return err
+	if err != nil {
+		log.Println("ProfileDAO: ", err)
 	} else {
-		query += fmt.Sprintf(",piclocation=$%d", i)
-		values = append(values, location)
-		updates[0] = true
+		if location, err := p.handleImage(r, inumber); err != nil {
+			return err
+		} else if location != "" {
+			query += fmt.Sprintf(",piclocation=$%d", i)
+			i++
+			values = append(values, location)
+			updates[0] = true
+		}
 	}
 
 	for k, _ := range r.Form {
 		val := r.Form.Get(k)
 		log.Println("UserPutHandler: found field ", k)
-		i++
 		switch k {
-
 		case "alias":
 			if !reAlias.MatchString(val) {
 				return errAliasInvalid
@@ -89,6 +87,7 @@ func (p UserPutHandler) parseAndUpdate(r *http.Request, inumber string) error {
 			query += fmt.Sprintf(",alias=$%d", i)
 			values = append(values, val)
 			updates[1] = true
+			i++
 
 		case "password":
 			if !rePass.MatchString(val) {
@@ -97,6 +96,7 @@ func (p UserPutHandler) parseAndUpdate(r *http.Request, inumber string) error {
 			query += fmt.Sprintf(",password=$%d", i)
 			values = append(values, util.GetHash([]byte(val)))
 			updates[2] = true
+			i++
 
 		default:
 			return errInvalidField
@@ -104,7 +104,6 @@ func (p UserPutHandler) parseAndUpdate(r *http.Request, inumber string) error {
 	}
 
 	if len(values) > 1 {
-		i++
 		query += fmt.Sprintf(" where inumber=$%d", i)
 		values = append(values, inumber)
 		log.Println(query, values)
@@ -136,7 +135,7 @@ func (p UserPutHandler) handleImage(r *http.Request, inumber string) (string, er
 	file, handle, err := r.FormFile("image")
 	if err != nil {
 		log.Println("UserPutHandler: error getting file handle", err.Error())
-		return "", err
+		return "", nil
 	}
 
 	defer file.Close()
