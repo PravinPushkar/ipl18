@@ -86,6 +86,9 @@ func (u UserDAO) InsertUser(user *models.User) error {
 		log.Println("UserDAO: db not updated inserting new user", err, num)
 		return &errors.DaoError{http.StatusInternalServerError, errors.ErrDBIssue, errors.ErrDBIssue}
 	}
+	defer cache.Lock.Unlock()
+	cache.Lock.Lock()
+	cache.UserINumberCache[user.INumber] = user
 
 	return nil
 }
