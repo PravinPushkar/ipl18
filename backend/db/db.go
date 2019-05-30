@@ -7,7 +7,7 @@ import (
 	"os"
 
 	_ "github.com/lib/pq"
-	"github.wdf.sap.corp/I334816/ipl18/backend/config"
+	"github.com/PravinPushkar/ipl18/backend/config"
 )
 
 var DB *sql.DB

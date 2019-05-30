@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
-	"github.wdf.sap.corp/I334816/ipl18/backend/handler"
-	"github.wdf.sap.corp/I334816/ipl18/backend/service"
+	"github.com/PravinPushkar/ipl18/backend/dao"
+	"github.com/PravinPushkar/ipl18/backend/handler"
+	"github.com/PravinPushkar/ipl18/backend/service"
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"

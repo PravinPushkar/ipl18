@@ -9,9 +9,9 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
-	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
-	"github.wdf.sap.corp/I334816/ipl18/backend/util"
+	"github.com/PravinPushkar/ipl18/backend/dao"
+	"github.com/PravinPushkar/ipl18/backend/errors"
+	"github.com/PravinPushkar/ipl18/backend/util"
 )
 
 var (

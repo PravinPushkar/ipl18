@@ -4,9 +4,9 @@ import (
 	"log"
 	"time"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/cache"
-	"github.wdf.sap.corp/I334816/ipl18/backend/dao"
-	"github.wdf.sap.corp/I334816/ipl18/backend/models"
+	"github.com/PravinPushkar/ipl18/backend/cache"
+	"github.com/PravinPushkar/ipl18/backend/dao"
+	"github.com/PravinPushkar/ipl18/backend/models"
 )
 
 //WebSocketManager and its dependencies

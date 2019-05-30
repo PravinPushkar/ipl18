@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/models"
+	"github.com/PravinPushkar/ipl18/backend/models"
 )
 
 var serverConfig models.Config

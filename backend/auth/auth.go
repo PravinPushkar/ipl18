@@ -5,8 +5,8 @@ import (
 	"log"
 	"time"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/config"
-	"github.wdf.sap.corp/I334816/ipl18/backend/models"
+	"github.com/PravinPushkar/ipl18/backend/config"
+	"github.com/PravinPushkar/ipl18/backend/models"
 
 	jwt "github.com/dgrijalva/jwt-go"
 )

@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.wdf.sap.corp/I334816/ipl18/backend/db"
-	"github.wdf.sap.corp/I334816/ipl18/backend/errors"
-	"github.wdf.sap.corp/I334816/ipl18/backend/models"
+	"github.com/PravinPushkar/ipl18/backend/db"
+	"github.com/PravinPushkar/ipl18/backend/errors"
+	"github.com/PravinPushkar/ipl18/backend/models"
 )
 
 type BonusDAO struct{}
